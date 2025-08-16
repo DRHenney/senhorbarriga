@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { ChartContainer } from "@/components/ui/chart";
+
 import { Plus, TrendingUp, DollarSign, CheckCircle, BarChart3, Target, Zap, Coins, Trash2 } from "lucide-react";
 import Link from "next/link";
 
@@ -364,7 +364,7 @@ export default function Home() {
               <CardDescription>Progresso semanal dos investimentos</CardDescription>
             </CardHeader>
             <CardContent>
-              <ChartContainer>
+              <ResponsiveContainer width="100%" height={350}>
                 <LineChart data={chartData}>
                   <CartesianGrid vertical={false} />
                   <XAxis
@@ -391,7 +391,7 @@ export default function Home() {
                     activeDot={{ r: 8, stroke: "var(--chart-1)", strokeWidth: 2 }}
                   />
                 </LineChart>
-              </ChartContainer>
+              </ResponsiveContainer>
             </CardContent>
             <CardFooter className="flex-col items-start gap-2 text-sm">
               <div className="flex gap-2 leading-none font-medium">
