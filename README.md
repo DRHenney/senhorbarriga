@@ -1,36 +1,135 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Senhor Barriga - Dashboard Financeiro
 
-## Getting Started
+Uma aplicação web moderna para acompanhar investimentos em pools de liquidez e robôs de grid trading.
 
-First, run the development server:
+## 🚀 Tecnologias Utilizadas
 
+- **Next.js 14** - Framework React com App Router
+- **React** - Biblioteca para interfaces de usuário
+- **TypeScript** - Tipagem estática para JavaScript
+- **Tailwind CSS** - Framework CSS utilitário
+- **ShadCN/ui** - Componentes de UI modernos e acessíveis
+- **Recharts** - Biblioteca de gráficos para React
+- **Lucide React** - Ícones modernos
+
+## ✨ Funcionalidades
+
+### Dashboard Principal
+- **Cards de Resumo**: Valor total, Pool de Liquidez e Robô Grid
+- **Gráfico de Evolução**: Linha temporal mostrando crescimento dos investimentos
+- **Gráfico de Distribuição**: Pizza chart com composição do portfólio
+- **Formulário de Entrada**: Adicionar novos registros semanais
+
+### Página de Histórico
+- **Tabela Detalhada**: Todos os registros com cálculos de crescimento
+- **Métricas de Resumo**: Total investido, crescimento médio e período
+- **Funcionalidades**: Filtros e exportação (preparado para implementação)
+
+## 🛠️ Como Executar
+
+### Pré-requisitos
+- Node.js 18+ 
+- npm ou yarn
+
+### Instalação
+
+1. Clone o repositório:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <url-do-repositorio>
+cd senhorbarriga
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Instale as dependências:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Execute o servidor de desenvolvimento:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Abra [http://localhost:3000](http://localhost:3000) no seu navegador
 
-## Learn More
+## 📁 Estrutura do Projeto
 
-To learn more about Next.js, take a look at the following resources:
+```
+senhorbarriga/
+├── src/
+│   ├── app/
+│   │   ├── page.tsx              # Dashboard principal
+│   │   ├── historico/
+│   │   │   └── page.tsx          # Página de histórico
+│   │   ├── layout.tsx            # Layout principal
+│   │   └── globals.css           # Estilos globais
+│   └── components/
+│       └── ui/                   # Componentes ShadCN/ui
+│           ├── button.tsx
+│           ├── card.tsx
+│           ├── input.tsx
+│           └── table.tsx
+├── lib/
+│   └── utils.ts                  # Utilitários
+├── components.json               # Configuração ShadCN/ui
+├── tailwind.config.ts           # Configuração Tailwind
+└── package.json
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🎨 Design System
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+A aplicação utiliza o design system do ShadCN/ui com:
+- **Cores**: Sistema de cores baseado em HSL com suporte a tema escuro
+- **Tipografia**: Fonte Geist Sans para texto e Geist Mono para código
+- **Componentes**: Botões, cards, inputs e tabelas consistentes
+- **Responsividade**: Layout adaptável para desktop e mobile
 
-## Deploy on Vercel
+## 📊 Dados e Gráficos
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Tipos de Gráficos
+- **LineChart**: Evolução temporal dos investimentos
+- **PieChart**: Distribuição percentual do portfólio
+- **Tabela**: Histórico detalhado com cálculos de crescimento
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Métricas Calculadas
+- Crescimento semanal (pool e grid)
+- Crescimento total do portfólio
+- Percentuais de distribuição
+- Médias e totais
+
+## 🔮 Próximos Passos
+
+### Funcionalidades Planejadas
+- [ ] Persistência de dados (banco de dados)
+- [ ] Autenticação de usuários
+- [ ] Exportação para Excel/CSV
+- [ ] Filtros avançados por período
+- [ ] Notificações de alerta
+- [ ] Múltiplas moedas
+- [ ] Integração com APIs de exchanges
+
+### Melhorias Técnicas
+- [ ] Testes automatizados
+- [ ] Otimização de performance
+- [ ] PWA (Progressive Web App)
+- [ ] Modo offline
+- [ ] Backup automático
+
+## 🤝 Contribuição
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📝 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+
+## 📞 Suporte
+
+Para dúvidas ou sugestões, abra uma issue no repositório ou entre em contato.
+
+---
+
+Desenvolvido com ❤️ para facilitar o acompanhamento de investimentos em DeFi
