@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Plus, TrendingUp, DollarSign, CheckCircle, BarChart3, Target, Zap, Coins, Trash2 } from "lucide-react";
 import Link from "next/link";
 
@@ -361,37 +362,50 @@ export default function Home() {
 
         {/* Gráficos com design melhorado */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl border-slate-200">
-            <CardHeader className="border-b border-slate-200">
-              <CardTitle className="text-xl font-semibold text-slate-800">Evolução ao Longo do Tempo</CardTitle>
-              <CardDescription className="text-slate-600">Progresso semanal dos investimentos</CardDescription>
+          <Card>
+            <CardHeader>
+              <CardTitle>Evolução ao Longo do Tempo</CardTitle>
+              <CardDescription>Progresso semanal dos investimentos</CardDescription>
             </CardHeader>
-            <CardContent className="pt-6">
-              <ResponsiveContainer width="100%" height={350}>
+            <CardContent>
+              <ChartContainer>
                 <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis dataKey="week" stroke="#64748b" />
-                  <YAxis stroke="#64748b" />
-                  <Tooltip 
-                    formatter={(value) => formatCurrency(Number(value))}
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                    }}
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="week"
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
+                    tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                  />
+                  <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent />}
                   />
                   <Line 
                     type="monotone" 
                     dataKey="total" 
-                    stroke="#475569" 
+                    stroke="var(--chart-1)" 
                     strokeWidth={3}
-                    dot={{ fill: '#475569', strokeWidth: 2, r: 6 }}
-                    activeDot={{ r: 8, stroke: '#475569', strokeWidth: 2 }}
+                    dot={{ fill: "var(--chart-1)", strokeWidth: 2, r: 6 }}
+                    activeDot={{ r: 8, stroke: "var(--chart-1)", strokeWidth: 2 }}
                   />
                 </LineChart>
-              </ResponsiveContainer>
+              </ChartContainer>
             </CardContent>
+            <CardFooter className="flex-col items-start gap-2 text-sm">
+              <div className="flex gap-2 leading-none font-medium">
+                Crescimento de {((chartData[chartData.length - 1].total - chartData[0].total) / chartData[0].total * 100).toFixed(1)}% no período <TrendingUp className="h-4 w-4" />
+              </div>
+              <div className="text-muted-foreground leading-none">
+                Mostrando evolução total dos investimentos nas últimas 5 semanas
+              </div>
+            </CardFooter>
           </Card>
 
           <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl border-slate-200">
