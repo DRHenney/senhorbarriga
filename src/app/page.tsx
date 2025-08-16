@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { Plus, TrendingUp, DollarSign, Activity, CheckCircle, BarChart3, Target, Zap, Coins, Trash2 } from "lucide-react";
+import { Plus, TrendingUp, DollarSign, CheckCircle, BarChart3, Target, Zap, Coins, Trash2 } from "lucide-react";
 import Link from "next/link";
 
 // Dados de exemplo
