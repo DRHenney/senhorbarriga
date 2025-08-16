@@ -470,7 +470,14 @@ export default function Home() {
               </div>
             </div>
             <div className="flex justify-end mt-6">
-              <Button className="px-8 py-3 text-lg">
+              <Button 
+                onClick={() => {
+                  // Lógica para adicionar nova entrada
+                  console.log("Nova entrada:", newEntry);
+                  setNewEntry({ poolLiquidity: "", gridBot: "" });
+                }}
+                className="px-8 py-3 text-lg"
+              >
                 <Plus className="h-5 w-5 mr-2" />
                 Adicionar Entrada
               </Button>
@@ -481,7 +488,7 @@ export default function Home() {
         {/* Link para Histórico com design melhorado */}
         <div className="flex justify-center">
           <Link href="/historico">
-            <Button variant="outline" size="lg" className="bg-white/80 backdrop-blur-sm border-slate-200 hover:bg-white hover:border-slate-300 text-slate-700 hover:text-slate-900 px-8 py-3 text-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300">
+            <Button variant="outline" size="lg" className="px-8 py-3 text-lg">
               Ver Histórico Completo
             </Button>
           </Link>
