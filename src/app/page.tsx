@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Label } from "recharts";
 
-import { Plus, TrendingUp, DollarSign, CheckCircle, BarChart3, Target, Zap, Coins, Trash2 } from "lucide-react";
+import { Plus, TrendingUp, DollarSign, CheckCircle, BarChart3, Target, Zap, Coins, Trash2, Calendar } from "lucide-react";
 import Link from "next/link";
 
 // Dados de exemplo
@@ -35,6 +35,26 @@ const pieData = [
 // Calcular valor total para o centro do donut
 const totalPortfolioValue = pieData.reduce((sum, item) => sum + item.value, 0);
 
+// Dados para resumo mensal
+const monthlyData = [
+  { name: "Janeiro", poolLiquidity: 4800, gridBot: 1100, total: 5900 },
+  { name: "Fevereiro", poolLiquidity: 5200, gridBot: 1250, total: 6450 },
+  { name: "Março", poolLiquidity: 5400, gridBot: 1350, total: 6750 },
+  { name: "Abril", poolLiquidity: 5600, gridBot: 1450, total: 7050 },
+  { name: "Maio", poolLiquidity: 5800, gridBot: 1550, total: 7350 },
+  { name: "Junho", poolLiquidity: 6000, gridBot: 1650, total: 7650 },
+];
+
+// Calcular totais mensais
+const totalMonthlyPool = monthlyData.reduce((sum, month) => sum + month.poolLiquidity, 0);
+const totalMonthlyGrid = monthlyData.reduce((sum, month) => sum + month.gridBot, 0);
+const totalMonthlyValue = totalMonthlyPool + totalMonthlyGrid;
+
+const monthlyPieData = [
+  { name: "Pool Liquidez", value: totalMonthlyPool, color: "#475569" },
+  { name: "Grid Bot", value: totalMonthlyGrid, color: "#64748b" },
+];
+
 // Dados de exemplo para tokens
 const initialTokens = [
   { id: 1, name: "Bitcoin", symbol: "BTC", amount: 0.5, price: 45000, value: 22500 },
@@ -61,6 +81,7 @@ export default function Home() {
   });
 
   const [tokens, setTokens] = useState(initialTokens);
+  const [activeTab, setActiveTab] = useState("current"); // "current" ou "monthly"
   const [newToken, setNewToken] = useState({
     name: "",
     symbol: "",
@@ -423,76 +444,160 @@ export default function Home() {
 
           <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl border-slate-200">
             <CardHeader className="border-b border-slate-200">
-              <CardTitle className="text-xl font-semibold text-slate-800">Distribuição Atual</CardTitle>
-              <CardDescription className="text-slate-600">Proporção entre pool de liquidez e grid bot</CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-xl font-semibold text-slate-800">
+                    {activeTab === "current" ? "Distribuição Atual" : "Resumo Mensal"}
+                  </CardTitle>
+                  <CardDescription className="text-slate-600">
+                    {activeTab === "current" 
+                      ? "Proporção entre pool de liquidez e grid bot" 
+                      : "Acumulado dos últimos 6 meses"
+                    }
+                  </CardDescription>
+                </div>
+                <div className="flex space-x-1 bg-slate-100 rounded-lg p-1">
+                  <button
+                    onClick={() => setActiveTab("current")}
+                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                      activeTab === "current"
+                        ? "bg-white text-slate-900 shadow-sm"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    <Target className="h-4 w-4 inline mr-1" />
+                    Atual
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("monthly")}
+                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                      activeTab === "monthly"
+                        ? "bg-white text-slate-900 shadow-sm"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    <Calendar className="h-4 w-4 inline mr-1" />
+                    Mensal
+                  </button>
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="pt-6">
-              <ResponsiveContainer width="100%" height={350}>
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
-                    outerRadius={120}
-                    innerRadius={60}
-                    fill="#8884d8"
-                    dataKey="value"
-                    strokeWidth={5}
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                    <Label
-                      content={({ viewBox }) => {
-                        if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                          return (
-                            <text
-                              x={viewBox.cx}
-                              y={viewBox.cy}
-                              textAnchor="middle"
-                              dominantBaseline="middle"
-                            >
-                              <tspan
+              {activeTab === "current" ? (
+                <ResponsiveContainer width="100%" height={350}>
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
+                      outerRadius={120}
+                      innerRadius={60}
+                      fill="#8884d8"
+                      dataKey="value"
+                      strokeWidth={5}
+                    >
+                      {pieData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                      <Label
+                        content={({ viewBox }) => {
+                          if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                            return (
+                              <text
                                 x={viewBox.cx}
                                 y={viewBox.cy}
-                                className="fill-slate-900 text-2xl font-bold"
+                                textAnchor="middle"
+                                dominantBaseline="middle"
                               >
-                                {formatCurrency(totalPortfolioValue)}
-                              </tspan>
-                              <tspan
-                                x={viewBox.cx}
-                                y={(viewBox.cy || 0) + 20}
-                                className="fill-slate-600 text-sm"
-                              >
-                                Total
-                              </tspan>
-                            </text>
-                          )
-                        }
+                                <tspan
+                                  x={viewBox.cx}
+                                  y={viewBox.cy}
+                                  className="fill-slate-900 text-2xl font-bold"
+                                >
+                                  {formatCurrency(totalPortfolioValue)}
+                                </tspan>
+                                <tspan
+                                  x={viewBox.cx}
+                                  y={(viewBox.cy || 0) + 20}
+                                  className="fill-slate-600 text-sm"
+                                >
+                                  Total
+                                </tspan>
+                              </text>
+                            )
+                          }
+                        }}
+                      />
+                    </Pie>
+                    <Tooltip 
+                      formatter={(value) => formatCurrency(Number(value))}
+                      contentStyle={{
+                        backgroundColor: 'white',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                       }}
                     />
-                  </Pie>
-                  <Tooltip 
-                    formatter={(value) => formatCurrency(Number(value))}
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <ResponsiveContainer width="100%" height={350}>
+                  <BarChart data={monthlyData}>
+                    <CartesianGrid vertical={false} stroke="#e2e8f0" />
+                    <XAxis
+                      dataKey="name"
+                      tickLine={false}
+                      tickMargin={10}
+                      axisLine={false}
+                      stroke="#64748b"
+                    />
+                    <YAxis
+                      tickLine={false}
+                      tickMargin={10}
+                      axisLine={false}
+                      stroke="#64748b"
+                      tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                    />
+                    <Tooltip 
+                      formatter={(value) => formatCurrency(Number(value))}
+                      contentStyle={{
+                        backgroundColor: 'white',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      }}
+                    />
+                    <Bar dataKey="poolLiquidity" fill="#475569" radius={4} name="Pool de Liquidez" />
+                    <Bar dataKey="gridBot" fill="#64748b" radius={4} name="Grid Bot" />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
             </CardContent>
             <CardFooter className="flex-col items-start gap-2 text-sm border-t border-slate-200">
-              <div className="flex gap-2 leading-none font-medium text-slate-700">
-                Pool de Liquidez: {formatCurrency(pieData[0].value)} ({((pieData[0].value / totalPortfolioValue) * 100).toFixed(0)}%)
-              </div>
-              <div className="flex gap-2 leading-none font-medium text-slate-700">
-                Grid Bot: {formatCurrency(pieData[1].value)} ({((pieData[1].value / totalPortfolioValue) * 100).toFixed(0)}%)
-              </div>
+              {activeTab === "current" ? (
+                <>
+                  <div className="flex gap-2 leading-none font-medium text-slate-700">
+                    Pool de Liquidez: {formatCurrency(pieData[0].value)} ({((pieData[0].value / totalPortfolioValue) * 100).toFixed(0)}%)
+                  </div>
+                  <div className="flex gap-2 leading-none font-medium text-slate-700">
+                    Grid Bot: {formatCurrency(pieData[1].value)} ({((pieData[1].value / totalPortfolioValue) * 100).toFixed(0)}%)
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex gap-2 leading-none font-medium text-slate-700">
+                    Total Acumulado: {formatCurrency(totalMonthlyValue)} em {monthlyData.length} meses
+                  </div>
+                  <div className="flex gap-2 leading-none font-medium text-slate-700">
+                    Crescimento: {((monthlyData[monthlyData.length - 1].total - monthlyData[0].total) / monthlyData[0].total * 100).toFixed(1)}% no período <TrendingUp className="h-4 w-4" />
+                  </div>
+                  <div className="text-slate-600 text-xs mt-1">
+                    Média mensal: {formatCurrency(totalMonthlyValue / monthlyData.length)}
+                  </div>
+                </>
+              )}
             </CardFooter>
           </Card>
         </div>
