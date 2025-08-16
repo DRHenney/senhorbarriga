@@ -50,7 +50,7 @@ export default function Home() {
                 <div className="p-2 bg-white/20 rounded-lg">
                   <BarChart3 className="h-6 w-6" />
                 </div>
-                <h1 className="text-4xl font-bold">Dashboard Financeiro</h1>
+                <h1 className="text-4xl font-bold">Senhor Barriga DeFi</h1>
               </div>
               <p className="text-blue-100 text-lg">Acompanhe suas finanças de forma inteligente</p>
             </div>
