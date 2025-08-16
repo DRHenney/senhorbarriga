@@ -29,6 +29,18 @@ const initialTokens = [
   { id: 3, name: "Cardano", symbol: "ADA", amount: 5000, price: 0.45, value: 2250 },
 ];
 
+// Dados para o gráfico de portfólio total
+const portfolioChartData = [
+  { month: "Jan", value: 28000 },
+  { month: "Fev", value: 29500 },
+  { month: "Mar", value: 31200 },
+  { month: "Abr", value: 29800 },
+  { month: "Mai", value: 32500 },
+  { month: "Jun", value: 34100 },
+  { month: "Jul", value: 35800 },
+  { month: "Ago", value: 37200 },
+];
+
 export default function Home() {
   const [newEntry, setNewEntry] = useState({
     poolLiquidity: "",
@@ -56,6 +68,12 @@ export default function Home() {
 
   // Calcular valor total do portfólio de tokens
   const portfolioTotal = tokens.reduce((sum, token) => sum + token.value, 0);
+
+  // Calcular valor total geral (DeFi + Tokens)
+  const totalPortfolioValue = totalValue + portfolioTotal;
+
+  // Calcular crescimento percentual
+  const portfolioGrowth = ((portfolioChartData[portfolioChartData.length - 1].value - portfolioChartData[0].value) / portfolioChartData[0].value * 100).toFixed(1);
 
   // Adicionar novo token
   const addToken = () => {
@@ -107,6 +125,64 @@ export default function Home() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+        {/* Card de Portfólio Total com Gráfico */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card className="lg:col-span-2 bg-gradient-to-br from-slate-800 to-slate-900 text-white border-0 shadow-2xl">
+            <CardContent className="p-6">
+              <div className="flex flex-col h-full">
+                {/* Header do Card */}
+                <div className="mb-6">
+                  <h3 className="text-gray-300 text-sm font-medium mb-2">Portfólio Total</h3>
+                  <div className="text-3xl font-bold text-white mb-2">{formatCurrency(totalPortfolioValue)}</div>
+                  <div className="flex items-center space-x-2">
+                    <TrendingUp className="h-4 w-4 text-green-400" />
+                    <span className="text-green-400 text-sm font-medium">+{portfolioGrowth}% desde janeiro</span>
+                  </div>
+                </div>
+                
+                {/* Gráfico de Linha */}
+                <div className="flex-1">
+                  <ResponsiveContainer width="100%" height={200}>
+                    <LineChart data={portfolioChartData}>
+                      <Line 
+                        type="monotone" 
+                        dataKey="value" 
+                        stroke="#10b981" 
+                        strokeWidth={3}
+                        dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
+                        activeDot={{ r: 6, stroke: '#10b981', strokeWidth: 2 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Card de Resumo Rápido */}
+          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-gray-800">Resumo Rápido</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">DeFi Total:</span>
+                <span className="font-semibold text-gray-900">{formatCurrency(totalValue)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Tokens:</span>
+                <span className="font-semibold text-gray-900">{formatCurrency(portfolioTotal)}</span>
+              </div>
+              <div className="border-t pt-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-800 font-medium">Total Geral:</span>
+                  <span className="text-xl font-bold text-gray-900">{formatCurrency(totalPortfolioValue)}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Cards de Resumo com design melhorado */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
