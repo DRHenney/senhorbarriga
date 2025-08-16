@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { Plus, TrendingUp, DollarSign, Activity, CheckCircle, BarChart3, Target, Zap } from "lucide-react";
+import { Plus, TrendingUp, DollarSign, Activity, CheckCircle, BarChart3, Target, Zap, Coins, Trash2 } from "lucide-react";
 import Link from "next/link";
 
 // Dados de exemplo
@@ -22,10 +22,25 @@ const pieData = [
   { name: "Grid Bot", value: 1600, color: "#10b981" },
 ];
 
+// Dados de exemplo para tokens
+const initialTokens = [
+  { id: 1, name: "Bitcoin", symbol: "BTC", amount: 0.5, price: 45000, value: 22500 },
+  { id: 2, name: "Ethereum", symbol: "ETH", amount: 3.2, price: 2800, value: 8960 },
+  { id: 3, name: "Cardano", symbol: "ADA", amount: 5000, price: 0.45, value: 2250 },
+];
+
 export default function Home() {
   const [newEntry, setNewEntry] = useState({
     poolLiquidity: "",
     gridBot: "",
+  });
+
+  const [tokens, setTokens] = useState(initialTokens);
+  const [newToken, setNewToken] = useState({
+    name: "",
+    symbol: "",
+    amount: "",
+    price: "",
   });
 
   const formatCurrency = (value: number) => {
@@ -38,6 +53,35 @@ export default function Home() {
   const totalValue = chartData[chartData.length - 1]?.total || 0;
   const poolLiquidity = chartData[chartData.length - 1]?.poolLiquidity || 0;
   const gridBot = chartData[chartData.length - 1]?.gridBot || 0;
+
+  // Calcular valor total do portfólio de tokens
+  const portfolioTotal = tokens.reduce((sum, token) => sum + token.value, 0);
+
+  // Adicionar novo token
+  const addToken = () => {
+    if (newToken.name && newToken.symbol && newToken.amount && newToken.price) {
+      const amount = parseFloat(newToken.amount);
+      const price = parseFloat(newToken.price);
+      const value = amount * price;
+      
+      const token = {
+        id: Date.now(),
+        name: newToken.name,
+        symbol: newToken.symbol.toUpperCase(),
+        amount: amount,
+        price: price,
+        value: value,
+      };
+      
+      setTokens([...tokens, token]);
+      setNewToken({ name: "", symbol: "", amount: "", price: "" });
+    }
+  };
+
+  // Remover token
+  const removeToken = (id: number) => {
+    setTokens(tokens.filter(token => token.id !== id));
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
@@ -64,7 +108,7 @@ export default function Home() {
 
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
         {/* Cards de Resumo com design melhorado */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">Valor Total</CardTitle>
@@ -112,7 +156,132 @@ export default function Home() {
               </div>
             </CardContent>
           </Card>
+
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Portfólio Tokens</CardTitle>
+              <div className="p-2 bg-orange-100 rounded-lg">
+                <Coins className="h-5 w-5 text-orange-600" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-gray-900">{formatCurrency(portfolioTotal)}</div>
+              <div className="flex items-center space-x-1 mt-2">
+                <TrendingUp className="h-4 w-4 text-green-500" />
+                <p className="text-sm text-green-600 font-medium">{tokens.length} tokens</p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
+
+        {/* Seção de Portfólio de Tokens */}
+        <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl">
+          <CardHeader className="border-b border-gray-100">
+            <CardTitle className="text-xl font-semibold text-gray-800">Portfólio de Tokens</CardTitle>
+            <CardDescription className="text-gray-600">Gerencie seus tokens e acompanhe o valor total do portfólio</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            {/* Formulário para adicionar token */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Nome do Token</label>
+                <Input
+                  placeholder="Ex: Bitcoin"
+                  value={newToken.name}
+                  onChange={(e) => setNewToken({ ...newToken, name: e.target.value })}
+                  className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Símbolo</label>
+                <Input
+                  placeholder="Ex: BTC"
+                  value={newToken.symbol}
+                  onChange={(e) => setNewToken({ ...newToken, symbol: e.target.value })}
+                  className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Quantidade</label>
+                <Input
+                  type="number"
+                  placeholder="0.00"
+                  value={newToken.amount}
+                  onChange={(e) => setNewToken({ ...newToken, amount: e.target.value })}
+                  className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Preço ($)</label>
+                <Input
+                  type="number"
+                  placeholder="0.00"
+                  value={newToken.price}
+                  onChange={(e) => setNewToken({ ...newToken, price: e.target.value })}
+                  className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end mb-6">
+              <Button 
+                onClick={addToken}
+                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-6 py-2 font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Adicionar Token
+              </Button>
+            </div>
+
+            {/* Lista de tokens */}
+            <div className="space-y-3">
+              {tokens.map((token) => (
+                <div key={token.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                      {token.symbol.charAt(0)}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">{token.name}</h3>
+                      <p className="text-sm text-gray-600">{token.symbol}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-6">
+                    <div className="text-right">
+                      <p className="text-sm text-gray-600">{token.amount} {token.symbol}</p>
+                      <p className="text-sm text-gray-500">${token.price.toLocaleString()}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold text-gray-900">{formatCurrency(token.value)}</p>
+                      <p className="text-sm text-gray-500">{((token.value / portfolioTotal) * 100).toFixed(1)}% do portfólio</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeToken(token.id)}
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Resumo do portfólio */}
+            <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Valor Total do Portfólio</h3>
+                  <p className="text-sm text-gray-600">{tokens.length} tokens • Última atualização: agora</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-3xl font-bold text-gray-900">{formatCurrency(portfolioTotal)}</p>
+                  <p className="text-sm text-green-600 font-medium">+5.2% esta semana</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Gráficos com design melhorado */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
