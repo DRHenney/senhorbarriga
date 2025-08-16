@@ -186,123 +186,119 @@ export default function Home() {
 
         {/* Cards de Resumo com design melhorado */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200">
+          <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">Valor Total</CardTitle>
-              <div className="p-2 bg-slate-100 rounded-lg">
-                <DollarSign className="h-5 w-5 text-slate-600" />
+              <CardTitle className="text-sm font-medium">Valor Total</CardTitle>
+              <div className="p-2 bg-muted rounded-lg">
+                <DollarSign className="h-5 w-5" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-slate-900">{formatCurrency(totalValue)}</div>
+              <div className="text-3xl font-bold">{formatCurrency(totalValue)}</div>
               <div className="flex items-center space-x-1 mt-2">
-                <TrendingUp className="h-4 w-4 text-slate-500" />
-                <p className="text-sm text-slate-600 font-medium">+12.5% este mês</p>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground font-medium">+12.5% este mês</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200">
+          <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">Pool de Liquidez</CardTitle>
-              <div className="p-2 bg-slate-100 rounded-lg">
-                <Target className="h-5 w-5 text-slate-600" />
+              <CardTitle className="text-sm font-medium">Pool de Liquidez</CardTitle>
+              <div className="p-2 bg-muted rounded-lg">
+                <Target className="h-5 w-5" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-slate-900">{formatCurrency(poolLiquidity)}</div>
+              <div className="text-3xl font-bold">{formatCurrency(poolLiquidity)}</div>
               <div className="flex items-center space-x-1 mt-2">
-                <TrendingUp className="h-4 w-4 text-slate-500" />
-                <p className="text-sm text-slate-600 font-medium">+8.2% esta semana</p>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground font-medium">+8.2% esta semana</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200">
+          <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">Grid Bot</CardTitle>
-              <div className="p-2 bg-slate-100 rounded-lg">
-                <Zap className="h-5 w-5 text-slate-600" />
+              <CardTitle className="text-sm font-medium">Grid Bot</CardTitle>
+              <div className="p-2 bg-muted rounded-lg">
+                <Zap className="h-5 w-5" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-slate-900">{formatCurrency(gridBot)}</div>
+              <div className="text-3xl font-bold">{formatCurrency(gridBot)}</div>
               <div className="flex items-center space-x-1 mt-2">
-                <TrendingUp className="h-4 w-4 text-slate-500" />
-                <p className="text-sm text-slate-600 font-medium">+15.3% esta semana</p>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground font-medium">+15.3% esta semana</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200">
+          <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">Portfólio Tokens</CardTitle>
-              <div className="p-2 bg-slate-100 rounded-lg">
-                <Coins className="h-5 w-5 text-slate-600" />
+              <CardTitle className="text-sm font-medium">Portfólio Tokens</CardTitle>
+              <div className="p-2 bg-muted rounded-lg">
+                <Coins className="h-5 w-5" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-slate-900">{formatCurrency(portfolioTotal)}</div>
+              <div className="text-3xl font-bold">{formatCurrency(portfolioTotal)}</div>
               <div className="flex items-center space-x-1 mt-2">
-                <TrendingUp className="h-4 w-4 text-slate-500" />
-                <p className="text-sm text-slate-600 font-medium">{tokens.length} tokens</p>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground font-medium">{tokens.length} tokens</p>
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Seção de Portfólio de Tokens */}
-        <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl border-slate-200">
-          <CardHeader className="border-b border-slate-200">
-            <CardTitle className="text-xl font-semibold text-slate-800">Portfólio de Tokens</CardTitle>
-            <CardDescription className="text-slate-600">Gerencie seus tokens e acompanhe o valor total do portfólio</CardDescription>
+        <Card>
+          <CardHeader>
+            <CardTitle>Portfólio de Tokens</CardTitle>
+            <CardDescription>Gerencie seus tokens e acompanhe o valor total do portfólio</CardDescription>
           </CardHeader>
-          <CardContent className="pt-6">
+          <CardContent>
             {/* Formulário para adicionar token */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700">Nome do Token</label>
+                <label className="text-sm font-medium">Nome do Token</label>
                 <Input
                   placeholder="Ex: Bitcoin"
                   value={newToken.name}
                   onChange={(e) => setNewToken({ ...newToken, name: e.target.value })}
-                  className="border-slate-200 focus:border-slate-500 focus:ring-slate-500"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700">Símbolo</label>
+                <label className="text-sm font-medium">Símbolo</label>
                 <Input
                   placeholder="Ex: BTC"
                   value={newToken.symbol}
                   onChange={(e) => setNewToken({ ...newToken, symbol: e.target.value })}
-                  className="border-slate-200 focus:border-slate-500 focus:ring-slate-500"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700">Quantidade</label>
+                <label className="text-sm font-medium">Quantidade</label>
                 <Input
                   type="number"
                   placeholder="0.00"
                   value={newToken.amount}
                   onChange={(e) => setNewToken({ ...newToken, amount: e.target.value })}
-                  className="border-slate-200 focus:border-slate-500 focus:ring-slate-500"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700">Preço ($)</label>
+                <label className="text-sm font-medium">Preço ($)</label>
                 <Input
                   type="number"
                   placeholder="0.00"
                   value={newToken.price}
                   onChange={(e) => setNewToken({ ...newToken, price: e.target.value })}
-                  className="border-slate-200 focus:border-slate-500 focus:ring-slate-500"
                 />
               </div>
             </div>
             <div className="flex justify-end mb-6">
               <Button 
                 onClick={addToken}
-                className="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white px-6 py-2 font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+                className="px-6 py-2"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Adicionar Token
@@ -312,30 +308,30 @@ export default function Home() {
             {/* Lista de tokens */}
             <div className="space-y-3">
               {tokens.map((token) => (
-                <div key={token.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                <div key={token.id} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors">
                   <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 bg-gradient-to-r from-slate-500 to-slate-600 rounded-full flex items-center justify-center text-white font-bold">
+                    <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold">
                       {token.symbol.charAt(0)}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-slate-900">{token.name}</h3>
-                      <p className="text-sm text-slate-600">{token.symbol}</p>
+                      <h3 className="font-semibold">{token.name}</h3>
+                      <p className="text-sm text-muted-foreground">{token.symbol}</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-6">
                     <div className="text-right">
-                      <p className="text-sm text-slate-600">{token.amount} {token.symbol}</p>
-                      <p className="text-sm text-slate-500">${token.price.toLocaleString()}</p>
+                      <p className="text-sm text-muted-foreground">{token.amount} {token.symbol}</p>
+                      <p className="text-sm text-muted-foreground">${token.price.toLocaleString()}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-slate-900">{formatCurrency(token.value)}</p>
-                      <p className="text-sm text-slate-500">{((token.value / portfolioTotal) * 100).toFixed(1)}% do portfólio</p>
+                      <p className="font-semibold">{formatCurrency(token.value)}</p>
+                      <p className="text-sm text-muted-foreground">{((token.value / portfolioTotal) * 100).toFixed(1)}% do portfólio</p>
                     </div>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => removeToken(token.id)}
-                      className="text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+                      className="text-muted-foreground hover:text-foreground"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -408,12 +404,12 @@ export default function Home() {
             </CardFooter>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl border-slate-200">
-            <CardHeader className="border-b border-slate-200">
-              <CardTitle className="text-xl font-semibold text-slate-800">Distribuição Atual</CardTitle>
-              <CardDescription className="text-slate-600">Proporção entre pool de liquidez e grid bot</CardDescription>
+          <Card>
+            <CardHeader>
+              <CardTitle>Distribuição Atual</CardTitle>
+              <CardDescription>Proporção entre pool de liquidez e grid bot</CardDescription>
             </CardHeader>
-            <CardContent className="pt-6">
+            <CardContent>
               <ResponsiveContainer width="100%" height={350}>
                 <PieChart>
                   <Pie
@@ -432,12 +428,6 @@ export default function Home() {
                   </Pie>
                   <Tooltip 
                     formatter={(value) => formatCurrency(Number(value))}
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                    }}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -446,15 +436,15 @@ export default function Home() {
         </div>
 
         {/* Formulário com design melhorado */}
-        <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl border-slate-200">
-          <CardHeader className="border-b border-slate-200">
-            <CardTitle className="text-xl font-semibold text-slate-800">Adicionar Nova Entrada Semanal</CardTitle>
-            <CardDescription className="text-slate-600">Registre seus valores de pool de liquidez e grid bot</CardDescription>
+        <Card>
+          <CardHeader>
+            <CardTitle>Adicionar Nova Entrada Semanal</CardTitle>
+            <CardDescription>Registre seus valores de pool de liquidez e grid bot</CardDescription>
           </CardHeader>
-          <CardContent className="pt-6">
+          <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-3">
-                <label htmlFor="poolLiquidity" className="text-sm font-medium text-slate-700">
+                <label htmlFor="poolLiquidity" className="text-sm font-medium">
                   Pool de Liquidez ($)
                 </label>
                 <Input
@@ -463,11 +453,11 @@ export default function Home() {
                   placeholder="0.00"
                   value={newEntry.poolLiquidity}
                   onChange={(e) => setNewEntry({ ...newEntry, poolLiquidity: e.target.value })}
-                  className="h-12 text-lg border-slate-200 focus:border-slate-500 focus:ring-slate-500"
+                  className="h-12 text-lg"
                 />
               </div>
               <div className="space-y-3">
-                <label htmlFor="gridBot" className="text-sm font-medium text-slate-700">
+                <label htmlFor="gridBot" className="text-sm font-medium">
                   Grid Bot ($)
                 </label>
                 <Input
@@ -476,12 +466,12 @@ export default function Home() {
                   placeholder="0.00"
                   value={newEntry.gridBot}
                   onChange={(e) => setNewEntry({ ...newEntry, gridBot: e.target.value })}
-                  className="h-12 text-lg border-slate-200 focus:border-slate-500 focus:ring-slate-500"
+                  className="h-12 text-lg"
                 />
               </div>
             </div>
             <div className="flex justify-end mt-6">
-              <Button className="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white px-8 py-3 text-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300">
+              <Button className="px-8 py-3 text-lg">
                 <Plus className="h-5 w-5 mr-2" />
                 Adicionar Entrada
               </Button>
