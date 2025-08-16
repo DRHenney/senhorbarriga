@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from "recharts";
 
 import { Plus, TrendingUp, DollarSign, CheckCircle, BarChart3, Target, Zap, Coins, Trash2 } from "lucide-react";
 import Link from "next/link";
@@ -16,6 +16,15 @@ const chartData = [
   { week: "Semana 3", poolLiquidity: 5400, gridBot: 1400, total: 6800 },
   { week: "Semana 4", poolLiquidity: 5600, gridBot: 1500, total: 7100 },
   { week: "Semana 5", poolLiquidity: 5800, gridBot: 1600, total: 7400 },
+];
+
+// Dados para o gráfico de barras
+const barChartData = [
+  { week: "Semana 1", poolLiquidity: 5000, gridBot: 1200 },
+  { week: "Semana 2", poolLiquidity: 5200, gridBot: 1350 },
+  { week: "Semana 3", poolLiquidity: 5400, gridBot: 1400 },
+  { week: "Semana 4", poolLiquidity: 5600, gridBot: 1500 },
+  { week: "Semana 5", poolLiquidity: 5800, gridBot: 1600 },
 ];
 
 const pieData = [
@@ -364,15 +373,27 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl border-slate-200">
             <CardHeader className="border-b border-slate-200">
-              <CardTitle className="text-xl font-semibold text-slate-800">Evolução ao Longo do Tempo</CardTitle>
-              <CardDescription className="text-slate-600">Progresso semanal dos investimentos</CardDescription>
+              <CardTitle className="text-xl font-semibold text-slate-800">Evolução Semanal</CardTitle>
+              <CardDescription className="text-slate-600">Valores de Pool de Liquidez e Grid Bot por semana</CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
               <ResponsiveContainer width="100%" height={350}>
-                <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis dataKey="week" stroke="#64748b" />
-                  <YAxis stroke="#64748b" />
+                <BarChart data={barChartData}>
+                  <CartesianGrid vertical={false} stroke="#e2e8f0" />
+                  <XAxis
+                    dataKey="week"
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
+                    stroke="#64748b"
+                  />
+                  <YAxis
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
+                    stroke="#64748b"
+                    tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                  />
                   <Tooltip 
                     formatter={(value) => formatCurrency(Number(value))}
                     contentStyle={{
@@ -382,17 +403,19 @@ export default function Home() {
                       boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                     }}
                   />
-                  <Line 
-                    type="monotone" 
-                    dataKey="total" 
-                    stroke="#475569" 
-                    strokeWidth={3}
-                    dot={{ fill: '#475569', strokeWidth: 2, r: 6 }}
-                    activeDot={{ r: 8, stroke: '#475569', strokeWidth: 2 }}
-                  />
-                </LineChart>
+                  <Bar dataKey="poolLiquidity" fill="#475569" radius={4} name="Pool de Liquidez" />
+                  <Bar dataKey="gridBot" fill="#64748b" radius={4} name="Grid Bot" />
+                </BarChart>
               </ResponsiveContainer>
             </CardContent>
+            <CardFooter className="flex-col items-start gap-2 text-sm border-t border-slate-200">
+              <div className="flex gap-2 leading-none font-medium text-slate-700">
+                Crescimento de {((barChartData[barChartData.length - 1].poolLiquidity + barChartData[barChartData.length - 1].gridBot - barChartData[0].poolLiquidity - barChartData[0].gridBot) / (barChartData[0].poolLiquidity + barChartData[0].gridBot) * 100).toFixed(1)}% no período <TrendingUp className="h-4 w-4" />
+              </div>
+              <div className="text-slate-600 leading-none">
+                Mostrando evolução semanal dos investimentos nas últimas 5 semanas
+              </div>
+            </CardFooter>
           </Card>
 
           <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl border-slate-200">
