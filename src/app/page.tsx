@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Label } from "recharts";
 
 import { Plus, TrendingUp, DollarSign, CheckCircle, BarChart3, Target, Zap, Coins, Trash2 } from "lucide-react";
 import Link from "next/link";
@@ -31,6 +31,9 @@ const pieData = [
   { name: "Pool Liquidez", value: 5800, color: "#475569" },
   { name: "Grid Bot", value: 1600, color: "#64748b" },
 ];
+
+// Calcular valor total para o centro do donut
+const totalPortfolioValue = pieData.reduce((sum, item) => sum + item.value, 0);
 
 // Dados de exemplo para tokens
 const initialTokens = [
@@ -433,12 +436,43 @@ export default function Home() {
                     labelLine={false}
                     label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
                     outerRadius={120}
+                    innerRadius={60}
                     fill="#8884d8"
                     dataKey="value"
+                    strokeWidth={5}
                   >
                     {pieData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
+                    <Label
+                      content={({ viewBox }) => {
+                        if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                          return (
+                            <text
+                              x={viewBox.cx}
+                              y={viewBox.cy}
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                            >
+                              <tspan
+                                x={viewBox.cx}
+                                y={viewBox.cy}
+                                className="fill-slate-900 text-2xl font-bold"
+                              >
+                                {formatCurrency(totalPortfolioValue)}
+                              </tspan>
+                              <tspan
+                                x={viewBox.cx}
+                                y={(viewBox.cy || 0) + 20}
+                                className="fill-slate-600 text-sm"
+                              >
+                                Total
+                              </tspan>
+                            </text>
+                          )
+                        }
+                      }}
+                    />
                   </Pie>
                   <Tooltip 
                     formatter={(value) => formatCurrency(Number(value))}
@@ -452,6 +486,14 @@ export default function Home() {
                 </PieChart>
               </ResponsiveContainer>
             </CardContent>
+            <CardFooter className="flex-col items-start gap-2 text-sm border-t border-slate-200">
+              <div className="flex gap-2 leading-none font-medium text-slate-700">
+                Pool de Liquidez: {formatCurrency(pieData[0].value)} ({((pieData[0].value / totalPortfolioValue) * 100).toFixed(0)}%)
+              </div>
+              <div className="flex gap-2 leading-none font-medium text-slate-700">
+                Grid Bot: {formatCurrency(pieData[1].value)} ({((pieData[1].value / totalPortfolioValue) * 100).toFixed(0)}%)
+              </div>
+            </CardFooter>
           </Card>
         </div>
 
