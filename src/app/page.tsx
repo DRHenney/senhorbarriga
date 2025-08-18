@@ -339,7 +339,7 @@ export default function Home() {
                   placeholder="Ex: Bitcoin"
                   value={newToken.name}
                   onChange={(e) => setNewToken({ ...newToken, name: e.target.value })}
-                  className="h-12 text-base border-2 border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-400"
+                  className="h-12 text-base border-2 border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-600"
                 />
               </div>
               <div className="space-y-3">
@@ -351,7 +351,7 @@ export default function Home() {
                   placeholder="Ex: BTC"
                   value={newToken.symbol}
                   onChange={(e) => setNewToken({ ...newToken, symbol: e.target.value })}
-                  className="h-12 text-base border-2 border-slate-300 focus:border-green-500 focus:ring-4 focus:ring-green-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-400 uppercase"
+                  className="h-12 text-base border-2 border-slate-300 focus:border-green-500 focus:ring-4 focus:ring-green-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-600 uppercase"
                 />
               </div>
               <div className="space-y-3">
@@ -364,7 +364,7 @@ export default function Home() {
                   placeholder="0.00"
                   value={newToken.amount}
                   onChange={(e) => setNewToken({ ...newToken, amount: e.target.value })}
-                  className="h-12 text-base border-2 border-slate-300 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-400"
+                  className="h-12 text-base border-2 border-slate-300 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-600"
                 />
               </div>
               <div className="space-y-3">
@@ -377,7 +377,7 @@ export default function Home() {
                   placeholder="0.00"
                   value={newToken.price}
                   onChange={(e) => setNewToken({ ...newToken, price: e.target.value })}
-                  className="h-12 text-base border-2 border-slate-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-400"
+                  className="h-12 text-base border-2 border-slate-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-600"
                 />
               </div>
             </div>
