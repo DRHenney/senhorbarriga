@@ -36,7 +36,7 @@ export default function SignInForm() {
         router.push('/');
         router.refresh();
       }
-    } catch (error) {
+    } catch {
       setError('Erro ao fazer login');
     } finally {
       setLoading(false);
@@ -47,7 +47,7 @@ export default function SignInForm() {
     setLoading(true);
     try {
       await signIn('google', { callbackUrl: '/' });
-    } catch (error) {
+    } catch {
       setError('Erro ao fazer login com Google');
       setLoading(false);
     }

@@ -19,7 +19,7 @@ export async function GET() {
 
     // Buscar usuário pelo email
     const user = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.email, session.user.email!),
+      where: (users, { eq }) => eq(users.email, session.user!.email!),
     });
 
     if (!user) {
@@ -70,7 +70,7 @@ export async function POST(request: Request) {
 
     // Buscar usuário pelo email
     const user = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.email, session.user.email!),
+      where: (users, { eq }) => eq(users.email, session.user!.email!),
     });
 
     if (!user) {

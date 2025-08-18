@@ -63,7 +63,7 @@ export default function SignUpForm() {
           router.push('/auth/signin');
         }, 2000);
       }
-    } catch (error) {
+    } catch {
       setError('Erro ao criar conta');
     } finally {
       setLoading(false);
@@ -74,7 +74,7 @@ export default function SignUpForm() {
     setLoading(true);
     try {
       await signIn('google', { callbackUrl: '/' });
-    } catch (error) {
+    } catch {
       setError('Erro ao fazer login com Google');
       setLoading(false);
     }
