@@ -8,6 +8,8 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 import { Plus, TrendingUp, DollarSign, CheckCircle, BarChart3, Target, Zap, Coins, Trash2, Calendar } from "lucide-react";
 import Link from "next/link";
+import DatabaseStatus from "@/components/DatabaseStatus";
+import UserNav from "@/components/auth/UserNav";
 
 // Dados de exemplo
 const chartData = [
@@ -150,10 +152,7 @@ export default function Home() {
               </div>
               <p className="text-slate-300 text-lg">Acompanhe suas finanças de forma inteligente</p>
             </div>
-            <div className="flex items-center space-x-2 bg-slate-600/30 backdrop-blur-sm px-4 py-2 rounded-full">
-              <CheckCircle className="h-5 w-5 text-slate-300" />
-              <span className="text-sm font-medium">Deploy Automático Ativo</span>
-            </div>
+            <UserNav />
           </div>
         </div>
       </div>
@@ -653,12 +652,23 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        {/* Link para Histórico com design melhorado */}
+        {/* Status do Banco de Dados */}
         <div className="flex justify-center">
+          <DatabaseStatus />
+        </div>
+
+        {/* Links de Navegação */}
+        <div className="flex justify-center space-x-4">
           <Link href="/historico">
             <Button variant="outline" size="lg" className="bg-white/80 backdrop-blur-sm border-slate-200 hover:bg-white hover:border-slate-300 text-slate-700 hover:text-slate-900 px-8 py-3 text-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300">
               <BarChart3 className="h-5 w-5 mr-2" />
               Ver Histórico Completo
+            </Button>
+          </Link>
+          <Link href="/dashboard">
+            <Button size="lg" className="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white px-8 py-3 text-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300">
+              <User className="h-5 w-5 mr-2" />
+              Dashboard
             </Button>
           </Link>
         </div>
