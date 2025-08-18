@@ -97,6 +97,9 @@ export default function Home() {
     price: "",
   });
 
+  // Verificar se todos os campos estão preenchidos
+  const isFormComplete = newToken.name && newToken.symbol && newToken.amount && newToken.price;
+
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -326,53 +329,70 @@ export default function Home() {
           </CardHeader>
           <CardContent className="pt-6">
             {/* Formulário para adicionar token */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700">Nome do Token</label>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-slate-800 flex items-center">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                  Nome do Token
+                </label>
                 <Input
                   placeholder="Ex: Bitcoin"
                   value={newToken.name}
                   onChange={(e) => setNewToken({ ...newToken, name: e.target.value })}
-                  className="border-slate-200 focus:border-slate-500 focus:ring-slate-500"
+                  className="h-12 text-base border-2 border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-400"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700">Símbolo</label>
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-slate-800 flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                  Símbolo
+                </label>
                 <Input
                   placeholder="Ex: BTC"
                   value={newToken.symbol}
                   onChange={(e) => setNewToken({ ...newToken, symbol: e.target.value })}
-                  className="border-slate-200 focus:border-slate-500 focus:ring-slate-500"
+                  className="h-12 text-base border-2 border-slate-300 focus:border-green-500 focus:ring-4 focus:ring-green-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-400 uppercase"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700">Quantidade</label>
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-slate-800 flex items-center">
+                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                  Quantidade
+                </label>
                 <Input
                   type="number"
                   placeholder="0.00"
                   value={newToken.amount}
                   onChange={(e) => setNewToken({ ...newToken, amount: e.target.value })}
-                  className="border-slate-200 focus:border-slate-500 focus:ring-slate-500"
+                  className="h-12 text-base border-2 border-slate-300 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-400"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700">Preço ($)</label>
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-slate-800 flex items-center">
+                  <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
+                  Preço ($)
+                </label>
                 <Input
                   type="number"
                   placeholder="0.00"
                   value={newToken.price}
                   onChange={(e) => setNewToken({ ...newToken, price: e.target.value })}
-                  className="border-slate-200 focus:border-slate-500 focus:ring-slate-500"
+                  className="h-12 text-base border-2 border-slate-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-400"
                 />
               </div>
             </div>
             <div className="flex justify-end mb-6">
               <Button 
                 onClick={addToken}
-                className="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white px-6 py-2 font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+                disabled={!isFormComplete}
+                className={`px-8 py-3 text-lg font-semibold shadow-xl transition-all duration-300 transform hover:scale-105 border-0 ${
+                  isFormComplete 
+                    ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white hover:shadow-2xl' 
+                    : 'bg-gradient-to-r from-slate-400 to-slate-500 text-slate-200 cursor-not-allowed'
+                }`}
               >
-                <Plus className="h-4 w-4 mr-2" />
-                Adicionar Token
+                <Plus className="h-5 w-5 mr-3" />
+                {isFormComplete ? 'Adicionar Token' : 'Preencha todos os campos'}
               </Button>
             </div>
 
