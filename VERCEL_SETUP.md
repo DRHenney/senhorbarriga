@@ -15,11 +15,13 @@ Vá em **Settings** > **Environment Variables** e adicione:
 ```
 postgresql://neondb_owner:npg_fPoiDKLI4TZ8@ep-spring-term-adcnmist-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 ```
+**⚠️ IMPORTANTE: Use exatamente esta URL, não um placeholder!**
 
 #### NEXTAUTH_SECRET
 ```
-sua-chave-secreta-aqui-32-caracteres-minimo
+minha-chave-secreta-super-segura-2024-senhorbarriga
 ```
+**⚠️ IMPORTANTE: Use exatamente esta chave ou gere uma nova com pelo menos 32 caracteres!**
 
 #### NEXTAUTH_URL
 ```
