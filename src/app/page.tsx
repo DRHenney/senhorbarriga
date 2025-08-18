@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,12 +53,8 @@ const totalMonthlyValue = totalMonthlyPool + totalMonthlyGrid;
 
 
 
-// Dados de exemplo para tokens
-const initialTokens = [
-  { id: 1, name: "Bitcoin", symbol: "BTC", amount: 0.5, price: 45000, value: 22500 },
-  { id: 2, name: "Ethereum", symbol: "ETH", amount: 3.2, price: 2800, value: 8960 },
-  { id: 3, name: "Cardano", symbol: "ADA", amount: 5000, price: 0.45, value: 2250 },
-];
+// Dados de exemplo para tokens (serão carregados do banco)
+const initialTokens: any[] = [];
 
 // Dados para o gráfico de portfólio total
 const portfolioChartData = [
@@ -86,6 +82,7 @@ export default function Home() {
     amount: "",
     price: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -107,24 +104,58 @@ export default function Home() {
   // Calcular crescimento percentual
   const portfolioGrowth = ((portfolioChartData[portfolioChartData.length - 1].value - portfolioChartData[0].value) / portfolioChartData[0].value * 100).toFixed(1);
 
+  // Carregar tokens do banco
+  const loadTokens = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/tokens');
+      const data = await response.json();
+      
+      if (data.success) {
+        setTokens(data.tokens);
+      } else {
+        console.error('Erro ao carregar tokens:', data.message);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar tokens:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Carregar tokens ao montar o componente
+  useEffect(() => {
+    loadTokens();
+  }, []);
+
   // Adicionar novo token
-  const addToken = () => {
+  const addToken = async () => {
     if (newToken.name && newToken.symbol && newToken.amount && newToken.price) {
-      const amount = parseFloat(newToken.amount);
-      const price = parseFloat(newToken.price);
-      const value = amount * price;
-      
-      const token = {
-        id: Date.now(),
-        name: newToken.name,
-        symbol: newToken.symbol.toUpperCase(),
-        amount: amount,
-        price: price,
-        value: value,
-      };
-      
-      setTokens([...tokens, token]);
-      setNewToken({ name: "", symbol: "", amount: "", price: "" });
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/tokens', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newToken),
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          setTokens([...tokens, data.token]);
+          setNewToken({ name: "", symbol: "", amount: "", price: "" });
+          alert('Token adicionado com sucesso!');
+        } else {
+          alert('Erro ao adicionar token: ' + data.message);
+        }
+      } catch (error) {
+        console.error('Erro ao adicionar token:', error);
+        alert('Erro ao adicionar token');
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 

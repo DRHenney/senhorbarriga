@@ -84,6 +84,19 @@ export const defiPositions = pgTable('defi_positions', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+// Tabela de tokens do usuário
+export const userTokens = pgTable('user_tokens', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  symbol: text('symbol').notNull(),
+  amount: decimal('amount', { precision: 18, scale: 8 }).notNull(),
+  price: decimal('price', { precision: 18, scale: 8 }).notNull(),
+  value: decimal('value', { precision: 18, scale: 8 }).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
 // Tabela de histórico de preços
 export const priceHistory = pgTable('price_history', {
   id: serial('id').primaryKey(),
@@ -98,6 +111,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   wallets: many(wallets),
   accounts: many(accounts),
   sessions: many(sessions),
+  tokens: many(userTokens),
 }));
 
 export const walletsRelations = relations(wallets, ({ one, many }) => ({
@@ -134,5 +148,12 @@ export const defiPositionsRelations = relations(defiPositions, ({ one }) => ({
   wallet: one(wallets, {
     fields: [defiPositions.walletId],
     references: [wallets.id],
+  }),
+}));
+
+export const userTokensRelations = relations(userTokens, ({ one }) => ({
+  user: one(users, {
+    fields: [userTokens.userId],
+    references: [users.id],
   }),
 }));
