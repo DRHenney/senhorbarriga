@@ -15,7 +15,6 @@ export const users = pgTable('users', {
 
 // Tabelas necessárias para NextAuth
 export const accounts = pgTable('accounts', {
-  id: serial('id').primaryKey(),
   userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   type: text('type').notNull(),
   provider: text('provider').notNull(),
@@ -27,11 +26,12 @@ export const accounts = pgTable('accounts', {
   scope: text('scope'),
   id_token: text('id_token'),
   session_state: text('session_state'),
-});
+}, (account) => ({
+  compoundKey: primaryKey(account.provider, account.providerAccountId),
+}));
 
 export const sessions = pgTable('sessions', {
-  id: serial('id').primaryKey(),
-  sessionToken: text('session_token').notNull().unique(),
+  sessionToken: text('session_token').primaryKey(),
   userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   expires: timestamp('expires').notNull(),
 });

@@ -15,6 +15,13 @@
       "when": 1755476055704,
       "tag": "0001_aberrant_ulik",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1755476348734,
+      "tag": "0002_familiar_menace",
+      "breakpoints": true
     }
   ]
 }

@@ -7,6 +7,7 @@ export const userOperations = {
   // Criar usuário
   async createUser(email: string, name: string, password: string) {
     return await db.insert(users).values({
+      id: crypto.randomUUID(),
       email,
       name,
       password, // Em produção, criptografe a senha
@@ -20,7 +21,7 @@ export const userOperations = {
   },
 
   // Buscar usuário com suas carteiras
-  async getUserWithWallets(userId: number) {
+  async getUserWithWallets(userId: string) {
     return await db.query.users.findFirst({
       where: eq(users.id, userId),
       with: {
@@ -30,7 +31,7 @@ export const userOperations = {
   },
 
   // Atualizar usuário
-  async updateUser(userId: number, updates: Partial<typeof users.$inferInsert>) {
+  async updateUser(userId: string, updates: Partial<typeof users.$inferInsert>) {
     return await db.update(users)
       .set(updates)
       .where(eq(users.id, userId))
@@ -41,7 +42,7 @@ export const userOperations = {
 // Operações com Carteiras
 export const walletOperations = {
   // Criar carteira
-  async createWallet(userId: number, address: string, name: string) {
+  async createWallet(userId: string, address: string, name: string) {
     return await db.insert(wallets).values({
       userId,
       address,
