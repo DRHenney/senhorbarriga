@@ -23,3 +23,4 @@ console.log('2. Selecione seu projeto senhorbarriga');
 console.log('3. Vá em Settings > Environment Variables');
 console.log('4. Adicione as variáveis com os valores corretos');
 console.log('\n🔗 DATABASE_URL: postgresql://neondb_owner:npg_fPoiDKLI4TZ8@ep-spring-term-adcnmist-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require');
+
