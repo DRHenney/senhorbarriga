@@ -54,7 +54,14 @@ const totalMonthlyValue = totalMonthlyPool + totalMonthlyGrid;
 
 
 // Dados de exemplo para tokens (serão carregados do banco)
-const initialTokens: any[] = [];
+const initialTokens: Array<{
+  id: number;
+  name: string;
+  symbol: string;
+  amount: number;
+  price: number;
+  value: number;
+}> = [];
 
 // Dados para o gráfico de portfólio total
 const portfolioChartData = [
@@ -74,7 +81,14 @@ export default function Home() {
     gridBot: "",
   });
 
-  const [tokens, setTokens] = useState(initialTokens);
+  const [tokens, setTokens] = useState<Array<{
+    id: number;
+    name: string;
+    symbol: string;
+    amount: number;
+    price: number;
+    value: number;
+  }>>(initialTokens);
   const [activeTab, setActiveTab] = useState("current"); // "current" ou "monthly"
   const [newToken, setNewToken] = useState({
     name: "",
@@ -82,7 +96,7 @@ export default function Home() {
     amount: "",
     price: "",
   });
-  const [isLoading, setIsLoading] = useState(false);
+
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -107,7 +121,6 @@ export default function Home() {
   // Carregar tokens do banco
   const loadTokens = async () => {
     try {
-      setIsLoading(true);
       const response = await fetch('/api/tokens');
       const data = await response.json();
       
@@ -118,8 +131,6 @@ export default function Home() {
       }
     } catch (error) {
       console.error('Erro ao carregar tokens:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -132,7 +143,6 @@ export default function Home() {
   const addToken = async () => {
     if (newToken.name && newToken.symbol && newToken.amount && newToken.price) {
       try {
-        setIsLoading(true);
         const response = await fetch('/api/tokens', {
           method: 'POST',
           headers: {
@@ -153,8 +163,6 @@ export default function Home() {
       } catch (error) {
         console.error('Erro ao adicionar token:', error);
         alert('Erro ao adicionar token');
-      } finally {
-        setIsLoading(false);
       }
     }
   };
