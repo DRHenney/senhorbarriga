@@ -1,11 +1,11 @@
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
+import * as schema from './schema';
 
 // Configuração da conexão com o Neon
-// Substitua a URL abaixo pela sua string de conexão do Neon
 const sql = neon(process.env.DATABASE_URL || 'postgresql://[seu-usuario]:[sua-senha]@[seu-host]/[seu-banco]?sslmode=require');
 
-export const db = drizzle(sql);
+export const db = drizzle(sql, { schema });
 
 // Função para testar a conexão
 export async function testConnection() {

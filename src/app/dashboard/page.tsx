@@ -101,8 +101,8 @@ export default function DashboardPage() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-slate-700">ID do Usuário</label>
-                  <p className="text-sm text-slate-900 mt-1">{user?.id || 'N/A'}</p>
+                  <label className="text-sm font-medium text-slate-700">Status da Sessão</label>
+                  <p className="text-sm text-slate-900 mt-1">Ativa</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-700">Email</label>

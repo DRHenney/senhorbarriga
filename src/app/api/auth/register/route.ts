@@ -31,8 +31,12 @@ export async function POST(request: Request) {
     // Criptografar a senha
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    // Gerar ID único para o usuário
+    const userId = crypto.randomUUID();
+
     // Criar o usuário
     const newUser = await db.insert(users).values({
+      id: userId,
       email,
       name,
       password: hashedPassword,

@@ -3,7 +3,7 @@ import { relations } from 'drizzle-orm';
 
 // Tabela de usuários (atualizada para NextAuth)
 export const users = pgTable('users', {
-  id: serial('id').primaryKey(),
+  id: text('id').primaryKey(),
   name: text('name'),
   email: text('email').notNull().unique(),
   emailVerified: timestamp('email_verified'),
@@ -16,7 +16,7 @@ export const users = pgTable('users', {
 // Tabelas necessárias para NextAuth
 export const accounts = pgTable('accounts', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   type: text('type').notNull(),
   provider: text('provider').notNull(),
   providerAccountId: text('provider_account_id').notNull(),
@@ -32,7 +32,7 @@ export const accounts = pgTable('accounts', {
 export const sessions = pgTable('sessions', {
   id: serial('id').primaryKey(),
   sessionToken: text('session_token').notNull().unique(),
-  userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   expires: timestamp('expires').notNull(),
 });
 
@@ -47,7 +47,7 @@ export const verificationTokens = pgTable('verification_tokens', {
 // Tabela de carteiras
 export const wallets = pgTable('wallets', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').references(() => users.id),
+  userId: text('user_id').references(() => users.id),
   address: text('address').notNull().unique(),
   name: text('name').notNull(),
   isActive: boolean('is_active').default(true),

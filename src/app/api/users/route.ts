@@ -34,6 +34,7 @@ export async function POST(request: Request) {
     }
 
     const newUser = await db.insert(users).values({
+      id: crypto.randomUUID(),
       email,
       name,
       password, // Em produção, deve ser criptografada

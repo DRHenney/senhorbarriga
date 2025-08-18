@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Label } from "recharts";
 
-import { Plus, TrendingUp, DollarSign, CheckCircle, BarChart3, Target, Zap, Coins, Trash2, Calendar } from "lucide-react";
+import { Plus, TrendingUp, DollarSign, CheckCircle, BarChart3, Target, Zap, Coins, Trash2, Calendar, User } from "lucide-react";
 import Link from "next/link";
 import DatabaseStatus from "@/components/DatabaseStatus";
 import UserNav from "@/components/auth/UserNav";
