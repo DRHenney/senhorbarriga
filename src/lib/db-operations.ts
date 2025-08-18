@@ -51,7 +51,7 @@ export const walletOperations = {
   },
 
   // Buscar carteiras de um usuário
-  async getUserWallets(userId: number) {
+  async getUserWallets(userId: string) {
     return await db.select().from(wallets).where(eq(wallets.userId, userId));
   },
 
@@ -79,7 +79,7 @@ export const transactionOperations = {
     return await db.insert(transactions).values({
       walletId,
       type,
-      amount,
+      amount: amount.toString(),
       token,
       txHash,
     }).returning();
@@ -142,9 +142,9 @@ export const defiOperations = {
       pool,
       tokenA,
       tokenB,
-      amountA,
-      amountB,
-      apr,
+      amountA: amountA.toString(),
+      amountB: amountB.toString(),
+      apr: apr ? apr.toString() : undefined,
     }).returning();
   },
 
@@ -182,7 +182,7 @@ export const priceOperations = {
   async addPrice(token: string, price: number, source: string) {
     return await db.insert(priceHistory).values({
       token,
-      price,
+      price: price.toString(),
       source,
       timestamp: new Date(),
     }).returning();
@@ -219,7 +219,7 @@ export const priceOperations = {
 // Operações de Relatórios e Analytics
 export const analyticsOperations = {
   // Calcular valor total do portfólio de um usuário
-  async calculateUserPortfolioValue(userId: number) {
+  async calculateUserPortfolioValue(userId: string) {
     // Buscar todas as carteiras do usuário
     const userWallets = await walletOperations.getUserWallets(userId);
     

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Label } from "recharts";
 
-import { Plus, TrendingUp, DollarSign, CheckCircle, BarChart3, Target, Zap, Coins, Trash2, Calendar, User } from "lucide-react";
+import { Plus, TrendingUp, DollarSign, BarChart3, Target, Zap, Coins, Trash2, Calendar, User } from "lucide-react";
 import Link from "next/link";
 import DatabaseStatus from "@/components/DatabaseStatus";
 import UserNav from "@/components/auth/UserNav";
@@ -34,8 +34,7 @@ const pieData = [
   { name: "Grid Bot", value: 1600, color: "#64748b" },
 ];
 
-// Calcular valor total para o centro do donut
-const totalPortfolioValue = pieData.reduce((sum, item) => sum + item.value, 0);
+
 
 // Dados para resumo mensal
 const monthlyData = [
@@ -52,10 +51,7 @@ const totalMonthlyPool = monthlyData.reduce((sum, month) => sum + month.poolLiqu
 const totalMonthlyGrid = monthlyData.reduce((sum, month) => sum + month.gridBot, 0);
 const totalMonthlyValue = totalMonthlyPool + totalMonthlyGrid;
 
-const monthlyPieData = [
-  { name: "Pool Liquidez", value: totalMonthlyPool, color: "#475569" },
-  { name: "Grid Bot", value: totalMonthlyGrid, color: "#64748b" },
-];
+
 
 // Dados de exemplo para tokens
 const initialTokens = [

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/database';
 import { users } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+
 
 // GET - Listar todos os usuários
 export async function GET() {
