@@ -1,21 +1,15 @@
-import { withAuth } from "next-auth/middleware";
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-export default withAuth(
-  function middleware() {
-    // Middleware personalizado pode ser adicionado aqui
-  },
-  {
-    callbacks: {
-      authorized: ({ token }) => !!token,
-    },
-  }
-);
+export function middleware(request: NextRequest) {
+  // Middleware básico - sem autenticação obrigatória por enquanto
+  return NextResponse.next()
+}
 
 export const config = {
   matcher: [
-    // Rotas que precisam de autenticação
-    "/dashboard/:path*",
-    "/profile/:path*",
-    "/api/protected/:path*",
+    // Rotas que precisam de middleware
+    '/dashboard/:path*',
+    '/api/:path*',
   ],
-};
+}
