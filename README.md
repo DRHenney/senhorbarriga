@@ -28,3 +28,4 @@ Dashboard completo para gerenciamento de portfólio DeFi com autenticação e ba
 Última atualização: 18/08/2024
 Deploy status: Testing
 TypeScript errors: Fixed
+Package-lock: Regenerated
