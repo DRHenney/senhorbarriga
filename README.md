@@ -25,4 +25,4 @@ Dashboard completo para gerenciamento de portfólio DeFi com autenticação e ba
 
 🟢 **Aplicação funcionando e salvando dados no banco Neon!**
 
-Última atualização: $(date)
+Última atualização: 18/08/2024
