@@ -952,28 +952,24 @@ export default function Home() {
                       <p className="text-sm text-slate-500">Adicione registros semanais para ver o histórico</p>
                     </div>
                   ) : (
-                    <div className="space-y-3 max-h-80 overflow-y-auto">
-                      {records.slice(0, 10).map((record) => (
-                        <div key={record.id} className="p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4">
-                              <div className="text-center">
-                                <p className="text-sm font-medium text-slate-700">Semana {record.weekNumber}</p>
-                                <p className="text-xs text-slate-500">{record.year}</p>
-                              </div>
-                              <div>
-                                <p className="text-sm text-slate-600">
-                                  {new Date(record.recordDate).toLocaleDateString('pt-BR', {
-                                    day: '2-digit',
-                                    month: '2-digit',
-                                    year: 'numeric'
-                                  })}
-                                </p>
-                                {record.notes && (
-                                  <p className="text-xs text-slate-500 italic">{record.notes}</p>
-                                )}
-                              </div>
-                            </div>
+                                         <div className="space-y-3 max-h-80 overflow-y-auto">
+                       {records.slice(0, 10).map((record) => (
+                         <div key={record.id} className="p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                           <div className="flex items-center justify-between">
+                             <div className="flex items-center space-x-4">
+                               <div>
+                                 <p className="text-sm font-medium text-slate-700">
+                                   {new Date(record.recordDate).toLocaleDateString('pt-BR', {
+                                     day: '2-digit',
+                                     month: '2-digit',
+                                     year: 'numeric'
+                                   })}
+                                 </p>
+                                 {record.notes && (
+                                   <p className="text-xs text-slate-500 italic">{record.notes}</p>
+                                 )}
+                               </div>
+                             </div>
                             <div className="flex items-center space-x-4">
                               <div className="text-right">
                                 <p className="text-sm text-slate-600">Pool: {formatCurrency(record.poolLiquidity)}</p>
