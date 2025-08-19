@@ -1400,40 +1400,40 @@ export default function Home() {
             <CardHeader className="border-b border-slate-200 dark:border-slate-600">
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-xl font-semibold text-slate-800">
-                    {evolutionTab === "weekly" ? "Evolução Semanal" : "Registros Semanais"}
-                  </CardTitle>
-                  <CardDescription className="text-slate-600">
+                                     <CardTitle className="text-xl font-semibold text-slate-800 dark:text-slate-100">
+                     {evolutionTab === "weekly" ? "Evolução Semanal" : "Registros Semanais"}
+                   </CardTitle>
+                   <CardDescription className="text-slate-600 dark:text-slate-400">
                     {evolutionTab === "weekly" 
                       ? "Valores de Pool de Liquidez e Grid Bot por semana" 
                       : "Histórico dos seus registros semanais"
                     }
                   </CardDescription>
                 </div>
-                <div className="flex space-x-1 bg-slate-100 rounded-lg p-1">
-                  <button
-                    onClick={() => setEvolutionTab("weekly")}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                      evolutionTab === "weekly"
-                        ? "bg-white text-slate-900 shadow-sm"
-                        : "text-slate-600 hover:text-slate-900"
-                    }`}
-                  >
-                    <BarChart3 className="h-4 w-4 inline mr-1" />
-                    Semanal
-                  </button>
-                  <button
-                    onClick={() => setEvolutionTab("records")}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                      evolutionTab === "records"
-                        ? "bg-white text-slate-900 shadow-sm"
-                        : "text-slate-600 hover:text-slate-900"
-                    }`}
-                  >
-                    <Calendar className="h-4 w-4 inline mr-1" />
-                    Registros
-                  </button>
-                </div>
+                                 <div className="flex space-x-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
+                   <button
+                     onClick={() => setEvolutionTab("weekly")}
+                     className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                       evolutionTab === "weekly"
+                         ? "bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100 shadow-sm"
+                         : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
+                     }`}
+                   >
+                     <BarChart3 className="h-4 w-4 inline mr-1" />
+                     Semanal
+                   </button>
+                   <button
+                     onClick={() => setEvolutionTab("records")}
+                     className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                       evolutionTab === "records"
+                         ? "bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100 shadow-sm"
+                         : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
+                     }`}
+                   >
+                     <Calendar className="h-4 w-4 inline mr-1" />
+                     Registros
+                   </button>
+                 </div>
               </div>
             </CardHeader>
             <CardContent className="pt-6">
@@ -1473,8 +1473,8 @@ export default function Home() {
                    {records.length === 0 ? (
                      <div className="text-center py-8">
                        <Calendar className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                       <p className="text-slate-600">Nenhum registro encontrado</p>
-                       <p className="text-sm text-slate-500">Adicione registros semanais para ver o histórico</p>
+                                               <p className="text-slate-600 dark:text-slate-400">Nenhum registro encontrado</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-500">Adicione registros semanais para ver o histórico</p>
                      </div>
                    ) : (
                      <div className="space-y-3 max-h-80 overflow-y-auto">
@@ -1547,27 +1547,27 @@ export default function Home() {
                              <div className="flex items-center justify-between">
                                <div className="flex items-center space-x-4">
                                  <div>
-                                   <p className="text-sm font-medium text-slate-700">
-                                     {new Date(record.recordDate).toLocaleDateString('pt-BR', {
-                                       day: '2-digit',
-                                       month: '2-digit',
-                                       year: 'numeric'
-                                     })}
-                                   </p>
-                                   {record.notes && (
-                                     <p className="text-xs text-slate-500 italic">{record.notes}</p>
-                                   )}
+                                                                       <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                      {new Date(record.recordDate).toLocaleDateString('pt-BR', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric'
+                                      })}
+                                    </p>
+                                    {record.notes && (
+                                      <p className="text-xs text-slate-500 dark:text-slate-500 italic">{record.notes}</p>
+                                    )}
                                  </div>
                                </div>
                                <div className="flex items-center space-x-4">
-                                 <div className="text-right">
-                                   <p className="text-sm text-slate-600">Pool: {formatCurrency(record.poolLiquidity)}</p>
-                                   <p className="text-sm text-slate-600">Grid: {formatCurrency(record.gridBot)}</p>
-                                 </div>
-                                 <div className="text-right">
-                                   <p className="font-semibold text-slate-900">{formatCurrency(record.total)}</p>
-                                   <p className="text-sm text-slate-500">Total</p>
-                                 </div>
+                                                                   <div className="text-right">
+                                    <p className="text-sm text-slate-600 dark:text-slate-400">Pool: {formatCurrency(record.poolLiquidity)}</p>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400">Grid: {formatCurrency(record.gridBot)}</p>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(record.total)}</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-500">Total</p>
+                                  </div>
                                  <div className="flex space-x-2">
                                    <Button
                                      variant="outline"
@@ -1599,32 +1599,32 @@ export default function Home() {
             <CardFooter className="flex-col items-start gap-2 text-sm border-t border-slate-200">
               {evolutionTab === "weekly" ? (
                 <>
-                                     <div className="flex gap-2 leading-none font-medium text-slate-700">
-                     {barChartData.length > 1 ? (
-                       <>
-                         Crescimento de {((barChartData[barChartData.length - 1].poolLiquidity + barChartData[barChartData.length - 1].gridBot - barChartData[0].poolLiquidity - barChartData[0].gridBot) / (barChartData[0].poolLiquidity + barChartData[0].gridBot) * 100).toFixed(1)}% no período <TrendingUp className="h-4 w-4" />
-                       </>
-                     ) : (
-                       <>
-                         {records.length > 0 ? 'Dados baseados nos seus registros' : 'Dados de exemplo'} <TrendingUp className="h-4 w-4" />
-                       </>
-                     )}
-                   </div>
-                                     <div className="text-slate-600 leading-none">
-                     {records.length > 0 
-                       ? `Mostrando evolução baseada em ${records.length} registros (datas do mês atual)`
-                       : 'Mostrando evolução dos investimentos (datas do mês atual - dados de exemplo)'
-                     }
-                   </div>
+                                                                           <div className="flex gap-2 leading-none font-medium text-slate-700 dark:text-slate-300">
+                      {barChartData.length > 1 ? (
+                        <>
+                          Crescimento de {((barChartData[barChartData.length - 1].poolLiquidity + barChartData[barChartData.length - 1].gridBot - barChartData[0].poolLiquidity - barChartData[0].gridBot) / (barChartData[0].poolLiquidity + barChartData[0].gridBot) * 100).toFixed(1)}% no período <TrendingUp className="h-4 w-4" />
+                        </>
+                      ) : (
+                        <>
+                          {records.length > 0 ? 'Dados baseados nos seus registros' : 'Dados de exemplo'} <TrendingUp className="h-4 w-4" />
+                        </>
+                      )}
+                    </div>
+                                      <div className="text-slate-600 dark:text-slate-400 leading-none">
+                      {records.length > 0 
+                        ? `Mostrando evolução baseada em ${records.length} registros (datas do mês atual)`
+                        : 'Mostrando evolução dos investimentos (datas do mês atual - dados de exemplo)'
+                      }
+                    </div>
                 </>
               ) : (
                 <>
-                  <div className="flex gap-2 leading-none font-medium text-slate-700">
-                    {records.length > 0 ? `${records.length} registros encontrados` : 'Nenhum registro'}
-                  </div>
-                  <div className="text-slate-600 leading-none">
-                    Mostrando os últimos 10 registros semanais
-                  </div>
+                                     <div className="flex gap-2 leading-none font-medium text-slate-700 dark:text-slate-300">
+                     {records.length > 0 ? `${records.length} registros encontrados` : 'Nenhum registro'}
+                   </div>
+                   <div className="text-slate-600 dark:text-slate-400 leading-none">
+                     Mostrando os últimos 10 registros semanais
+                   </div>
                 </>
               )}
             </CardFooter>
@@ -1991,24 +1991,24 @@ export default function Home() {
             <CardFooter className="flex-col items-start gap-2 text-sm border-t border-slate-200">
               {activeTab === "current" ? (
                 <>
-                  <div className="flex gap-2 leading-none font-medium text-slate-700">
-                    Pool de Liquidez: {formatCurrency(pieData[0].value)} ({((pieData[0].value / totalPortfolioValue) * 100).toFixed(0)}%)
-                  </div>
-                  <div className="flex gap-2 leading-none font-medium text-slate-700">
-                    Grid Bot: {formatCurrency(pieData[1].value)} ({((pieData[1].value / totalPortfolioValue) * 100).toFixed(0)}%)
-                  </div>
+                                     <div className="flex gap-2 leading-none font-medium text-slate-700 dark:text-slate-300">
+                     Pool de Liquidez: {formatCurrency(pieData[0].value)} ({((pieData[0].value / totalPortfolioValue) * 100).toFixed(0)}%)
+                   </div>
+                   <div className="flex gap-2 leading-none font-medium text-slate-700 dark:text-slate-300">
+                     Grid Bot: {formatCurrency(pieData[1].value)} ({((pieData[1].value / totalPortfolioValue) * 100).toFixed(0)}%)
+                   </div>
                 </>
               ) : (
                 <>
-                  <div className="flex gap-2 leading-none font-medium text-slate-700">
-                    Total Acumulado: {formatCurrency(totalMonthlyValue)} em {monthlyData.length} meses
-                  </div>
-                  <div className="flex gap-2 leading-none font-medium text-slate-700">
-                    Crescimento: {((monthlyData[monthlyData.length - 1].total - monthlyData[0].total) / monthlyData[0].total * 100).toFixed(1)}% no período <TrendingUp className="h-4 w-4" />
-                  </div>
-                  <div className="text-slate-600 text-xs mt-1">
-                    Média mensal: {formatCurrency(totalMonthlyValue / monthlyData.length)}
-                  </div>
+                                     <div className="flex gap-2 leading-none font-medium text-slate-700 dark:text-slate-300">
+                     Total Acumulado: {formatCurrency(totalMonthlyValue)} em {monthlyData.length} meses
+                   </div>
+                   <div className="flex gap-2 leading-none font-medium text-slate-700 dark:text-slate-300">
+                     Crescimento: {((monthlyData[monthlyData.length - 1].total - monthlyData[0].total) / monthlyData[0].total * 100).toFixed(1)}% no período <TrendingUp className="h-4 w-4" />
+                   </div>
+                   <div className="text-slate-600 dark:text-slate-400 text-xs mt-1">
+                     Média mensal: {formatCurrency(totalMonthlyValue / monthlyData.length)}
+                   </div>
                 </>
               )}
             </CardFooter>
