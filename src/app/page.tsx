@@ -109,6 +109,7 @@ export default function Home() {
   const [editForm, setEditForm] = useState({
     action: "add" as "add" | "remove",
     amount: "",
+    price: "",
   });
 
   // Verificar se todos os campos estão preenchidos
@@ -117,13 +118,13 @@ export default function Home() {
   // Função para iniciar edição de token
   const editToken = (token: any) => {
     setEditingToken(token);
-    setEditForm({ action: "add", amount: "" });
+    setEditForm({ action: "add", amount: "", price: "" });
   };
 
   // Função para cancelar edição
   const cancelEdit = () => {
     setEditingToken(null);
-    setEditForm({ action: "add", amount: "" });
+    setEditForm({ action: "add", amount: "", price: "" });
   };
 
   // Função para aplicar edição
@@ -141,25 +142,43 @@ export default function Home() {
 
     let updatedToken;
     if (editForm.action === "add") {
-      // Adicionar tokens
-      const newAmount = Number((currentToken.amount + editAmount).toFixed(2));
-      const newValue = Number((newAmount * currentToken.price).toFixed(2));
+      // Adicionar tokens com preço médio
+      const editPrice = editForm.price ? parseFloat(editForm.price) : currentToken.price;
       
-      console.log('Debug - Adicionando tokens:', {
+      if (isNaN(editPrice) || editPrice <= 0) {
+        alert("Por favor, insira um preço válido.");
+        return;
+      }
+
+      // Calcular preço médio ponderado
+      const currentValue = currentToken.amount * currentToken.price;
+      const newValue = editAmount * editPrice;
+      const totalValue = currentValue + newValue;
+      const totalAmount = currentToken.amount + editAmount;
+      const averagePrice = totalValue / totalAmount;
+
+      const newAmount = Number(totalAmount.toFixed(2));
+      const newPrice = Number(averagePrice.toFixed(2));
+      const finalValue = Number((newAmount * newPrice).toFixed(2));
+      
+      console.log('Debug - Adicionando tokens com preço médio:', {
         currentAmount: currentToken.amount,
-        editAmount: editAmount,
-        newAmount: newAmount,
         currentPrice: currentToken.price,
-        newValue: newValue
+        editAmount: editAmount,
+        editPrice: editPrice,
+        newAmount: newAmount,
+        newPrice: newPrice,
+        finalValue: finalValue
       });
       
       updatedToken = {
         ...currentToken,
         amount: newAmount,
-        value: newValue,
+        price: newPrice,
+        value: finalValue,
       };
     } else {
-      // Remover tokens
+      // Remover tokens (mantém o preço atual)
       if (editAmount > currentToken.amount) {
         alert("Não é possível remover mais tokens do que você possui!");
         return;
@@ -190,11 +209,11 @@ export default function Home() {
       
       const data = await response.json();
       
-      if (data.success) {
-        setTokens(tokens.map(t => t.id === editingToken.id ? updatedToken : t));
-        setEditingToken(null);
-        setEditForm({ action: "add", amount: "" });
-      } else {
+             if (data.success) {
+         setTokens(tokens.map(t => t.id === editingToken.id ? updatedToken : t));
+         setEditingToken(null);
+         setEditForm({ action: "add", amount: "", price: "" });
+       } else {
         alert('Erro ao atualizar token: ' + data.message);
       }
     } catch (error) {
@@ -580,7 +599,7 @@ export default function Home() {
                         </div>
                                                  <div className="text-right">
                            <p className="text-sm text-slate-600">Quantidade atual: {token.amount.toFixed(2)} {token.symbol}</p>
-                           <p className="text-sm text-slate-500">Preço: ${token.price.toFixed(2)}</p>
+                           <p className="text-sm text-slate-500">Preço médio: ${token.price.toFixed(2)}</p>
                          </div>
                       </div>
                       
@@ -604,18 +623,36 @@ export default function Home() {
                           </Button>
                         </div>
                         
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-slate-700">
-                            {editForm.action === "add" ? "Quantidade a adicionar" : "Quantidade a remover"}
-                          </label>
-                          <Input
-                            type="number"
-                            placeholder="0.00"
-                            value={editForm.amount}
-                            onChange={(e) => setEditForm({ ...editForm, amount: e.target.value })}
-                            className="h-10 text-base border-2 border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-600 text-slate-900 font-medium"
-                          />
-                        </div>
+                                                 <div className="space-y-2">
+                           <label className="text-sm font-medium text-slate-700">
+                             {editForm.action === "add" ? "Quantidade a adicionar" : "Quantidade a remover"}
+                           </label>
+                           <Input
+                             type="number"
+                             placeholder="0.00"
+                             value={editForm.amount}
+                             onChange={(e) => setEditForm({ ...editForm, amount: e.target.value })}
+                             className="h-10 text-base border-2 border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-600 text-slate-900 font-medium"
+                           />
+                         </div>
+                         
+                         {editForm.action === "add" && (
+                           <div className="space-y-2">
+                             <label className="text-sm font-medium text-slate-700">
+                               Preço por token ($) - Opcional
+                             </label>
+                             <Input
+                               type="number"
+                               placeholder={`${token.price.toFixed(2)} (preço atual)`}
+                               value={editForm.price}
+                               onChange={(e) => setEditForm({ ...editForm, price: e.target.value })}
+                               className="h-10 text-base border-2 border-slate-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-600 text-slate-900 font-medium"
+                             />
+                             <p className="text-xs text-slate-500">
+                               Deixe vazio para usar o preço atual. Se informado, será calculado o preço médio ponderado.
+                             </p>
+                           </div>
+                         )}
                       </div>
                       
                       <div className="flex justify-end space-x-2">
@@ -648,10 +685,10 @@ export default function Home() {
                         </div>
                       </div>
                       <div className="flex items-center space-x-6">
-                        <div className="text-right">
-                          <p className="text-sm text-slate-600">{token.amount.toFixed(2)} {token.symbol}</p>
-                          <p className="text-sm text-slate-500">${token.price.toFixed(2)}</p>
-                        </div>
+                                                 <div className="text-right">
+                           <p className="text-sm text-slate-600">{token.amount.toFixed(2)} {token.symbol}</p>
+                           <p className="text-sm text-slate-500">Preço médio: ${token.price.toFixed(2)}</p>
+                         </div>
                         <div className="text-right">
                           <p className="font-semibold text-slate-900">{formatCurrency(token.value)}</p>
                           <p className="text-sm text-slate-500">{portfolioTotal > 0 ? ((token.value / portfolioTotal) * 100).toFixed(1) : '0.0'}% do portfólio</p>
