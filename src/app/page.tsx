@@ -968,9 +968,9 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       {/* Header com gradiente Slate */}
-      <div className="bg-gradient-to-r from-slate-700 via-slate-800 to-slate-900 text-white shadow-lg">
+      <div className="bg-gradient-to-r from-slate-700 via-slate-800 to-slate-900 dark:from-slate-800 dark:via-slate-900 dark:to-black text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex items-center justify-between">
             <div className="space-y-2">
@@ -990,7 +990,7 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
         {/* Card de Portfólio Total com Gráfico */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-2 bg-gradient-to-br from-slate-800 to-slate-900 text-white border-0 shadow-2xl">
+          <Card className="lg:col-span-2 bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-900 dark:to-black text-white border-0 shadow-2xl">
             <CardContent className="p-6">
               <div className="flex flex-col h-full">
                 {/* Header do Card */}
@@ -1054,23 +1054,23 @@ export default function Home() {
           </Card>
 
           {/* Card de Resumo Rápido */}
-          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl border-slate-200">
+          <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border-0 shadow-xl border-slate-200 dark:border-slate-700">
             <CardHeader>
-              <CardTitle className="text-lg font-semibold text-slate-800">Resumo Rápido</CardTitle>
+              <CardTitle className="text-lg font-semibold text-slate-800 dark:text-slate-100">Resumo Rápido</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-slate-600">DeFi Total:</span>
-                <span className="font-semibold text-slate-900">{formatCurrency(totalValue)}</span>
+                <span className="text-slate-600 dark:text-slate-400">DeFi Total:</span>
+                <span className="font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(totalValue)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-600">Tokens:</span>
-                <span className="font-semibold text-slate-900">{formatCurrency(portfolioTotal)}</span>
+                <span className="text-slate-600 dark:text-slate-400">Tokens:</span>
+                <span className="font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(portfolioTotal)}</span>
               </div>
-              <div className="border-t border-slate-200 pt-4">
+              <div className="border-t border-slate-200 dark:border-slate-600 pt-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-800 font-medium">Total Geral:</span>
-                  <span className="text-xl font-bold text-slate-900">{formatCurrency(totalPortfolioValue)}</span>
+                  <span className="text-slate-800 dark:text-slate-200 font-medium">Total Geral:</span>
+                  <span className="text-xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(totalPortfolioValue)}</span>
                 </div>
               </div>
             </CardContent>
@@ -1079,15 +1079,15 @@ export default function Home() {
 
         {/* Cards de Resumo com design melhorado */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200">
+          <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200 dark:border-slate-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">Valor Total</CardTitle>
-              <div className="p-2 bg-slate-100 rounded-lg">
-                <DollarSign className="h-5 w-5 text-slate-600" />
+              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Valor Total</CardTitle>
+              <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                <DollarSign className="h-5 w-5 text-slate-600 dark:text-slate-400" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-slate-900">{formatCurrency(totalValue)}</div>
+              <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(totalValue)}</div>
               <div className="flex items-center space-x-1 mt-2">
                 <TrendingUp className="h-4 w-4 text-slate-500" />
                 <p className="text-sm text-slate-600 font-medium">
@@ -1118,7 +1118,7 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200">
+          <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200 dark:border-slate-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-600">Pool de Liquidez</CardTitle>
               <div className="p-2 bg-slate-100 rounded-lg">
@@ -1134,7 +1134,7 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200">
+          <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200 dark:border-slate-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-600">Grid Bot</CardTitle>
               <div className="p-2 bg-slate-100 rounded-lg">
@@ -1150,7 +1150,7 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200">
+          <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200 dark:border-slate-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-600">Portfólio Tokens</CardTitle>
               <div className="p-2 bg-slate-100 rounded-lg">
