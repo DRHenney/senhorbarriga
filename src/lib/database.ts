@@ -11,10 +11,8 @@ export const db = drizzle(sql, { schema });
 export async function testConnection() {
   try {
     const result = await sql`SELECT NOW()`;
-    console.log('Conexão com o banco de dados estabelecida:', result[0]);
     return true;
   } catch (error) {
-    console.error('Erro ao conectar com o banco de dados:', error);
     return false;
   }
 }

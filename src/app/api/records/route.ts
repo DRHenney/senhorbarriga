@@ -48,7 +48,6 @@ export async function GET() {
     });
 
   } catch (error) {
-    console.error('Erro ao buscar registros:', error);
     return NextResponse.json({ 
       success: false, 
       message: 'Erro interno do servidor' 
@@ -123,7 +122,6 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Erro ao criar registro:', error);
     return NextResponse.json({ 
       success: false, 
       message: 'Erro interno do servidor' 
@@ -214,7 +212,6 @@ export async function PUT(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Erro ao atualizar registro:', error);
     return NextResponse.json({ 
       success: false, 
       message: 'Erro interno do servidor' 
@@ -280,7 +277,6 @@ export async function DELETE(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Erro ao remover registro:', error);
     return NextResponse.json({ 
       success: false, 
       message: 'Erro interno do servidor' 

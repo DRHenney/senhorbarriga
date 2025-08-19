@@ -25,11 +25,11 @@ const getBarChartData = (records: any[]) => {
   if (records.length === 0) {
     // Dados padrão quando não há registros
     return [
-      { week: "Semana 1", poolLiquidity: 5000, gridBot: 1200 },
-      { week: "Semana 2", poolLiquidity: 5200, gridBot: 1350 },
-      { week: "Semana 3", poolLiquidity: 5400, gridBot: 1400 },
-      { week: "Semana 4", poolLiquidity: 5600, gridBot: 1500 },
-      { week: "Semana 5", poolLiquidity: 5800, gridBot: 1600 },
+      { week: "Semana 1", poolLiquidity: 5000, gridBot: 1200, total: 6200 },
+      { week: "Semana 2", poolLiquidity: 5200, gridBot: 1350, total: 6550 },
+      { week: "Semana 3", poolLiquidity: 5400, gridBot: 1400, total: 6800 },
+      { week: "Semana 4", poolLiquidity: 5600, gridBot: 1500, total: 7100 },
+      { week: "Semana 5", poolLiquidity: 5800, gridBot: 1600, total: 7400 },
     ];
   }
 
@@ -323,9 +323,12 @@ export default function Home() {
 
   // Calcular dados dinâmicos baseados nos registros
   const barChartData = getBarChartData(records);
-  const totalValue = barChartData.length > 0 ? barChartData[barChartData.length - 1]?.total || 0 : chartData[chartData.length - 1]?.total || 0;
-  const poolLiquidity = barChartData.length > 0 ? barChartData[barChartData.length - 1]?.poolLiquidity || 0 : chartData[chartData.length - 1]?.poolLiquidity || 0;
-  const gridBot = barChartData.length > 0 ? barChartData[barChartData.length - 1]?.gridBot || 0 : chartData[chartData.length - 1]?.gridBot || 0;
+  const lastBarData = barChartData.length > 0 ? barChartData[barChartData.length - 1] : null;
+  const lastChartData = chartData.length > 0 ? chartData[chartData.length - 1] : null;
+  
+  const totalValue = lastBarData?.total || lastChartData?.total || 0;
+  const poolLiquidity = lastBarData?.poolLiquidity || lastChartData?.poolLiquidity || 0;
+  const gridBot = lastBarData?.gridBot || lastChartData?.gridBot || 0;
   
   // Calcular dados dinâmicos para o gráfico de pizza
   const pieData = getPieData(poolLiquidity, gridBot);

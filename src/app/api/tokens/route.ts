@@ -37,11 +37,9 @@ export async function GET() {
       tokens 
     });
   } catch (error) {
-    console.error('Erro ao buscar tokens:', error);
     return NextResponse.json({ 
       success: false, 
-      message: 'Erro interno do servidor',
-      error: error instanceof Error ? error.message : 'Erro desconhecido'
+      message: 'Erro interno do servidor'
     }, { status: 500 });
   }
 }
@@ -96,11 +94,9 @@ export async function POST(request: Request) {
       message: 'Token criado com sucesso!' 
     }, { status: 201 });
   } catch (error) {
-    console.error('Erro ao criar token:', error);
     return NextResponse.json({ 
       success: false, 
-      message: 'Erro interno do servidor',
-      error: error instanceof Error ? error.message : 'Erro desconhecido'
+      message: 'Erro interno do servidor'
     }, { status: 500 });
   }
 }
@@ -156,11 +152,9 @@ export async function PUT(request: Request) {
       message: 'Token atualizado com sucesso!' 
     });
   } catch (error) {
-    console.error('Erro ao atualizar token:', error);
     return NextResponse.json({ 
       success: false, 
-      message: 'Erro interno do servidor',
-      error: error instanceof Error ? error.message : 'Erro desconhecido'
+      message: 'Erro interno do servidor'
     }, { status: 500 });
   }
 }
