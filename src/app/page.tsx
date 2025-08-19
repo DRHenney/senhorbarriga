@@ -1050,15 +1050,6 @@ export default function Home() {
                 <div className="mb-6">
                   <h3 className="text-slate-300 text-sm font-medium mb-2">Portfólio Total</h3>
                   <div className="text-3xl font-bold text-white mb-2">{formatCurrency(totalPortfolioValue)}</div>
-                                     <div className="flex items-center space-x-2">
-                     <TrendingUp className="h-4 w-4 text-slate-300" />
-                                           <span className="text-slate-300 text-sm font-medium">
-                        {portfolioEvolutionData.length > 1 
-                          ? `+${portfolioGrowth}% desde ${(portfolioEvolutionData[0] as any).month}`
-                          : 'Evolução desde janeiro/25'
-                        }
-                      </span>
-                   </div>
                 </div>
                 
                                  {/* Gráfico de Linha */}
