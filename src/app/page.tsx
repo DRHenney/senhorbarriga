@@ -79,7 +79,29 @@ export default function Home() {
   const [newEntry, setNewEntry] = useState({
     poolLiquidity: "",
     gridBot: "",
+    recordDate: new Date().toISOString().split('T')[0], // Data atual como padrão
+    notes: "",
   });
+
+  const [records, setRecords] = useState<Array<{
+    id: number;
+    poolLiquidity: number;
+    gridBot: number;
+    total: number;
+    weekNumber: number;
+    year: number;
+    recordDate: string;
+    notes?: string;
+    createdAt: string;
+  }>>([]);
+
+  const [editingRecord, setEditingRecord] = useState<{
+    id: number;
+    poolLiquidity: number;
+    gridBot: number;
+    recordDate: string;
+    notes?: string;
+  } | null>(null);
 
   const [tokens, setTokens] = useState<Array<{
     id: number;
@@ -311,7 +333,119 @@ export default function Home() {
   // Carregar tokens ao montar o componente
   useEffect(() => {
     loadTokens();
+    loadRecords();
   }, []);
+
+  // Carregar registros do banco
+  const loadRecords = async () => {
+    try {
+      const response = await fetch('/api/records');
+      const data = await response.json();
+      
+      if (data.success) {
+        setRecords(data.records);
+      } else {
+        console.error('Erro ao carregar registros:', data.message);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar registros:', error);
+    }
+  };
+
+  // Adicionar novo registro
+  const addRecord = async () => {
+    if (newEntry.poolLiquidity && newEntry.gridBot && newEntry.recordDate) {
+      try {
+        const response = await fetch('/api/records', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newEntry),
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          setRecords([data.record, ...records]);
+          setNewEntry({ 
+            poolLiquidity: "", 
+            gridBot: "", 
+            recordDate: new Date().toISOString().split('T')[0],
+            notes: "" 
+          });
+          alert('Registro adicionado com sucesso!');
+        } else {
+          alert('Erro ao adicionar registro: ' + data.message);
+        }
+      } catch (error) {
+        console.error('Erro ao adicionar registro:', error);
+        alert('Erro ao adicionar registro');
+      }
+    }
+  };
+
+  // Editar registro
+  const editRecord = (record: any) => {
+    setEditingRecord({
+      id: record.id,
+      poolLiquidity: record.poolLiquidity,
+      gridBot: record.gridBot,
+      recordDate: record.recordDate.split('T')[0],
+      notes: record.notes || "",
+    });
+  };
+
+  // Aplicar edição de registro
+  const applyRecordEdit = async () => {
+    if (!editingRecord) return;
+
+    try {
+      const response = await fetch('/api/records', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editingRecord),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setRecords(records.map(r => r.id === editingRecord.id ? data.record : r));
+        setEditingRecord(null);
+        alert('Registro atualizado com sucesso!');
+      } else {
+        alert('Erro ao atualizar registro: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar registro:', error);
+      alert('Erro ao atualizar registro');
+    }
+  };
+
+  // Remover registro
+  const removeRecord = async (id: number) => {
+    if (confirm('Tem certeza que deseja remover este registro?')) {
+      try {
+        const response = await fetch(`/api/records?id=${id}`, {
+          method: 'DELETE',
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          setRecords(records.filter(r => r.id !== id));
+          alert('Registro removido com sucesso!');
+        } else {
+          alert('Erro ao remover registro: ' + data.message);
+        }
+      } catch (error) {
+        console.error('Erro ao remover registro:', error);
+        alert('Erro ao remover registro');
+      }
+    }
+  };
 
   // Adicionar novo token
   const addToken = async () => {
@@ -943,58 +1077,216 @@ export default function Home() {
           </Card>
         </div>
 
-        {/* Formulário com design melhorado */}
-        <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl border-slate-200">
-          <CardHeader className="border-b border-slate-200">
-            <CardTitle className="text-xl font-semibold text-slate-800">Adicionar Nova Entrada Semanal</CardTitle>
-            <CardDescription className="text-slate-600">Registre seus valores de pool de liquidez e grid bot</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <label htmlFor="poolLiquidity" className="text-sm font-medium text-slate-700">
-                  Pool de Liquidez ($)
-                </label>
-                <Input
-                  id="poolLiquidity"
-                  type="number"
-                  placeholder="0.00"
-                  value={newEntry.poolLiquidity}
-                  onChange={(e) => setNewEntry({ ...newEntry, poolLiquidity: e.target.value })}
-                  className="h-12 text-lg border-2 border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-600 text-slate-900 font-medium"
-                />
-              </div>
-              <div className="space-y-3">
-                <label htmlFor="gridBot" className="text-sm font-medium text-slate-700">
-                  Grid Bot ($)
-                </label>
-                <Input
-                  id="gridBot"
-                  type="number"
-                  placeholder="0.00"
-                  value={newEntry.gridBot}
-                  onChange={(e) => setNewEntry({ ...newEntry, gridBot: e.target.value })}
-                  className="h-12 text-lg border-2 border-slate-300 focus:border-green-500 focus:ring-4 focus:ring-green-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-600 text-slate-900 font-medium"
-                />
-              </div>
-            </div>
-            <div className="flex justify-end mt-6">
-              <Button 
-                onClick={() => {
-                  // Lógica para adicionar nova entrada
-                  console.log("Nova entrada:", newEntry);
-                  setNewEntry({ poolLiquidity: "", gridBot: "" });
-                }}
-                className="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white px-8 py-3 text-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                <Plus className="h-5 w-5 mr-2" />
-                Adicionar Entrada
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+                 {/* Formulário com design melhorado */}
+         <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl border-slate-200">
+           <CardHeader className="border-b border-slate-200">
+             <CardTitle className="text-xl font-semibold text-slate-800">Adicionar Nova Entrada Semanal</CardTitle>
+             <CardDescription className="text-slate-600">Registre seus valores de pool de liquidez e grid bot com data</CardDescription>
+           </CardHeader>
+           <CardContent className="pt-6">
+             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+               <div className="space-y-3">
+                 <label htmlFor="poolLiquidity" className="text-sm font-medium text-slate-700">
+                   Pool de Liquidez ($)
+                 </label>
+                 <Input
+                   id="poolLiquidity"
+                   type="number"
+                   placeholder="0.00"
+                   value={newEntry.poolLiquidity}
+                   onChange={(e) => setNewEntry({ ...newEntry, poolLiquidity: e.target.value })}
+                   className="h-12 text-lg border-2 border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-600 text-slate-900 font-medium"
+                 />
+               </div>
+               <div className="space-y-3">
+                 <label htmlFor="gridBot" className="text-sm font-medium text-slate-700">
+                   Grid Bot ($)
+                 </label>
+                 <Input
+                   id="gridBot"
+                   type="number"
+                   placeholder="0.00"
+                   value={newEntry.gridBot}
+                   onChange={(e) => setNewEntry({ ...newEntry, gridBot: e.target.value })}
+                   className="h-12 text-lg border-2 border-slate-300 focus:border-green-500 focus:ring-4 focus:ring-green-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-600 text-slate-900 font-medium"
+                 />
+               </div>
+               <div className="space-y-3">
+                 <label htmlFor="recordDate" className="text-sm font-medium text-slate-700">
+                   Data do Registro
+                 </label>
+                 <Input
+                   id="recordDate"
+                   type="date"
+                   value={newEntry.recordDate}
+                   onChange={(e) => setNewEntry({ ...newEntry, recordDate: e.target.value })}
+                   className="h-12 text-lg border-2 border-slate-300 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 text-slate-900 font-medium"
+                 />
+               </div>
+               <div className="space-y-3">
+                 <label htmlFor="notes" className="text-sm font-medium text-slate-700">
+                   Observações (Opcional)
+                 </label>
+                 <Input
+                   id="notes"
+                   type="text"
+                   placeholder="Ex: Semana de alta volatilidade"
+                   value={newEntry.notes}
+                   onChange={(e) => setNewEntry({ ...newEntry, notes: e.target.value })}
+                   className="h-12 text-lg border-2 border-slate-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-600 text-slate-900 font-medium"
+                 />
+               </div>
+             </div>
+             <div className="flex justify-end mt-6">
+               <Button 
+                 onClick={addRecord}
+                 disabled={!newEntry.poolLiquidity || !newEntry.gridBot || !newEntry.recordDate}
+                 className={`px-8 py-3 text-lg font-semibold shadow-xl transition-all duration-300 transform hover:scale-105 border-0 ${
+                   newEntry.poolLiquidity && newEntry.gridBot && newEntry.recordDate
+                     ? 'bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white hover:shadow-2xl' 
+                     : 'bg-gradient-to-r from-slate-400 to-slate-500 text-slate-200 cursor-not-allowed'
+                 }`}
+               >
+                 <Plus className="h-5 w-5 mr-2" />
+                 {newEntry.poolLiquidity && newEntry.gridBot && newEntry.recordDate ? 'Adicionar Registro' : 'Preencha os campos obrigatórios'}
+               </Button>
+             </div>
+           </CardContent>
+                   </Card>
 
-        {/* Status do Banco de Dados */}
+         {/* Seção de Registros Semanais */}
+         <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl border-slate-200">
+           <CardHeader className="border-b border-slate-200">
+             <CardTitle className="text-xl font-semibold text-slate-800">Registros Semanais</CardTitle>
+             <CardDescription className="text-slate-600">Histórico completo de suas entradas semanais</CardDescription>
+           </CardHeader>
+           <CardContent className="pt-6">
+             {records.length === 0 ? (
+               <div className="text-center py-8">
+                 <Calendar className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                 <p className="text-slate-600">Nenhum registro encontrado</p>
+                 <p className="text-sm text-slate-500">Adicione seu primeiro registro semanal acima</p>
+               </div>
+             ) : (
+               <div className="space-y-4">
+                 {records.map((record) => (
+                   <div key={record.id} className="p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                     {editingRecord?.id === record.id ? (
+                       // Modo de edição
+                       <div className="space-y-4">
+                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                           <div className="space-y-2">
+                             <label className="text-sm font-medium text-slate-700">Pool de Liquidez ($)</label>
+                             <Input
+                               type="number"
+                               value={editingRecord.poolLiquidity}
+                               onChange={(e) => setEditingRecord({ ...editingRecord, poolLiquidity: parseFloat(e.target.value) || 0 })}
+                               className="h-10"
+                             />
+                           </div>
+                           <div className="space-y-2">
+                             <label className="text-sm font-medium text-slate-700">Grid Bot ($)</label>
+                             <Input
+                               type="number"
+                               value={editingRecord.gridBot}
+                               onChange={(e) => setEditingRecord({ ...editingRecord, gridBot: parseFloat(e.target.value) || 0 })}
+                               className="h-10"
+                             />
+                           </div>
+                           <div className="space-y-2">
+                             <label className="text-sm font-medium text-slate-700">Data</label>
+                             <Input
+                               type="date"
+                               value={editingRecord.recordDate}
+                               onChange={(e) => setEditingRecord({ ...editingRecord, recordDate: e.target.value })}
+                               className="h-10"
+                             />
+                           </div>
+                           <div className="space-y-2">
+                             <label className="text-sm font-medium text-slate-700">Observações</label>
+                             <Input
+                               type="text"
+                               value={editingRecord.notes || ""}
+                               onChange={(e) => setEditingRecord({ ...editingRecord, notes: e.target.value })}
+                               className="h-10"
+                             />
+                           </div>
+                         </div>
+                         <div className="flex justify-end space-x-2">
+                           <Button
+                             variant="outline"
+                             onClick={() => setEditingRecord(null)}
+                             className="border-slate-300 text-slate-700 hover:bg-slate-50"
+                           >
+                             Cancelar
+                           </Button>
+                           <Button
+                             onClick={applyRecordEdit}
+                             className="bg-blue-600 hover:bg-blue-700 text-white"
+                           >
+                             Salvar
+                           </Button>
+                         </div>
+                       </div>
+                     ) : (
+                       // Modo de visualização
+                       <div className="flex items-center justify-between">
+                         <div className="flex items-center space-x-6">
+                           <div className="text-center">
+                             <p className="text-sm text-slate-600">Semana {record.weekNumber}</p>
+                             <p className="text-xs text-slate-500">{record.year}</p>
+                           </div>
+                           <div>
+                             <p className="text-sm text-slate-600">
+                               {new Date(record.recordDate).toLocaleDateString('pt-BR', {
+                                 day: '2-digit',
+                                 month: '2-digit',
+                                 year: 'numeric'
+                               })}
+                             </p>
+                             {record.notes && (
+                               <p className="text-xs text-slate-500 italic">{record.notes}</p>
+                             )}
+                           </div>
+                         </div>
+                         <div className="flex items-center space-x-6">
+                           <div className="text-right">
+                             <p className="text-sm text-slate-600">Pool: {formatCurrency(record.poolLiquidity)}</p>
+                             <p className="text-sm text-slate-600">Grid: {formatCurrency(record.gridBot)}</p>
+                           </div>
+                           <div className="text-right">
+                             <p className="font-semibold text-slate-900">{formatCurrency(record.total)}</p>
+                             <p className="text-sm text-slate-500">Total</p>
+                           </div>
+                           <div className="flex space-x-2">
+                             <Button
+                               variant="outline"
+                               size="sm"
+                               onClick={() => editRecord(record)}
+                               className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                             >
+                               Editar
+                             </Button>
+                             <Button
+                               variant="ghost"
+                               size="sm"
+                               onClick={() => removeRecord(record.id)}
+                               className="text-slate-500 hover:text-red-600 hover:bg-red-50"
+                             >
+                               <Trash2 className="h-4 w-4" />
+                             </Button>
+                           </div>
+                         </div>
+                       </div>
+                     )}
+                   </div>
+                 ))}
+               </div>
+             )}
+           </CardContent>
+         </Card>
+ 
+         {/* Status do Banco de Dados */}
         <div className="flex justify-center">
           <DatabaseStatus />
         </div>
