@@ -1402,7 +1402,7 @@ export default function Home() {
                         <select
                           value={newOperation.type}
                           onChange={(e) => setNewOperation({ ...newOperation, type: e.target.value as "pool" | "grid" })}
-                          className="w-full h-10 px-3 border-2 border-slate-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
+                          className="w-full h-10 px-3 border-2 border-slate-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white text-slate-900 font-medium"
                         >
                           <option value="pool">🏊‍♂️ Pool de Liquidez</option>
                           <option value="grid">🤖 Grid Bot</option>
@@ -1414,7 +1414,7 @@ export default function Home() {
                           placeholder="Ex: BTC/USDT"
                           value={newOperation.pair}
                           onChange={(e) => setNewOperation({ ...newOperation, pair: e.target.value })}
-                          className="h-10 border-2 border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                          className="h-10 border-2 border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white text-slate-900 font-medium placeholder:text-slate-500"
                         />
                       </div>
                       <div className="space-y-2">
@@ -1424,7 +1424,7 @@ export default function Home() {
                           placeholder="0.00"
                           value={newOperation.capital}
                           onChange={(e) => setNewOperation({ ...newOperation, capital: e.target.value })}
-                          className="h-10 border-2 border-slate-300 focus:border-green-500 focus:ring-2 focus:ring-green-100"
+                          className="h-10 border-2 border-slate-300 focus:border-green-500 focus:ring-2 focus:ring-green-100 bg-white text-slate-900 font-medium placeholder:text-slate-500"
                         />
                       </div>
                       <div className="space-y-2">
@@ -1433,7 +1433,7 @@ export default function Home() {
                           type="date"
                           value={newOperation.startDate}
                           onChange={(e) => setNewOperation({ ...newOperation, startDate: e.target.value })}
-                          className="h-10 border-2 border-slate-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
+                          className="h-10 border-2 border-slate-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 bg-white text-slate-900 font-medium"
                         />
                       </div>
                     </div>
@@ -1447,7 +1447,7 @@ export default function Home() {
                             placeholder="0.00"
                             value={newOperation.rangeMin}
                             onChange={(e) => setNewOperation({ ...newOperation, rangeMin: e.target.value })}
-                            className="h-10 border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                            className="h-10 border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 bg-white text-slate-900 font-medium placeholder:text-slate-500"
                           />
                         </div>
                         <div className="space-y-2">
@@ -1457,7 +1457,7 @@ export default function Home() {
                             placeholder="0.00"
                             value={newOperation.rangeMax}
                             onChange={(e) => setNewOperation({ ...newOperation, rangeMax: e.target.value })}
-                            className="h-10 border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                            className="h-10 border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 bg-white text-slate-900 font-medium placeholder:text-slate-500"
                           />
                         </div>
                         <div className="space-y-2">
@@ -1467,7 +1467,7 @@ export default function Home() {
                             placeholder="0"
                             value={newOperation.numGrids}
                             onChange={(e) => setNewOperation({ ...newOperation, numGrids: e.target.value })}
-                            className="h-10 border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                            className="h-10 border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 bg-white text-slate-900 font-medium placeholder:text-slate-500"
                           />
                         </div>
                       </div>
@@ -1479,7 +1479,7 @@ export default function Home() {
                         placeholder="Ex: Pool de alta volatilidade"
                         value={newOperation.notes}
                         onChange={(e) => setNewOperation({ ...newOperation, notes: e.target.value })}
-                        className="mt-1 h-10 border-2 border-slate-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-100"
+                        className="mt-1 h-10 border-2 border-slate-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-100 bg-white text-slate-900 font-medium placeholder:text-slate-500"
                       />
                     </div>
                     
@@ -1520,7 +1520,7 @@ export default function Home() {
                                     <select
                                       value={editingOperation.type}
                                       onChange={(e) => setEditingOperation({ ...editingOperation, type: e.target.value as "pool" | "grid" })}
-                                      className="w-full h-10 px-3 border-2 border-slate-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
+                                      className="w-full h-10 px-3 border-2 border-slate-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white text-slate-900 font-medium"
                                     >
                                       <option value="pool">🏊‍♂️ Pool de Liquidez</option>
                                       <option value="grid">🤖 Grid Bot</option>
@@ -1532,7 +1532,7 @@ export default function Home() {
                                       placeholder="Ex: BTC/USDT"
                                       value={editingOperation.pair}
                                       onChange={(e) => setEditingOperation({ ...editingOperation, pair: e.target.value })}
-                                      className="h-10 border-2 border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                      className="h-10 border-2 border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white text-slate-900 font-medium placeholder:text-slate-500"
                                     />
                                   </div>
                                   <div className="space-y-2">
@@ -1542,7 +1542,7 @@ export default function Home() {
                                       placeholder="0.00"
                                       value={editingOperation.capital}
                                       onChange={(e) => setEditingOperation({ ...editingOperation, capital: parseFloat(e.target.value) || 0 })}
-                                      className="h-10 border-2 border-slate-300 focus:border-green-500 focus:ring-2 focus:ring-green-100"
+                                      className="h-10 border-2 border-slate-300 focus:border-green-500 focus:ring-2 focus:ring-green-100 bg-white text-slate-900 font-medium placeholder:text-slate-500"
                                     />
                                   </div>
                                   <div className="space-y-2">
@@ -1551,7 +1551,7 @@ export default function Home() {
                                       type="date"
                                       value={editingOperation.startDate}
                                       onChange={(e) => setEditingOperation({ ...editingOperation, startDate: e.target.value })}
-                                      className="h-10 border-2 border-slate-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
+                                      className="h-10 border-2 border-slate-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 bg-white text-slate-900 font-medium"
                                     />
                                   </div>
                                 </div>
@@ -1565,7 +1565,7 @@ export default function Home() {
                                         placeholder="0.00"
                                         value={editingOperation.rangeMin || ""}
                                         onChange={(e) => setEditingOperation({ ...editingOperation, rangeMin: parseFloat(e.target.value) || 0 })}
-                                        className="h-10 border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                                        className="h-10 border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 bg-white text-slate-900 font-medium placeholder:text-slate-500"
                                       />
                                     </div>
                                     <div className="space-y-2">
@@ -1575,7 +1575,7 @@ export default function Home() {
                                         placeholder="0.00"
                                         value={editingOperation.rangeMax || ""}
                                         onChange={(e) => setEditingOperation({ ...editingOperation, rangeMax: parseFloat(e.target.value) || 0 })}
-                                        className="h-10 border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                                        className="h-10 border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 bg-white text-slate-900 font-medium placeholder:text-slate-500"
                                       />
                                     </div>
                                     <div className="space-y-2">
@@ -1585,7 +1585,7 @@ export default function Home() {
                                         placeholder="0"
                                         value={editingOperation.numGrids || ""}
                                         onChange={(e) => setEditingOperation({ ...editingOperation, numGrids: parseInt(e.target.value) || 0 })}
-                                        className="h-10 border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                                        className="h-10 border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 bg-white text-slate-900 font-medium placeholder:text-slate-500"
                                       />
                                     </div>
                                   </div>
@@ -1597,7 +1597,7 @@ export default function Home() {
                                     placeholder="Ex: Pool de alta volatilidade"
                                     value={editingOperation.notes || ""}
                                     onChange={(e) => setEditingOperation({ ...editingOperation, notes: e.target.value })}
-                                    className="h-10 border-2 border-slate-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-100"
+                                    className="h-10 border-2 border-slate-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-100 bg-white text-slate-900 font-medium placeholder:text-slate-500"
                                   />
                                 </div>
                                 
