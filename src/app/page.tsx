@@ -1458,15 +1458,15 @@ export default function Home() {
                      <Tooltip 
                        formatter={(value) => formatCurrency(Number(value))}
                        contentStyle={{
-                         backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                         border: '1px solid #334155',
+                         backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                         border: '1px solid #475569',
                          borderRadius: '8px',
                          color: 'white',
                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)'
                        }}
                      />
-                     <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={4} name="Pool de Liquidez" />
-                     <Bar dataKey="gridBot" fill="#10b981" radius={4} name="Grid Bot" />
+                     <Bar dataKey="poolLiquidity" fill="#60a5fa" radius={4} name="Pool de Liquidez" />
+                     <Bar dataKey="gridBot" fill="#34d399" radius={4} name="Grid Bot" />
                    </BarChart>
                  </ResponsiveContainer>
               ) : (
@@ -1977,15 +1977,15 @@ export default function Home() {
                      <Tooltip 
                        formatter={(value) => formatCurrency(Number(value))}
                        contentStyle={{
-                         backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                         border: '1px solid #334155',
+                         backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                         border: '1px solid #475569',
                          borderRadius: '8px',
                          color: 'white',
                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)'
                        }}
                      />
-                     <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={4} name="Pool de Liquidez" />
-                     <Bar dataKey="gridBot" fill="#10b981" radius={4} name="Grid Bot" />
+                     <Bar dataKey="poolLiquidity" fill="#60a5fa" radius={4} name="Pool de Liquidez" />
+                     <Bar dataKey="gridBot" fill="#34d399" radius={4} name="Grid Bot" />
                    </BarChart>
                  </ResponsiveContainer>
               )}
