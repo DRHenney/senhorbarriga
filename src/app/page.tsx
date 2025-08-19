@@ -1120,64 +1120,64 @@ export default function Home() {
 
           <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200 dark:border-slate-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">Pool de Liquidez</CardTitle>
-              <div className="p-2 bg-slate-100 rounded-lg">
-                <Target className="h-5 w-5 text-slate-600" />
+              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Pool de Liquidez</CardTitle>
+              <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                <Target className="h-5 w-5 text-slate-600 dark:text-slate-400" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-slate-900">{formatCurrency(poolLiquidity)}</div>
+              <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(poolLiquidity)}</div>
               <div className="flex items-center space-x-1 mt-2">
-                <TrendingUp className="h-4 w-4 text-slate-500" />
-                <p className="text-sm text-slate-600 font-medium">+8.2% esta semana</p>
+                <TrendingUp className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">+8.2% esta semana</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200 dark:border-slate-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">Grid Bot</CardTitle>
-              <div className="p-2 bg-slate-100 rounded-lg">
-                <Zap className="h-5 w-5 text-slate-600" />
+              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Grid Bot</CardTitle>
+              <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                <Zap className="h-5 w-5 text-slate-600 dark:text-slate-400" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-slate-900">{formatCurrency(gridBot)}</div>
+              <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(gridBot)}</div>
               <div className="flex items-center space-x-1 mt-2">
-                <TrendingUp className="h-4 w-4 text-slate-500" />
-                <p className="text-sm text-slate-600 font-medium">+15.3% esta semana</p>
+                <TrendingUp className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">+15.3% esta semana</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200 dark:border-slate-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">Portfólio Tokens</CardTitle>
-              <div className="p-2 bg-slate-100 rounded-lg">
-                <Coins className="h-5 w-5 text-slate-600" />
+              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Portfólio Tokens</CardTitle>
+              <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                <Coins className="h-5 w-5 text-slate-600 dark:text-slate-400" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-slate-900">{formatCurrency(portfolioTotal)}</div>
+              <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(portfolioTotal)}</div>
               <div className="flex items-center space-x-1 mt-2">
-                <TrendingUp className="h-4 w-4 text-slate-500" />
-                <p className="text-sm text-slate-600 font-medium">{tokens.length} tokens</p>
+                <TrendingUp className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">{tokens.length} tokens</p>
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Seção de Portfólio de Tokens */}
-        <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl border-slate-200">
-          <CardHeader className="border-b border-slate-200">
-            <CardTitle className="text-xl font-semibold text-slate-800">Portfólio de Tokens</CardTitle>
-            <CardDescription className="text-slate-600">Gerencie seus tokens e acompanhe o valor total do portfólio</CardDescription>
+        <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border-0 shadow-xl border-slate-200 dark:border-slate-700">
+          <CardHeader className="border-b border-slate-200 dark:border-slate-600">
+            <CardTitle className="text-xl font-semibold text-slate-800 dark:text-slate-100">Portfólio de Tokens</CardTitle>
+            <CardDescription className="text-slate-600 dark:text-slate-400">Gerencie seus tokens e acompanhe o valor total do portfólio</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             {/* Formulário para adicionar token */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               <div className="space-y-3">
-                <label className="text-sm font-semibold text-slate-800 flex items-center">
+                <label className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center">
                   <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
                   Nome do Token
                 </label>
@@ -1185,11 +1185,11 @@ export default function Home() {
                   placeholder="Ex: Bitcoin"
                   value={newToken.name}
                   onChange={(e) => setNewToken({ ...newToken, name: e.target.value })}
-                  className="h-12 text-base border-2 border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-600 text-slate-900 font-medium"
+                  className="h-12 text-base border-2 border-slate-300 dark:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100 font-medium"
                 />
               </div>
               <div className="space-y-3">
-                <label className="text-sm font-semibold text-slate-800 flex items-center">
+                <label className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center">
                   <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
                   Símbolo
                 </label>
@@ -1197,11 +1197,11 @@ export default function Home() {
                   placeholder="Ex: BTC"
                   value={newToken.symbol}
                   onChange={(e) => setNewToken({ ...newToken, symbol: e.target.value })}
-                  className="h-12 text-base border-2 border-slate-300 focus:border-green-500 focus:ring-4 focus:ring-green-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-600 text-slate-900 font-medium uppercase"
+                  className="h-12 text-base border-2 border-slate-300 dark:border-slate-600 focus:border-green-500 focus:ring-4 focus:ring-green-100 dark:focus:ring-green-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100 font-medium uppercase"
                 />
               </div>
               <div className="space-y-3">
-                <label className="text-sm font-semibold text-slate-800 flex items-center">
+                <label className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center">
                   <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
                   Quantidade
                 </label>
@@ -1210,11 +1210,11 @@ export default function Home() {
                   placeholder="0.00"
                   value={newToken.amount}
                   onChange={(e) => setNewToken({ ...newToken, amount: e.target.value })}
-                  className="h-12 text-base border-2 border-slate-300 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-600 text-slate-900 font-medium"
+                  className="h-12 text-base border-2 border-slate-300 dark:border-slate-600 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 dark:focus:ring-purple-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100 font-medium"
                 />
               </div>
               <div className="space-y-3">
-                <label className="text-sm font-semibold text-slate-800 flex items-center">
+                <label className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center">
                   <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
                   Preço ($)
                 </label>
@@ -1223,7 +1223,7 @@ export default function Home() {
                   placeholder="0.00"
                   value={newToken.price}
                   onChange={(e) => setNewToken({ ...newToken, price: e.target.value })}
-                  className="h-12 text-base border-2 border-slate-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-600 text-slate-900 font-medium"
+                  className="h-12 text-base border-2 border-slate-300 dark:border-slate-600 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 dark:focus:ring-orange-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100 font-medium"
                 />
               </div>
             </div>
@@ -1245,7 +1245,7 @@ export default function Home() {
             {/* Lista de tokens */}
             <div className="space-y-3">
               {tokens.map((token) => (
-                <div key={token.id} className="p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                <div key={token.id} className="p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
                   {editingToken?.id === token.id ? (
                     // Modo de edição
                     <div className="space-y-4">
@@ -1253,14 +1253,14 @@ export default function Home() {
                         <div className="w-10 h-10 bg-gradient-to-r from-slate-500 to-slate-600 rounded-full flex items-center justify-center text-white font-bold">
                           {token.symbol.charAt(0)}
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-slate-900">{token.name}</h3>
-                          <p className="text-sm text-slate-600">{token.symbol}</p>
+                                                <div>
+                          <h3 className="font-semibold text-slate-900 dark:text-slate-100">{token.name}</h3>
+                          <p className="text-sm text-slate-600 dark:text-slate-400">{token.symbol}</p>
                         </div>
-                                                 <div className="text-right">
-                           <p className="text-sm text-slate-600">Quantidade atual: {token.amount.toFixed(2)} {token.symbol}</p>
-                           <p className="text-sm text-slate-500">Preço médio: ${token.price.toFixed(2)}</p>
-                         </div>
+                        <div className="text-right">
+                          <p className="text-sm text-slate-600 dark:text-slate-400">Quantidade atual: {token.amount.toFixed(2)} {token.symbol}</p>
+                          <p className="text-sm text-slate-500 dark:text-slate-500">Preço médio: ${token.price.toFixed(2)}</p>
+                        </div>
                       </div>
                       
                       <div className="flex items-center space-x-4">
@@ -1283,18 +1283,18 @@ export default function Home() {
                           </Button>
                         </div>
                         
-                                                 <div className="space-y-2">
-                           <label className="text-sm font-medium text-slate-700">
-                             {editForm.action === "add" ? "Quantidade a adicionar" : "Quantidade a remover"}
-                           </label>
-                                                       <Input
-                              type="number"
-                              placeholder="0.00"
-                              value={editForm.amount}
-                              onChange={(e) => setEditForm({ ...editForm, amount: e.target.value })}
-                              className="h-10 text-base border-2 border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-500 text-slate-900 font-medium"
-                            />
-                         </div>
+                                                                         <div className="space-y-2">
+                          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                            {editForm.action === "add" ? "Quantidade a adicionar" : "Quantidade a remover"}
+                          </label>
+                          <Input
+                            type="number"
+                            placeholder="0.00"
+                            value={editForm.amount}
+                            onChange={(e) => setEditForm({ ...editForm, amount: e.target.value })}
+                            className="h-10 text-base border-2 border-slate-300 dark:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-500 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100 font-medium"
+                          />
+                        </div>
                          
                          {editForm.action === "add" && (
                            <div className="space-y-2">
@@ -1379,15 +1379,15 @@ export default function Home() {
             </div>
 
             {/* Resumo do portfólio */}
-            <div className="mt-6 p-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg border border-slate-200">
+            <div className="mt-6 p-4 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 rounded-lg border border-slate-200 dark:border-slate-600">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900">Valor Total do Portfólio</h3>
-                  <p className="text-sm text-slate-600">{tokens.length} tokens • Última atualização: agora</p>
+                  <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Valor Total do Portfólio</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">{tokens.length} tokens • Última atualização: agora</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-3xl font-bold text-slate-900">{formatCurrency(portfolioTotal)}</p>
-                  <p className="text-sm text-slate-600 font-medium">+5.2% esta semana</p>
+                  <p className="text-3xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(portfolioTotal)}</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">+5.2% esta semana</p>
                 </div>
               </div>
             </div>
@@ -1396,8 +1396,8 @@ export default function Home() {
 
         {/* Gráficos com design melhorado */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl border-slate-200">
-            <CardHeader className="border-b border-slate-200">
+          <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border-0 shadow-xl border-slate-200 dark:border-slate-700">
+            <CardHeader className="border-b border-slate-200 dark:border-slate-600">
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-xl font-semibold text-slate-800">
@@ -1630,27 +1630,27 @@ export default function Home() {
             </CardFooter>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl border-slate-200">
-            <CardHeader className="border-b border-slate-200">
+          <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border-0 shadow-xl border-slate-200 dark:border-slate-700">
+            <CardHeader className="border-b border-slate-200 dark:border-slate-600">
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-xl font-semibold text-slate-800">
+                  <CardTitle className="text-xl font-semibold text-slate-800 dark:text-slate-100">
                     {activeTab === "current" ? "Operações Ativas" : "Resumo Mensal"}
                   </CardTitle>
-                  <CardDescription className="text-slate-600">
+                  <CardDescription className="text-slate-600 dark:text-slate-400">
                     {activeTab === "current" 
                       ? "Pools de liquidez e grid bots ativos" 
                       : "Acumulado dos últimos 6 meses"
                     }
                   </CardDescription>
                 </div>
-                <div className="flex space-x-1 bg-slate-100 rounded-lg p-1">
+                <div className="flex space-x-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
                   <button
                     onClick={() => setActiveTab("current")}
                     className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                       activeTab === "current"
-                        ? "bg-white text-slate-900 shadow-sm"
-                        : "text-slate-600 hover:text-slate-900"
+                        ? "bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100 shadow-sm"
+                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
                     }`}
                   >
                     <Target className="h-4 w-4 inline mr-1" />
@@ -1660,8 +1660,8 @@ export default function Home() {
                     onClick={() => setActiveTab("monthly")}
                     className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                       activeTab === "monthly"
-                        ? "bg-white text-slate-900 shadow-sm"
-                        : "text-slate-600 hover:text-slate-900"
+                        ? "bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100 shadow-sm"
+                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
                     }`}
                   >
                     <Calendar className="h-4 w-4 inline mr-1" />
@@ -1674,16 +1674,16 @@ export default function Home() {
               {activeTab === "current" ? (
                 <div className="space-y-6">
                   {/* Formulário para adicionar operação */}
-                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                    <h3 className="text-lg font-semibold text-slate-800 mb-4">Adicionar Nova Operação</h3>
+                  <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg border border-slate-200 dark:border-slate-600">
+                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">Adicionar Nova Operação</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-700">Tipo</label>
-                        <select
-                          value={newOperation.type}
-                          onChange={(e) => setNewOperation({ ...newOperation, type: e.target.value as "pool" | "grid" })}
-                          className="w-full h-10 px-3 border-2 border-slate-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white text-slate-900 font-medium"
-                        >
+                                              <div className="space-y-2">
+                          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Tipo</label>
+                          <select
+                            value={newOperation.type}
+                            onChange={(e) => setNewOperation({ ...newOperation, type: e.target.value as "pool" | "grid" })}
+                            className="w-full h-10 px-3 border-2 border-slate-300 dark:border-slate-600 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/20 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 font-medium"
+                          >
                           <option value="pool">🏊‍♂️ Pool de Liquidez</option>
                           <option value="grid">🤖 Grid Bot</option>
                         </select>
