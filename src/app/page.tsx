@@ -230,6 +230,42 @@ export default function Home() {
     price: "",
   });
 
+  // Estados para operações ativas
+  const [activeOperations, setActiveOperations] = useState<Array<{
+    id: number;
+    type: "pool" | "grid";
+    pair: string;
+    capital: number;
+    startDate: string;
+    rangeMin?: number;
+    rangeMax?: number;
+    numGrids?: number;
+    notes?: string;
+  }>>([]);
+
+  const [newOperation, setNewOperation] = useState({
+    type: "pool" as "pool" | "grid",
+    pair: "",
+    capital: "",
+    startDate: new Date().toISOString().split('T')[0],
+    rangeMin: "",
+    rangeMax: "",
+    numGrids: "",
+    notes: "",
+  });
+
+  const [editingOperation, setEditingOperation] = useState<{
+    id: number;
+    type: "pool" | "grid";
+    pair: string;
+    capital: number;
+    startDate: string;
+    rangeMin?: number;
+    rangeMax?: number;
+    numGrids?: number;
+    notes?: string;
+  } | null>(null);
+
   // Verificar se todos os campos estão preenchidos
   const isFormComplete = newToken.name && newToken.symbol && newToken.amount && newToken.price;
 
@@ -590,6 +626,119 @@ export default function Home() {
   // Remover token
   const removeToken = (id: number) => {
     setTokens(tokens.filter(token => token.id !== id));
+  };
+
+  // Funções para operações ativas
+  const addOperation = () => {
+    if (newOperation.pair && newOperation.capital && newOperation.startDate) {
+      const capital = parseFloat(newOperation.capital);
+      
+      if (isNaN(capital) || capital <= 0) {
+        alert('Por favor, insira um valor válido para o capital.');
+        return;
+      }
+
+      // Validações específicas para grid bots
+      if (newOperation.type === "grid") {
+        const rangeMin = parseFloat(newOperation.rangeMin);
+        const rangeMax = parseFloat(newOperation.rangeMax);
+        const numGrids = parseInt(newOperation.numGrids);
+        
+        if (isNaN(rangeMin) || isNaN(rangeMax) || isNaN(numGrids) || 
+            rangeMin <= 0 || rangeMax <= 0 || numGrids <= 0) {
+          alert('Para grid bots, preencha range mínimo, máximo e número de grids.');
+          return;
+        }
+        
+        if (rangeMin >= rangeMax) {
+          alert('O range mínimo deve ser menor que o máximo.');
+          return;
+        }
+      }
+
+      const operation = {
+        id: Date.now(),
+        type: newOperation.type,
+        pair: newOperation.pair.toUpperCase(),
+        capital: Number(capital.toFixed(2)),
+        startDate: newOperation.startDate,
+        rangeMin: newOperation.type === "grid" ? parseFloat(newOperation.rangeMin) : undefined,
+        rangeMax: newOperation.type === "grid" ? parseFloat(newOperation.rangeMax) : undefined,
+        numGrids: newOperation.type === "grid" ? parseInt(newOperation.numGrids) : undefined,
+        notes: newOperation.notes || undefined,
+      };
+
+      setActiveOperations([...activeOperations, operation]);
+      setNewOperation({
+        type: "pool",
+        pair: "",
+        capital: "",
+        startDate: new Date().toISOString().split('T')[0],
+        rangeMin: "",
+        rangeMax: "",
+        numGrids: "",
+        notes: "",
+      });
+      alert('Operação adicionada com sucesso!');
+    } else {
+      alert('Por favor, preencha os campos obrigatórios.');
+    }
+  };
+
+  const editOperation = (operation: any) => {
+    setEditingOperation({
+      id: operation.id,
+      type: operation.type,
+      pair: operation.pair,
+      capital: operation.capital,
+      startDate: operation.startDate,
+      rangeMin: operation.rangeMin,
+      rangeMax: operation.rangeMax,
+      numGrids: operation.numGrids,
+      notes: operation.notes,
+    });
+  };
+
+  const applyOperationEdit = () => {
+    if (!editingOperation) return;
+
+    const capital = editingOperation.capital;
+    
+    if (isNaN(capital) || capital <= 0) {
+      alert('Por favor, insira um valor válido para o capital.');
+      return;
+    }
+
+    // Validações específicas para grid bots
+    if (editingOperation.type === "grid") {
+      const rangeMin = editingOperation.rangeMin;
+      const rangeMax = editingOperation.rangeMax;
+      const numGrids = editingOperation.numGrids;
+      
+      if (!rangeMin || !rangeMax || !numGrids || 
+          rangeMin <= 0 || rangeMax <= 0 || numGrids <= 0) {
+        alert('Para grid bots, preencha range mínimo, máximo e número de grids.');
+        return;
+      }
+      
+      if (rangeMin >= rangeMax) {
+        alert('O range mínimo deve ser menor que o máximo.');
+        return;
+      }
+    }
+
+    setActiveOperations(activeOperations.map(op => 
+      op.id === editingOperation.id ? editingOperation : op
+    ));
+    setEditingOperation(null);
+    alert('Operação atualizada com sucesso!');
+  };
+
+  const removeOperation = (id: number) => {
+    if (confirm('Tem certeza que deseja remover esta operação?')) {
+      setActiveOperations(activeOperations.filter(op => op.id !== id));
+      alert('Operação removida com sucesso!');
+    }
   };
 
   return (
@@ -1206,11 +1355,11 @@ export default function Home() {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-xl font-semibold text-slate-800">
-                    {activeTab === "current" ? "Distribuição Atual" : "Resumo Mensal"}
+                    {activeTab === "current" ? "Operações Ativas" : "Resumo Mensal"}
                   </CardTitle>
                   <CardDescription className="text-slate-600">
                     {activeTab === "current" 
-                      ? "Proporção entre pool de liquidez e grid bot" 
+                      ? "Pools de liquidez e grid bots ativos" 
                       : "Acumulado dos últimos 6 meses"
                     }
                   </CardDescription>
@@ -1225,7 +1374,7 @@ export default function Home() {
                     }`}
                   >
                     <Target className="h-4 w-4 inline mr-1" />
-                    Atual
+                    Operações
                   </button>
                   <button
                     onClick={() => setActiveTab("monthly")}
@@ -1243,64 +1392,289 @@ export default function Home() {
             </CardHeader>
             <CardContent className="pt-6">
               {activeTab === "current" ? (
-                <ResponsiveContainer width="100%" height={350}>
-                  <PieChart>
-                    <Pie
-                      data={pieData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
-                      outerRadius={120}
-                      innerRadius={60}
-                      fill="#8884d8"
-                      dataKey="value"
-                      strokeWidth={5}
-                    >
-                      {pieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                      <Label
-                        content={({ viewBox }) => {
-                          if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                            return (
-                              <text
-                                x={viewBox.cx}
-                                y={viewBox.cy}
-                                textAnchor="middle"
-                                dominantBaseline="middle"
-                              >
-                                <tspan
-                                  x={viewBox.cx}
-                                  y={viewBox.cy}
-                                  className="fill-slate-900 text-2xl font-bold"
-                                >
-                                  {formatCurrency(totalPortfolioValue)}
-                                </tspan>
-                                <tspan
-                                  x={viewBox.cx}
-                                  y={(viewBox.cy || 0) + 20}
-                                  className="fill-slate-600 text-sm"
-                                >
-                                  Total
-                                </tspan>
-                              </text>
-                            )
-                          }
-                        }}
+                <div className="space-y-6">
+                  {/* Formulário para adicionar operação */}
+                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h3 className="text-lg font-semibold text-slate-800 mb-4">Adicionar Nova Operação</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-700">Tipo</label>
+                        <select
+                          value={newOperation.type}
+                          onChange={(e) => setNewOperation({ ...newOperation, type: e.target.value as "pool" | "grid" })}
+                          className="w-full h-10 px-3 border-2 border-slate-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
+                        >
+                          <option value="pool">🏊‍♂️ Pool de Liquidez</option>
+                          <option value="grid">🤖 Grid Bot</option>
+                        </select>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-700">Par</label>
+                        <Input
+                          placeholder="Ex: BTC/USDT"
+                          value={newOperation.pair}
+                          onChange={(e) => setNewOperation({ ...newOperation, pair: e.target.value })}
+                          className="h-10 border-2 border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-700">Capital ($)</label>
+                        <Input
+                          type="number"
+                          placeholder="0.00"
+                          value={newOperation.capital}
+                          onChange={(e) => setNewOperation({ ...newOperation, capital: e.target.value })}
+                          className="h-10 border-2 border-slate-300 focus:border-green-500 focus:ring-2 focus:ring-green-100"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-700">Data de Início</label>
+                        <Input
+                          type="date"
+                          value={newOperation.startDate}
+                          onChange={(e) => setNewOperation({ ...newOperation, startDate: e.target.value })}
+                          className="h-10 border-2 border-slate-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
+                        />
+                      </div>
+                    </div>
+                    
+                    {newOperation.type === "grid" && (
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-slate-700">Range Mínimo ($)</label>
+                          <Input
+                            type="number"
+                            placeholder="0.00"
+                            value={newOperation.rangeMin}
+                            onChange={(e) => setNewOperation({ ...newOperation, rangeMin: e.target.value })}
+                            className="h-10 border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-slate-700">Range Máximo ($)</label>
+                          <Input
+                            type="number"
+                            placeholder="0.00"
+                            value={newOperation.rangeMax}
+                            onChange={(e) => setNewOperation({ ...newOperation, rangeMax: e.target.value })}
+                            className="h-10 border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-slate-700">Número de Grids</label>
+                          <Input
+                            type="number"
+                            placeholder="0"
+                            value={newOperation.numGrids}
+                            onChange={(e) => setNewOperation({ ...newOperation, numGrids: e.target.value })}
+                            className="h-10 border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                          />
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="mt-4">
+                      <label className="text-sm font-medium text-slate-700">Observações (Opcional)</label>
+                      <Input
+                        placeholder="Ex: Pool de alta volatilidade"
+                        value={newOperation.notes}
+                        onChange={(e) => setNewOperation({ ...newOperation, notes: e.target.value })}
+                        className="mt-1 h-10 border-2 border-slate-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-100"
                       />
-                    </Pie>
-                    <Tooltip 
-                      formatter={(value) => formatCurrency(Number(value))}
-                      contentStyle={{
-                        backgroundColor: 'white',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                      }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
+                    </div>
+                    
+                    <div className="flex justify-end mt-4">
+                      <Button 
+                        onClick={addOperation}
+                        disabled={!newOperation.pair || !newOperation.capital || !newOperation.startDate}
+                        className={`px-6 py-2 text-base font-semibold shadow-lg transition-all duration-300 transform hover:scale-105 border-0 ${
+                          newOperation.pair && newOperation.capital && newOperation.startDate
+                            ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white hover:shadow-xl' 
+                            : 'bg-gradient-to-r from-slate-400 to-slate-500 text-slate-200 cursor-not-allowed'
+                        }`}
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Adicionar Operação
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Lista de operações ativas */}
+                  <div className="space-y-4">
+                    {activeOperations.length === 0 ? (
+                      <div className="text-center py-8">
+                        <Target className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                        <p className="text-slate-600">Nenhuma operação ativa</p>
+                        <p className="text-sm text-slate-500">Adicione pools de liquidez ou grid bots para começar</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {activeOperations.map((operation) => (
+                          <div key={operation.id} className="p-4 bg-slate-50 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors">
+                            {editingOperation?.id === operation.id ? (
+                              // Modo de edição
+                              <div className="space-y-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                  <div className="space-y-2">
+                                    <label className="text-sm font-medium text-slate-700">Tipo</label>
+                                    <select
+                                      value={editingOperation.type}
+                                      onChange={(e) => setEditingOperation({ ...editingOperation, type: e.target.value as "pool" | "grid" })}
+                                      className="w-full h-10 px-3 border-2 border-slate-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
+                                    >
+                                      <option value="pool">🏊‍♂️ Pool de Liquidez</option>
+                                      <option value="grid">🤖 Grid Bot</option>
+                                    </select>
+                                  </div>
+                                  <div className="space-y-2">
+                                    <label className="text-sm font-medium text-slate-700">Par</label>
+                                    <Input
+                                      placeholder="Ex: BTC/USDT"
+                                      value={editingOperation.pair}
+                                      onChange={(e) => setEditingOperation({ ...editingOperation, pair: e.target.value })}
+                                      className="h-10 border-2 border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <label className="text-sm font-medium text-slate-700">Capital ($)</label>
+                                    <Input
+                                      type="number"
+                                      placeholder="0.00"
+                                      value={editingOperation.capital}
+                                      onChange={(e) => setEditingOperation({ ...editingOperation, capital: parseFloat(e.target.value) || 0 })}
+                                      className="h-10 border-2 border-slate-300 focus:border-green-500 focus:ring-2 focus:ring-green-100"
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <label className="text-sm font-medium text-slate-700">Data de Início</label>
+                                    <Input
+                                      type="date"
+                                      value={editingOperation.startDate}
+                                      onChange={(e) => setEditingOperation({ ...editingOperation, startDate: e.target.value })}
+                                      className="h-10 border-2 border-slate-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
+                                    />
+                                  </div>
+                                </div>
+                                
+                                {editingOperation.type === "grid" && (
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="space-y-2">
+                                      <label className="text-sm font-medium text-slate-700">Range Mínimo ($)</label>
+                                      <Input
+                                        type="number"
+                                        placeholder="0.00"
+                                        value={editingOperation.rangeMin || ""}
+                                        onChange={(e) => setEditingOperation({ ...editingOperation, rangeMin: parseFloat(e.target.value) || 0 })}
+                                        className="h-10 border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <label className="text-sm font-medium text-slate-700">Range Máximo ($)</label>
+                                      <Input
+                                        type="number"
+                                        placeholder="0.00"
+                                        value={editingOperation.rangeMax || ""}
+                                        onChange={(e) => setEditingOperation({ ...editingOperation, rangeMax: parseFloat(e.target.value) || 0 })}
+                                        className="h-10 border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <label className="text-sm font-medium text-slate-700">Número de Grids</label>
+                                      <Input
+                                        type="number"
+                                        placeholder="0"
+                                        value={editingOperation.numGrids || ""}
+                                        onChange={(e) => setEditingOperation({ ...editingOperation, numGrids: parseInt(e.target.value) || 0 })}
+                                        className="h-10 border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                                      />
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                <div className="space-y-2">
+                                  <label className="text-sm font-medium text-slate-700">Observações</label>
+                                  <Input
+                                    placeholder="Ex: Pool de alta volatilidade"
+                                    value={editingOperation.notes || ""}
+                                    onChange={(e) => setEditingOperation({ ...editingOperation, notes: e.target.value })}
+                                    className="h-10 border-2 border-slate-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-100"
+                                  />
+                                </div>
+                                
+                                <div className="flex justify-end space-x-2">
+                                  <Button
+                                    variant="outline"
+                                    onClick={() => setEditingOperation(null)}
+                                    className="border-slate-300 text-slate-700 hover:bg-slate-50"
+                                  >
+                                    Cancelar
+                                  </Button>
+                                  <Button
+                                    onClick={applyOperationEdit}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                                  >
+                                    Salvar
+                                  </Button>
+                                </div>
+                              </div>
+                            ) : (
+                              // Modo de visualização
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-4">
+                                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold ${
+                                    operation.type === "pool" 
+                                      ? "bg-gradient-to-r from-blue-500 to-blue-600" 
+                                      : "bg-gradient-to-r from-green-500 to-green-600"
+                                  }`}>
+                                    {operation.type === "pool" ? "🏊‍♂️" : "🤖"}
+                                  </div>
+                                  <div>
+                                    <h3 className="font-semibold text-slate-900">{operation.pair}</h3>
+                                    <p className="text-sm text-slate-600">
+                                      {operation.type === "pool" ? "Pool de Liquidez" : "Grid Bot"}
+                                      {operation.notes && ` • ${operation.notes}`}
+                                    </p>
+                                    {operation.type === "grid" && operation.rangeMin && operation.rangeMax && operation.numGrids && (
+                                      <p className="text-xs text-slate-500">
+                                        Range: ${operation.rangeMin.toLocaleString()} - ${operation.rangeMax.toLocaleString()} | {operation.numGrids} grids
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="flex items-center space-x-4">
+                                  <div className="text-right">
+                                    <p className="font-semibold text-slate-900">{formatCurrency(operation.capital)}</p>
+                                    <p className="text-sm text-slate-500">
+                                      Início: {new Date(operation.startDate).toLocaleDateString('pt-BR')}
+                                    </p>
+                                  </div>
+                                  <div className="flex space-x-2">
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => editOperation(operation)}
+                                      className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                                    >
+                                      Editar
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => removeOperation(operation.id)}
+                                      className="text-slate-500 hover:text-red-600 hover:bg-red-50"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
               ) : (
                 <ResponsiveContainer width="100%" height={350}>
                   <BarChart data={monthlyData}>
