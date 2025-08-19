@@ -23,42 +23,62 @@ const chartData = [
 // Dados para o gráfico de barras (serão calculados dinamicamente)
 const getBarChartData = (records: any[]) => {
   if (records.length === 0) {
-    // Dados padrão quando não há registros
+    // Dados padrão quando não há registros - apenas 4 semanas do mês atual
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+    
     return [
-      { week: "Semana 1", poolLiquidity: 5000, gridBot: 1200, total: 6200 },
-      { week: "Semana 2", poolLiquidity: 5200, gridBot: 1350, total: 6550 },
-      { week: "Semana 3", poolLiquidity: 5400, gridBot: 1400, total: 6800 },
-      { week: "Semana 4", poolLiquidity: 5600, gridBot: 1500, total: 7100 },
-      { week: "Semana 5", poolLiquidity: 5800, gridBot: 1600, total: 7400 },
+      { week: `Semana ${getWeekNumber(new Date(currentYear, currentMonth, 1))}`, poolLiquidity: 5000, gridBot: 1200, total: 6200 },
+      { week: `Semana ${getWeekNumber(new Date(currentYear, currentMonth, 8))}`, poolLiquidity: 5200, gridBot: 1350, total: 6550 },
+      { week: `Semana ${getWeekNumber(new Date(currentYear, currentMonth, 15))}`, poolLiquidity: 5400, gridBot: 1400, total: 6800 },
+      { week: `Semana ${getWeekNumber(new Date(currentYear, currentMonth, 22))}`, poolLiquidity: 5600, gridBot: 1500, total: 7100 },
     ];
   }
 
-  // Agrupar registros por semana
+  // Função para obter o número da semana
+  const getWeekNumber = (date: Date) => {
+    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+    const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
+    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+  };
+
+  // Obter o mês e ano atual
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+  const currentYear = currentDate.getFullYear();
+
+  // Agrupar registros por semana, mas apenas do mês atual
   const weeklyData = records.reduce((acc: any, record) => {
     const date = new Date(record.recordDate);
-    const weekKey = `${date.getFullYear()}-W${record.weekNumber}`;
     
-    if (!acc[weekKey]) {
-      acc[weekKey] = {
-        week: `Semana ${record.weekNumber}`,
-        poolLiquidity: 0,
-        gridBot: 0,
-        total: 0,
-        date: date
-      };
+    // Filtrar apenas registros do mês atual
+    if (date.getMonth() === currentMonth && date.getFullYear() === currentYear) {
+      const weekNumber = getWeekNumber(date);
+      const weekKey = `${currentYear}-W${weekNumber}`;
+      
+      if (!acc[weekKey]) {
+        acc[weekKey] = {
+          week: `Semana ${weekNumber}`,
+          poolLiquidity: 0,
+          gridBot: 0,
+          total: 0,
+          date: date,
+          weekNumber: weekNumber
+        };
+      }
+      
+      acc[weekKey].poolLiquidity += record.poolLiquidity;
+      acc[weekKey].gridBot += record.gridBot;
+      acc[weekKey].total += record.total;
     }
-    
-    acc[weekKey].poolLiquidity += record.poolLiquidity;
-    acc[weekKey].gridBot += record.gridBot;
-    acc[weekKey].total += record.total;
     
     return acc;
   }, {});
 
-  // Converter para array e ordenar por data
+  // Converter para array e ordenar por número da semana
   const sortedData = Object.values(weeklyData)
-    .sort((a: any, b: any) => a.date - b.date)
-    .slice(-5) // Pegar apenas as últimas 5 semanas
+    .sort((a: any, b: any) => a.weekNumber - b.weekNumber)
     .map((item: any) => ({
       week: item.week,
       poolLiquidity: item.poolLiquidity,
@@ -1165,8 +1185,8 @@ export default function Home() {
                    </div>
                                      <div className="text-slate-600 leading-none">
                      {records.length > 0 
-                       ? `Mostrando evolução baseada em ${records.length} registros (últimas ${barChartData.length} semanas)`
-                       : 'Mostrando evolução semanal dos investimentos nas últimas 5 semanas (dados de exemplo)'
+                       ? `Mostrando evolução baseada em ${records.length} registros (semanas do mês atual)`
+                       : 'Mostrando evolução semanal dos investimentos (semanas do mês atual - dados de exemplo)'
                      }
                    </div>
                 </>
