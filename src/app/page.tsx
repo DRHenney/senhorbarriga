@@ -256,6 +256,15 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
   return allMonths;
 };
 
+// Função para formatar moeda
+const formatCurrency = (value: number) => {
+  if (isNaN(value) || !isFinite(value)) return "$0.00";
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(value);
+};
+
 // Componente de Tooltip Customizado
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -524,13 +533,7 @@ export default function Home() {
     }
   };
 
-  const formatCurrency = (value: number) => {
-    if (isNaN(value) || !isFinite(value)) return "$0.00";
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(value);
-  };
+
 
   // Calcular dados dinâmicos baseados nos registros
   const barChartData = getBarChartData(records);
