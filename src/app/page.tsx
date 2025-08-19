@@ -112,6 +112,7 @@ export default function Home() {
     value: number;
   }>>(initialTokens);
   const [activeTab, setActiveTab] = useState("current"); // "current" ou "monthly"
+  const [evolutionTab, setEvolutionTab] = useState("weekly"); // "weekly" ou "records"
   const [newToken, setNewToken] = useState({
     name: "",
     symbol: "",
@@ -872,48 +873,145 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl border-slate-200">
             <CardHeader className="border-b border-slate-200">
-              <CardTitle className="text-xl font-semibold text-slate-800">Evolução Semanal</CardTitle>
-              <CardDescription className="text-slate-600">Valores de Pool de Liquidez e Grid Bot por semana</CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-xl font-semibold text-slate-800">
+                    {evolutionTab === "weekly" ? "Evolução Semanal" : "Registros Semanais"}
+                  </CardTitle>
+                  <CardDescription className="text-slate-600">
+                    {evolutionTab === "weekly" 
+                      ? "Valores de Pool de Liquidez e Grid Bot por semana" 
+                      : "Histórico dos seus registros semanais"
+                    }
+                  </CardDescription>
+                </div>
+                <div className="flex space-x-1 bg-slate-100 rounded-lg p-1">
+                  <button
+                    onClick={() => setEvolutionTab("weekly")}
+                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                      evolutionTab === "weekly"
+                        ? "bg-white text-slate-900 shadow-sm"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    <BarChart3 className="h-4 w-4 inline mr-1" />
+                    Semanal
+                  </button>
+                  <button
+                    onClick={() => setEvolutionTab("records")}
+                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                      evolutionTab === "records"
+                        ? "bg-white text-slate-900 shadow-sm"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    <Calendar className="h-4 w-4 inline mr-1" />
+                    Registros
+                  </button>
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="pt-6">
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={barChartData}>
-                  <CartesianGrid vertical={false} stroke="#e2e8f0" />
-                  <XAxis
-                    dataKey="week"
-                    tickLine={false}
-                    tickMargin={10}
-                    axisLine={false}
-                    stroke="#64748b"
-                  />
-                  <YAxis
-                    tickLine={false}
-                    tickMargin={10}
-                    axisLine={false}
-                    stroke="#64748b"
-                    tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-                  />
-                  <Tooltip 
-                    formatter={(value) => formatCurrency(Number(value))}
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                    }}
-                  />
-                  <Bar dataKey="poolLiquidity" fill="#475569" radius={4} name="Pool de Liquidez" />
-                  <Bar dataKey="gridBot" fill="#64748b" radius={4} name="Grid Bot" />
-                </BarChart>
-              </ResponsiveContainer>
+              {evolutionTab === "weekly" ? (
+                <ResponsiveContainer width="100%" height={350}>
+                  <BarChart data={barChartData}>
+                    <CartesianGrid vertical={false} stroke="#e2e8f0" />
+                    <XAxis
+                      dataKey="week"
+                      tickLine={false}
+                      tickMargin={10}
+                      axisLine={false}
+                      stroke="#64748b"
+                    />
+                    <YAxis
+                      tickLine={false}
+                      tickMargin={10}
+                      axisLine={false}
+                      stroke="#64748b"
+                      tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                    />
+                    <Tooltip 
+                      formatter={(value) => formatCurrency(Number(value))}
+                      contentStyle={{
+                        backgroundColor: 'white',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      }}
+                    />
+                    <Bar dataKey="poolLiquidity" fill="#475569" radius={4} name="Pool de Liquidez" />
+                    <Bar dataKey="gridBot" fill="#64748b" radius={4} name="Grid Bot" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="space-y-4">
+                  {records.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Calendar className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                      <p className="text-slate-600">Nenhum registro encontrado</p>
+                      <p className="text-sm text-slate-500">Adicione registros semanais para ver o histórico</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3 max-h-80 overflow-y-auto">
+                      {records.slice(0, 10).map((record) => (
+                        <div key={record.id} className="p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                              <div className="text-center">
+                                <p className="text-sm font-medium text-slate-700">Semana {record.weekNumber}</p>
+                                <p className="text-xs text-slate-500">{record.year}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-slate-600">
+                                  {new Date(record.recordDate).toLocaleDateString('pt-BR', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric'
+                                  })}
+                                </p>
+                                {record.notes && (
+                                  <p className="text-xs text-slate-500 italic">{record.notes}</p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-4">
+                              <div className="text-right">
+                                <p className="text-sm text-slate-600">Pool: {formatCurrency(record.poolLiquidity)}</p>
+                                <p className="text-sm text-slate-600">Grid: {formatCurrency(record.gridBot)}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-semibold text-slate-900">{formatCurrency(record.total)}</p>
+                                <p className="text-sm text-slate-500">Total</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </CardContent>
             <CardFooter className="flex-col items-start gap-2 text-sm border-t border-slate-200">
-              <div className="flex gap-2 leading-none font-medium text-slate-700">
-                Crescimento de {((barChartData[barChartData.length - 1].poolLiquidity + barChartData[barChartData.length - 1].gridBot - barChartData[0].poolLiquidity - barChartData[0].gridBot) / (barChartData[0].poolLiquidity + barChartData[0].gridBot) * 100).toFixed(1)}% no período <TrendingUp className="h-4 w-4" />
-              </div>
-              <div className="text-slate-600 leading-none">
-                Mostrando evolução semanal dos investimentos nas últimas 5 semanas
-              </div>
+              {evolutionTab === "weekly" ? (
+                <>
+                  <div className="flex gap-2 leading-none font-medium text-slate-700">
+                    Crescimento de {((barChartData[barChartData.length - 1].poolLiquidity + barChartData[barChartData.length - 1].gridBot - barChartData[0].poolLiquidity - barChartData[0].gridBot) / (barChartData[0].poolLiquidity + barChartData[0].gridBot) * 100).toFixed(1)}% no período <TrendingUp className="h-4 w-4" />
+                  </div>
+                  <div className="text-slate-600 leading-none">
+                    Mostrando evolução semanal dos investimentos nas últimas 5 semanas
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex gap-2 leading-none font-medium text-slate-700">
+                    {records.length > 0 ? `${records.length} registros encontrados` : 'Nenhum registro'}
+                  </div>
+                  <div className="text-slate-600 leading-none">
+                    Mostrando os últimos 10 registros semanais
+                  </div>
+                </>
+              )}
             </CardFooter>
           </Card>
 
