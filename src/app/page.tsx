@@ -20,6 +20,13 @@ const chartData = [
   { week: "Semana 5", poolLiquidity: 5800, gridBot: 1600, total: 7400 },
 ];
 
+// Função para obter o número da semana
+const getWeekNumber = (date: Date) => {
+  const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+  const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
+  return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+};
+
 // Dados para o gráfico de barras (serão calculados dinamicamente)
 const getBarChartData = (records: any[]) => {
   if (records.length === 0) {
@@ -35,13 +42,6 @@ const getBarChartData = (records: any[]) => {
       { week: `Semana ${getWeekNumber(new Date(currentYear, currentMonth, 22))}`, poolLiquidity: 5600, gridBot: 1500, total: 7100 },
     ];
   }
-
-  // Função para obter o número da semana
-  const getWeekNumber = (date: Date) => {
-    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-    const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
-    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-  };
 
   // Obter o mês e ano atual
   const currentDate = new Date();
