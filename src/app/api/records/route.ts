@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/database';
 import { weeklyRecords, users } from '@/lib/schema';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, and } from 'drizzle-orm';
 
 // GET - Buscar registros do usuário
 export async function GET() {
@@ -193,6 +193,16 @@ export async function PUT(request: NextRequest) {
       }, { status: 400 });
     }
 
+    // Converter ID para número
+    const recordId = parseInt(id);
+    if (isNaN(recordId)) {
+      console.log('❌ ID inválido:', id);
+      return NextResponse.json({ 
+        success: false, 
+        message: 'ID do registro inválido' 
+      }, { status: 400 });
+    }
+
     // Buscar usuário pelo email
     const user = await db.query.users.findFirst({
       where: (users, { eq }) => eq(users.email, userEmail),
@@ -213,7 +223,7 @@ export async function PUT(request: NextRequest) {
     // Verificar se o registro pertence ao usuário
     const existingRecord = await db.query.weeklyRecords.findFirst({
       where: (weeklyRecords, { and, eq }) => 
-        and(eq(weeklyRecords.id, id), eq(weeklyRecords.userId, user.id)),
+        and(eq(weeklyRecords.id, recordId), eq(weeklyRecords.userId, user.id)),
     });
 
     console.log('📋 Registro existente encontrado:', !!existingRecord);
@@ -249,7 +259,7 @@ export async function PUT(request: NextRequest) {
         notes: notes || null,
         updatedAt: new Date(),
       })
-      .where(eq(weeklyRecords.id, id))
+      .where(eq(weeklyRecords.id, recordId))
       .returning();
 
     console.log('✅ Registro atualizado com sucesso:', updatedRecord[0]);
