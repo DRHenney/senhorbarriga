@@ -452,7 +452,21 @@ export default function Home() {
   const lastBarData = barChartData.length > 0 ? barChartData[barChartData.length - 1] : null;
   const lastChartData = chartData.length > 0 ? chartData[chartData.length - 1] : null;
   
-  const totalValue = lastBarData?.total || lastChartData?.total || 0;
+  // Calcular valor total do mês atual (soma de todas as entradas do mês)
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+  const currentYear = currentDate.getFullYear();
+  
+  const totalValue = records
+    .filter(record => {
+      const recordDate = new Date(record.recordDate);
+      return recordDate.getMonth() === currentMonth && recordDate.getFullYear() === currentYear;
+    })
+    .reduce((sum, record) => {
+      const poolValue = record.poolLiquidity || 0;
+      const gridValue = record.gridBot || 0;
+      return sum + poolValue + gridValue;
+    }, 0);
   const poolLiquidity = lastBarData?.poolLiquidity || lastChartData?.poolLiquidity || 0;
   const gridBot = lastBarData?.gridBot || lastChartData?.gridBot || 0;
   
@@ -944,7 +958,30 @@ export default function Home() {
               <div className="text-3xl font-bold text-slate-900">{formatCurrency(totalValue)}</div>
               <div className="flex items-center space-x-1 mt-2">
                 <TrendingUp className="h-4 w-4 text-slate-500" />
-                <p className="text-sm text-slate-600 font-medium">+12.5% este mês</p>
+                <p className="text-sm text-slate-600 font-medium">
+                  {(() => {
+                    // Calcular valor do mês anterior para comparação
+                    const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+                    const previousYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+                    
+                    const previousMonthValue = records
+                      .filter(record => {
+                        const recordDate = new Date(record.recordDate);
+                        return recordDate.getMonth() === previousMonth && recordDate.getFullYear() === previousYear;
+                      })
+                      .reduce((sum, record) => {
+                        const poolValue = record.poolLiquidity || 0;
+                        const gridValue = record.gridBot || 0;
+                        return sum + poolValue + gridValue;
+                      }, 0);
+                    
+                    if (previousMonthValue > 0 && totalValue > 0) {
+                      const growth = ((totalValue - previousMonthValue) / previousMonthValue * 100).toFixed(1);
+                      return `${parseFloat(growth) > 0 ? '+' : ''}${growth}% este mês`;
+                    }
+                    return 'Primeiro mês de registro';
+                  })()}
+                </p>
               </div>
             </CardContent>
           </Card>
