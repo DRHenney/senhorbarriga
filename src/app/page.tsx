@@ -69,27 +69,64 @@ const getBarChartData = (records: any[]) => {
   return sortedData;
 };
 
-const pieData = [
-  { name: "Pool Liquidez", value: 5800, color: "#475569" },
-  { name: "Grid Bot", value: 1600, color: "#64748b" },
+// Dados para o gráfico de pizza (serão calculados dinamicamente)
+const getPieData = (poolLiquidity: number, gridBot: number) => [
+  { name: "Pool Liquidez", value: poolLiquidity, color: "#475569" },
+  { name: "Grid Bot", value: gridBot, color: "#64748b" },
 ];
 
 
 
-// Dados para resumo mensal
-const monthlyData = [
-  { name: "Janeiro", poolLiquidity: 4800, gridBot: 1100, total: 5900 },
-  { name: "Fevereiro", poolLiquidity: 5200, gridBot: 1250, total: 6450 },
-  { name: "Março", poolLiquidity: 5400, gridBot: 1350, total: 6750 },
-  { name: "Abril", poolLiquidity: 5600, gridBot: 1450, total: 7050 },
-  { name: "Maio", poolLiquidity: 5800, gridBot: 1550, total: 7350 },
-  { name: "Junho", poolLiquidity: 6000, gridBot: 1650, total: 7650 },
-];
+// Função para calcular dados mensais baseados nos registros
+const getMonthlyData = (records: any[]) => {
+  if (records.length === 0) {
+    // Dados padrão quando não há registros
+    return [
+      { name: "Janeiro", poolLiquidity: 4800, gridBot: 1100, total: 5900 },
+      { name: "Fevereiro", poolLiquidity: 5200, gridBot: 1250, total: 6450 },
+      { name: "Março", poolLiquidity: 5400, gridBot: 1350, total: 6750 },
+      { name: "Abril", poolLiquidity: 5600, gridBot: 1450, total: 7050 },
+      { name: "Maio", poolLiquidity: 5800, gridBot: 1550, total: 7350 },
+      { name: "Junho", poolLiquidity: 6000, gridBot: 1650, total: 7650 },
+    ];
+  }
 
-// Calcular totais mensais
-const totalMonthlyPool = monthlyData.reduce((sum, month) => sum + month.poolLiquidity, 0);
-const totalMonthlyGrid = monthlyData.reduce((sum, month) => sum + month.gridBot, 0);
-const totalMonthlyValue = totalMonthlyPool + totalMonthlyGrid;
+  // Agrupar registros por mês
+  const monthlyData = records.reduce((acc: any, record) => {
+    const date = new Date(record.recordDate);
+    const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+    const monthName = date.toLocaleDateString('pt-BR', { month: 'long' });
+    
+    if (!acc[monthKey]) {
+      acc[monthKey] = {
+        name: monthName.charAt(0).toUpperCase() + monthName.slice(1),
+        poolLiquidity: 0,
+        gridBot: 0,
+        total: 0,
+        date: date
+      };
+    }
+    
+    acc[monthKey].poolLiquidity += record.poolLiquidity;
+    acc[monthKey].gridBot += record.gridBot;
+    acc[monthKey].total += record.total;
+    
+    return acc;
+  }, {});
+
+  // Converter para array e ordenar por data
+  const sortedData = Object.values(monthlyData)
+    .sort((a: any, b: any) => a.date - b.date)
+    .slice(-6) // Pegar apenas os últimos 6 meses
+    .map((item: any) => ({
+      name: item.name,
+      poolLiquidity: item.poolLiquidity,
+      gridBot: item.gridBot,
+      total: item.total
+    }));
+
+  return sortedData;
+};
 
 
 
@@ -298,6 +335,13 @@ export default function Home() {
   const totalValue = barChartData.length > 0 ? barChartData[barChartData.length - 1]?.total || 0 : chartData[chartData.length - 1]?.total || 0;
   const poolLiquidity = barChartData.length > 0 ? barChartData[barChartData.length - 1]?.poolLiquidity || 0 : chartData[chartData.length - 1]?.poolLiquidity || 0;
   const gridBot = barChartData.length > 0 ? barChartData[barChartData.length - 1]?.gridBot || 0 : chartData[chartData.length - 1]?.gridBot || 0;
+  
+  // Calcular dados dinâmicos para o gráfico de pizza
+  const pieData = getPieData(poolLiquidity, gridBot);
+  
+  // Calcular dados mensais dinâmicos
+  const monthlyData = getMonthlyData(records);
+  const totalMonthlyValue = monthlyData.reduce((sum, month) => sum + month.total, 0);
 
   // Calcular valor total do portfólio de tokens
   const portfolioTotal = tokens.reduce((sum, token) => {
