@@ -158,17 +158,89 @@ const initialTokens: Array<{
   value: number;
 }> = [];
 
-// Dados para o gráfico de portfólio total
-const portfolioChartData = [
-  { month: "Jan", value: 28000 },
-  { month: "Fev", value: 29500 },
-  { month: "Mar", value: 31200 },
-  { month: "Abr", value: 29800 },
-  { month: "Mai", value: 32500 },
-  { month: "Jun", value: 34100 },
-  { month: "Jul", value: 35800 },
-  { month: "Ago", value: 37200 },
-];
+// Função para calcular dados de evolução do portfólio baseados nos registros reais
+const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
+  // Se não há registros, usar dados de exemplo desde janeiro de 2025
+  if (records.length === 0) {
+    return [
+      { month: "Jan/25", value: 28000, date: new Date(2025, 0, 1) },
+      { month: "Fev/25", value: 29500, date: new Date(2025, 1, 1) },
+      { month: "Mar/25", value: 31200, date: new Date(2025, 2, 1) },
+      { month: "Abr/25", value: 29800, date: new Date(2025, 3, 1) },
+      { month: "Mai/25", value: 32500, date: new Date(2025, 4, 1) },
+      { month: "Jun/25", value: 34100, date: new Date(2025, 5, 1) },
+      { month: "Jul/25", value: 35800, date: new Date(2025, 6, 1) },
+      { month: "Ago/25", value: 37200, date: new Date(2025, 7, 1) },
+    ];
+  }
+
+  // Calcular valor total dos tokens
+  const tokensTotal = tokens.reduce((sum, token) => sum + (token.value || 0), 0);
+
+  // Agrupar registros por mês
+  const monthlyData = records.reduce((acc: any, record) => {
+    const date = new Date(record.recordDate);
+    const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+    const monthName = date.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+    
+    if (!acc[monthKey]) {
+      acc[monthKey] = {
+        month: monthName,
+        value: 0,
+        date: date,
+        records: []
+      };
+    }
+    
+    acc[monthKey].value += record.total;
+    acc[monthKey].records.push(record);
+    
+    return acc;
+  }, {});
+
+  // Converter para array e ordenar por data
+  const sortedData = Object.values(monthlyData)
+    .sort((a: any, b: any) => a.date - b.date)
+    .map((item: any) => ({
+      month: item.month,
+      value: item.value + tokensTotal, // Incluir tokens no total
+      date: item.date
+    }));
+
+  // Se não há dados suficientes, adicionar meses desde janeiro de 2025
+  if (sortedData.length === 0 || sortedData[0].date.getFullYear() > 2025 || 
+      (sortedData[0].date.getFullYear() === 2025 && sortedData[0].date.getMonth() > 0)) {
+    
+    const startDate = new Date(2025, 0, 1); // Janeiro de 2025
+    const currentDate = new Date();
+    const months = [];
+    
+    for (let d = new Date(startDate); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
+      const monthName = d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+      months.push({
+        month: monthName,
+        value: 0,
+        date: new Date(d)
+      });
+    }
+    
+    // Combinar com dados existentes
+    const combinedData = [...months, ...sortedData];
+    
+    // Remover duplicatas e ordenar
+    const uniqueData = combinedData.reduce((acc: any, item) => {
+      const key = `${item.date.getFullYear()}-${item.date.getMonth()}`;
+      if (!acc[key]) {
+        acc[key] = item;
+      }
+      return acc;
+    }, {});
+    
+    return Object.values(uniqueData).sort((a: any, b: any) => a.date - b.date);
+  }
+
+  return sortedData;
+};
 
 export default function Home() {
   const [newEntry, setNewEntry] = useState({
@@ -400,8 +472,13 @@ export default function Home() {
   // Calcular valor total geral (DeFi + Tokens)
   const totalPortfolioValue = totalValue + portfolioTotal;
 
+  // Calcular dados de evolução do portfólio
+  const portfolioEvolutionData = getPortfolioEvolutionData(records, tokens);
+  
   // Calcular crescimento percentual
-  const portfolioGrowth = ((portfolioChartData[portfolioChartData.length - 1].value - portfolioChartData[0].value) / portfolioChartData[0].value * 100).toFixed(1);
+  const portfolioGrowth = portfolioEvolutionData.length > 1 
+    ? ((portfolioEvolutionData[portfolioEvolutionData.length - 1].value - portfolioEvolutionData[0].value) / portfolioEvolutionData[0].value * 100).toFixed(1)
+    : "0.0";
 
   // Carregar tokens do banco
   const loadTokens = async () => {
@@ -771,27 +848,58 @@ export default function Home() {
                 <div className="mb-6">
                   <h3 className="text-slate-300 text-sm font-medium mb-2">Portfólio Total</h3>
                   <div className="text-3xl font-bold text-white mb-2">{formatCurrency(totalPortfolioValue)}</div>
-                  <div className="flex items-center space-x-2">
-                    <TrendingUp className="h-4 w-4 text-slate-300" />
-                    <span className="text-slate-300 text-sm font-medium">+{portfolioGrowth}% desde janeiro</span>
-                  </div>
+                                     <div className="flex items-center space-x-2">
+                     <TrendingUp className="h-4 w-4 text-slate-300" />
+                     <span className="text-slate-300 text-sm font-medium">
+                       {portfolioEvolutionData.length > 1 
+                         ? `+${portfolioGrowth}% desde ${portfolioEvolutionData[0].month}`
+                         : 'Evolução desde janeiro/25'
+                       }
+                     </span>
+                   </div>
                 </div>
                 
-                {/* Gráfico de Linha */}
-                <div className="flex-1">
-                  <ResponsiveContainer width="100%" height={200}>
-                    <LineChart data={portfolioChartData}>
-                      <Line 
-                        type="monotone" 
-                        dataKey="value" 
-                        stroke="#64748b" 
-                        strokeWidth={3}
-                        dot={{ fill: '#64748b', strokeWidth: 2, r: 4 }}
-                        activeDot={{ r: 6, stroke: '#64748b', strokeWidth: 2 }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
+                                 {/* Gráfico de Linha */}
+                 <div className="flex-1">
+                   <ResponsiveContainer width="100%" height={200}>
+                     <LineChart data={portfolioEvolutionData}>
+                       <CartesianGrid vertical={false} stroke="#334155" strokeDasharray="3 3" />
+                       <XAxis
+                         dataKey="month"
+                         tickLine={false}
+                         tickMargin={10}
+                         axisLine={false}
+                         stroke="#64748b"
+                         fontSize={12}
+                       />
+                       <YAxis
+                         tickLine={false}
+                         tickMargin={10}
+                         axisLine={false}
+                         stroke="#64748b"
+                         fontSize={12}
+                         tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                       />
+                       <Tooltip 
+                         formatter={(value) => formatCurrency(Number(value))}
+                         contentStyle={{
+                           backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                           border: '1px solid #334155',
+                           borderRadius: '8px',
+                           color: 'white'
+                         }}
+                       />
+                       <Line 
+                         type="monotone" 
+                         dataKey="value" 
+                         stroke="#64748b" 
+                         strokeWidth={3}
+                         dot={{ fill: '#64748b', strokeWidth: 2, r: 4 }}
+                         activeDot={{ r: 6, stroke: '#64748b', strokeWidth: 2 }}
+                       />
+                     </LineChart>
+                   </ResponsiveContainer>
+                 </div>
               </div>
             </CardContent>
           </Card>
