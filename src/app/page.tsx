@@ -1367,7 +1367,7 @@ export default function Home() {
                             variant="outline"
                             size="sm"
                             onClick={() => editToken(token)}
-                            className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                            className="border-blue-300 text-blue-700 hover:bg-blue-50 dark:border-blue-400 dark:text-blue-300 dark:hover:bg-blue-900/20 dark:hover:text-blue-200"
                           >
                             Editar
                           </Button>
@@ -1601,7 +1601,7 @@ export default function Home() {
                                      variant="outline"
                                      size="sm"
                                      onClick={() => editRecord(record)}
-                                     className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                                     className="border-blue-300 text-blue-700 hover:bg-blue-50 dark:border-blue-400 dark:text-blue-300 dark:hover:bg-blue-900/20 dark:hover:text-blue-200"
                                    >
                                      Editar
                                    </Button>
@@ -1961,7 +1961,7 @@ export default function Home() {
                                       variant="outline"
                                       size="sm"
                                       onClick={() => editOperation(operation)}
-                                      className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                                      className="border-blue-300 text-blue-700 hover:bg-blue-50 dark:border-blue-400 dark:text-blue-300 dark:hover:bg-blue-900/20 dark:hover:text-blue-200"
                                     >
                                       Editar
                                     </Button>
