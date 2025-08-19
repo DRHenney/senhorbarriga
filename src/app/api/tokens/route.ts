@@ -85,9 +85,9 @@ export async function POST(request: Request) {
       userId: user.id,
       name,
       symbol: symbol.toUpperCase(),
-      amount: amount.toString(),
-      price: price.toString(),
-      value: (parseFloat(amount) * parseFloat(price)).toString(),
+      amount: parseFloat(amount).toFixed(2),
+      price: parseFloat(price).toFixed(2),
+      value: (parseFloat(amount) * parseFloat(price)).toFixed(2),
     }).returning();
 
     return NextResponse.json({ 
@@ -97,6 +97,66 @@ export async function POST(request: Request) {
     }, { status: 201 });
   } catch (error) {
     console.error('Erro ao criar token:', error);
+    return NextResponse.json({ 
+      success: false, 
+      message: 'Erro interno do servidor',
+      error: error instanceof Error ? error.message : 'Erro desconhecido'
+    }, { status: 500 });
+  }
+}
+
+// PUT - Atualizar token existente
+export async function PUT(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.email) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Usuário não autenticado' 
+      }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { id, amount, price, value } = body;
+
+    if (!id || amount === undefined || price === undefined || value === undefined) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Todos os campos são obrigatórios' 
+      }, { status: 400 });
+    }
+
+    // Buscar usuário pelo email
+    const user = await db.query.users.findFirst({
+      where: (users, { eq }) => eq(users.email, session.user!.email!),
+    });
+
+    if (!user) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Usuário não encontrado' 
+      }, { status: 404 });
+    }
+
+    // Atualizar token no banco
+    const updatedToken = await db.update(userTokens)
+      .set({
+        amount: parseFloat(amount).toFixed(2),
+        price: parseFloat(price).toFixed(2),
+        value: parseFloat(value).toFixed(2),
+        updatedAt: new Date(),
+      })
+      .where(eq(userTokens.id, id))
+      .returning();
+
+    return NextResponse.json({ 
+      success: true, 
+      token: updatedToken[0],
+      message: 'Token atualizado com sucesso!' 
+    });
+  } catch (error) {
+    console.error('Erro ao atualizar token:', error);
     return NextResponse.json({ 
       success: false, 
       message: 'Erro interno do servidor',

@@ -142,11 +142,21 @@ export default function Home() {
     let updatedToken;
     if (editForm.action === "add") {
       // Adicionar tokens
-      const newAmount = currentToken.amount + editAmount;
+      const newAmount = Number((currentToken.amount + editAmount).toFixed(2));
+      const newValue = Number((newAmount * currentToken.price).toFixed(2));
+      
+      console.log('Debug - Adicionando tokens:', {
+        currentAmount: currentToken.amount,
+        editAmount: editAmount,
+        newAmount: newAmount,
+        currentPrice: currentToken.price,
+        newValue: newValue
+      });
+      
       updatedToken = {
         ...currentToken,
         amount: newAmount,
-        value: newAmount * currentToken.price,
+        value: newValue,
       };
     } else {
       // Remover tokens
@@ -154,17 +164,43 @@ export default function Home() {
         alert("Não é possível remover mais tokens do que você possui!");
         return;
       }
-      const newAmount = currentToken.amount - editAmount;
+      const newAmount = Number((currentToken.amount - editAmount).toFixed(2));
+      const newValue = Number((newAmount * currentToken.price).toFixed(2));
       updatedToken = {
         ...currentToken,
         amount: newAmount,
-        value: newAmount * currentToken.price,
+        value: newValue,
       };
     }
 
-    setTokens(tokens.map(t => t.id === editingToken.id ? updatedToken : t));
-    setEditingToken(null);
-    setEditForm({ action: "add", amount: "" });
+    // Atualizar no banco de dados
+    try {
+      const response = await fetch('/api/tokens', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: editingToken.id,
+          amount: updatedToken.amount,
+          price: updatedToken.price,
+          value: updatedToken.value,
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setTokens(tokens.map(t => t.id === editingToken.id ? updatedToken : t));
+        setEditingToken(null);
+        setEditForm({ action: "add", amount: "" });
+      } else {
+        alert('Erro ao atualizar token: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar token:', error);
+      alert('Erro ao atualizar token');
+    }
   };
 
   const formatCurrency = (value: number) => {
@@ -198,7 +234,53 @@ export default function Home() {
       const data = await response.json();
       
       if (data.success) {
-        setTokens(data.tokens);
+        // Converter os valores string para number e corrigir casas decimais
+        const processedTokens = data.tokens.map((token: any) => {
+          const amount = parseFloat(token.amount);
+          const price = parseFloat(token.price);
+          const value = parseFloat(token.value);
+          
+          // Verificar se precisa corrigir as casas decimais
+          const needsCorrection = 
+            amount.toString().includes('.') && amount.toString().split('.')[1]?.length > 2 ||
+            price.toString().includes('.') && price.toString().split('.')[1]?.length > 2 ||
+            value.toString().includes('.') && value.toString().split('.')[1]?.length > 2;
+          
+          if (needsCorrection) {
+            // Corrigir automaticamente no banco
+            const correctedToken = {
+              ...token,
+              amount: Number(amount.toFixed(2)),
+              price: Number(price.toFixed(2)),
+              value: Number(value.toFixed(2))
+            };
+            
+            // Atualizar no banco de dados
+            fetch('/api/tokens', {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                id: token.id,
+                amount: correctedToken.amount,
+                price: correctedToken.price,
+                value: correctedToken.value,
+              }),
+            }).catch(error => console.error('Erro ao corrigir token:', error));
+            
+            return correctedToken;
+          }
+          
+          return {
+            ...token,
+            amount: Number(amount.toFixed(2)),
+            price: Number(price.toFixed(2)),
+            value: Number(value.toFixed(2))
+          };
+        });
+        
+        setTokens(processedTokens);
       } else {
         console.error('Erro ao carregar tokens:', data.message);
       }
@@ -226,9 +308,9 @@ export default function Home() {
 
         const tokenData = {
           ...newToken,
-          amount,
-          price,
-          value: amount * price,
+          amount: Number(amount.toFixed(2)),
+          price: Number(price.toFixed(2)),
+          value: Number((amount * price).toFixed(2)),
         };
 
         const response = await fetch('/api/tokens', {
@@ -496,10 +578,10 @@ export default function Home() {
                           <h3 className="font-semibold text-slate-900">{token.name}</h3>
                           <p className="text-sm text-slate-600">{token.symbol}</p>
                         </div>
-                        <div className="text-right">
-                          <p className="text-sm text-slate-600">Quantidade atual: {token.amount} {token.symbol}</p>
-                          <p className="text-sm text-slate-500">Preço: ${token.price.toLocaleString()}</p>
-                        </div>
+                                                 <div className="text-right">
+                           <p className="text-sm text-slate-600">Quantidade atual: {token.amount.toFixed(2)} {token.symbol}</p>
+                           <p className="text-sm text-slate-500">Preço: ${token.price.toFixed(2)}</p>
+                         </div>
                       </div>
                       
                       <div className="flex items-center space-x-4">
@@ -567,8 +649,8 @@ export default function Home() {
                       </div>
                       <div className="flex items-center space-x-6">
                         <div className="text-right">
-                          <p className="text-sm text-slate-600">{token.amount} {token.symbol}</p>
-                          <p className="text-sm text-slate-500">${token.price.toLocaleString()}</p>
+                          <p className="text-sm text-slate-600">{token.amount.toFixed(2)} {token.symbol}</p>
+                          <p className="text-sm text-slate-500">${token.price.toFixed(2)}</p>
                         </div>
                         <div className="text-right">
                           <p className="font-semibold text-slate-900">{formatCurrency(token.value)}</p>
