@@ -261,15 +261,7 @@ export default function Home() {
       const newPrice = Number(averagePrice.toFixed(2));
       const finalValue = Number((newAmount * newPrice).toFixed(2));
       
-      console.log('Debug - Adicionando tokens com preço médio:', {
-        currentAmount: currentToken.amount,
-        currentPrice: currentToken.price,
-        editAmount: editAmount,
-        editPrice: editPrice,
-        newAmount: newAmount,
-        newPrice: newPrice,
-        finalValue: finalValue
-      });
+      // Debug removido para produção
       
       updatedToken = {
         ...currentToken,
@@ -317,7 +309,6 @@ export default function Home() {
         alert('Erro ao atualizar token: ' + data.message);
       }
     } catch (error) {
-      console.error('Erro ao atualizar token:', error);
       alert('Erro ao atualizar token');
     }
   };
@@ -395,7 +386,9 @@ export default function Home() {
                 price: correctedToken.price,
                 value: correctedToken.value,
               }),
-            }).catch(error => console.error('Erro ao corrigir token:', error));
+            }).catch(error => {
+      // Erro silencioso para produção
+    });
             
             return correctedToken;
           }
@@ -410,10 +403,10 @@ export default function Home() {
         
         setTokens(processedTokens);
       } else {
-        console.error('Erro ao carregar tokens:', data.message);
+        // Erro silencioso para produção
       }
     } catch (error) {
-      console.error('Erro ao carregar tokens:', error);
+      // Erro silencioso para produção
     }
   };
 
@@ -432,10 +425,10 @@ export default function Home() {
       if (data.success) {
         setRecords(data.records);
       } else {
-        console.error('Erro ao carregar registros:', data.message);
+        // Erro silencioso para produção
       }
     } catch (error) {
-      console.error('Erro ao carregar registros:', error);
+      // Erro silencioso para produção
     }
   };
 
@@ -466,7 +459,6 @@ export default function Home() {
           alert('Erro ao adicionar registro: ' + data.message);
         }
       } catch (error) {
-        console.error('Erro ao adicionar registro:', error);
         alert('Erro ao adicionar registro');
       }
     }
@@ -506,7 +498,6 @@ export default function Home() {
         alert('Erro ao atualizar registro: ' + data.message);
       }
     } catch (error) {
-      console.error('Erro ao atualizar registro:', error);
       alert('Erro ao atualizar registro');
     }
   };
@@ -528,7 +519,6 @@ export default function Home() {
           alert('Erro ao remover registro: ' + data.message);
         }
       } catch (error) {
-        console.error('Erro ao remover registro:', error);
         alert('Erro ao remover registro');
       }
     }
@@ -571,7 +561,6 @@ export default function Home() {
           alert('Erro ao adicionar token: ' + data.message);
         }
       } catch (error) {
-        console.error('Erro ao adicionar token:', error);
         alert('Erro ao adicionar token');
       }
     }

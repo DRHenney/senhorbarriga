@@ -1,0 +1,10 @@
+[33mb73ee63[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m fix: corrigir erro de deploy e implementar dados dinâmicos completos - converter todos os gráficos para usar dados reais dos registros - implementar cálculo dinâmico para gráfico de pizza e dados mensais - remover dados fictícios e usar apenas dados reais
+[33m5f89e41[m feat: conectar dados reais dos registros com o gráfico de evolução semanal - implementar cálculo dinâmico baseado nos registros criados - agrupar registros por semana e mostrar últimas 5 semanas - atualizar estatísticas e descrições dinamicamente
+[33mdc79317[m feat: adicionar funcionalidades de edição e exclusão na aba registros - implementar modo de edição inline com formulário completo - adicionar botões de editar e deletar para cada registro
+[33mcc822a7[m refactor: simplificar exibição na aba registros - remover semana/ano e mostrar apenas a data
+[33m03f88eb[m refactor: remover seção duplicada de registros semanais - integrar funcionalidade na aba registros da evolução semanal
+[33maab14a8[m feat: adicionar aba de registros na evolução semanal - implementar sistema de abas similar ao da distribuição atual
+[33m6f3ba63[m fix: forçar novo deploy
+[33m1d4b663[m feat: implementar sistema de registros semanais - adicionar tabela weekly_records, API completa e interface de gerenciamento
+[33m52310f9[m feat: implementar sistema de preço médio para tokens - calcular preço médio ponderado ao adicionar tokens
+[33me94bab1[m fix: corrigir erro de async/await na função applyEdit
