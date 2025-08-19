@@ -692,46 +692,15 @@ export default function Home() {
 
     console.log('🔄 Aplicando edição de registro:', editingRecord);
 
-    // Validar campos obrigatórios
+    // Validação básica
     if (!editingRecord.poolLiquidity || !editingRecord.gridBot || !editingRecord.recordDate) {
-      console.log('❌ Campos obrigatórios faltando:', {
-        poolLiquidity: !!editingRecord.poolLiquidity,
-        gridBot: !!editingRecord.gridBot,
-        recordDate: !!editingRecord.recordDate
-      });
       toast({
         title: "⚠️ Aviso",
-        description: "Por favor, preencha todos os campos obrigatórios (Pool de Liquidez, Grid Bot e Data).",
+        description: "Por favor, preencha todos os campos obrigatórios.",
         variant: "destructive",
       });
       return;
     }
-
-    // Validar se os valores são números válidos
-    const poolValue = parseFloat(editingRecord.poolLiquidity);
-    const gridValue = parseFloat(editingRecord.gridBot);
-    
-    console.log('💰 Valores convertidos:', { poolValue, gridValue });
-    
-    if (isNaN(poolValue) || isNaN(gridValue) || poolValue < 0 || gridValue < 0) {
-      console.log('❌ Valores inválidos:', { poolValue, gridValue });
-      toast({
-        title: "⚠️ Aviso",
-        description: "Por favor, insira valores válidos para Pool de Liquidez e Grid Bot.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const requestBody = {
-      id: editingRecord.id,
-      poolLiquidity: poolValue,
-      gridBot: gridValue,
-      recordDate: editingRecord.recordDate,
-      notes: editingRecord.notes || "",
-    };
-
-    console.log('📤 Enviando dados para API:', requestBody);
 
     try {
       const response = await fetch('/api/records', {
@@ -739,13 +708,16 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(requestBody),
+        body: JSON.stringify({
+          id: editingRecord.id,
+          poolLiquidity: editingRecord.poolLiquidity,
+          gridBot: editingRecord.gridBot,
+          recordDate: editingRecord.recordDate,
+          notes: editingRecord.notes || "",
+        }),
       });
       
-      console.log('📥 Resposta da API:', response.status);
-      
       const data = await response.json();
-      console.log('📋 Dados da resposta:', data);
       
       if (data.success) {
         setRecords(records.map(r => r.id === editingRecord.id ? data.record : r));
