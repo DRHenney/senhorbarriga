@@ -158,3 +158,69 @@ export async function PUT(request: Request) {
     }, { status: 500 });
   }
 }
+
+// DELETE - Remover token
+export async function DELETE(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.email) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Usuário não autenticado' 
+      }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'ID do token é obrigatório' 
+      }, { status: 400 });
+    }
+
+    // Buscar usuário pelo email
+    const user = await db.query.users.findFirst({
+      where: (users, { eq }) => eq(users.email, session.user!.email!),
+    });
+
+    if (!user) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Usuário não encontrado' 
+      }, { status: 404 });
+    }
+
+    // Verificar se o token pertence ao usuário
+    const token = await db.select().from(userTokens).where(eq(userTokens.id, parseInt(id))).limit(1);
+    
+    if (token.length === 0) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Token não encontrado' 
+      }, { status: 404 });
+    }
+
+    if (token[0].userId !== user.id) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Token não pertence ao usuário' 
+      }, { status: 403 });
+    }
+
+    // Remover token do banco
+    await db.delete(userTokens).where(eq(userTokens.id, parseInt(id)));
+
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Token removido com sucesso!' 
+    });
+  } catch (error) {
+    return NextResponse.json({ 
+      success: false, 
+      message: 'Erro interno do servidor'
+    }, { status: 500 });
+  }
+}

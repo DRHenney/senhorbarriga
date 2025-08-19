@@ -807,8 +807,38 @@ export default function Home() {
   };
 
   // Remover token
-  const removeToken = (id: number) => {
-    setTokens(tokens.filter(token => token.id !== id));
+  const removeToken = async (id: number) => {
+    if (confirm('Tem certeza que deseja remover este token?')) {
+      try {
+        const response = await fetch(`/api/tokens?id=${id}`, {
+          method: 'DELETE',
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          setTokens(tokens.filter(token => token.id !== id));
+          toast({
+            title: "✅ Sucesso!",
+            description: "Token removido com sucesso!",
+            variant: "default",
+            className: "bg-green-50 border-green-200 text-green-800",
+          });
+        } else {
+          toast({
+            title: "❌ Erro",
+            description: `Erro ao remover token: ${data.message}`,
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        toast({
+          title: "❌ Erro",
+          description: "Erro ao remover token",
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   // Funções para operações ativas
