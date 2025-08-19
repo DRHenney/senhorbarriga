@@ -476,9 +476,12 @@ export default function Home() {
   const portfolioEvolutionData = getPortfolioEvolutionData(records, tokens);
   
   // Calcular crescimento percentual
-  const portfolioGrowth = portfolioEvolutionData.length > 1 
-    ? ((portfolioEvolutionData[portfolioEvolutionData.length - 1].value - portfolioEvolutionData[0].value) / portfolioEvolutionData[0].value * 100).toFixed(1)
-    : "0.0";
+  let portfolioGrowth = "0.0";
+  if (portfolioEvolutionData.length > 1) {
+    const firstValue = (portfolioEvolutionData[0] as any).value;
+    const lastValue = (portfolioEvolutionData[portfolioEvolutionData.length - 1] as any).value;
+    portfolioGrowth = (((lastValue - firstValue) / firstValue) * 100).toFixed(1);
+  }
 
   // Carregar tokens do banco
   const loadTokens = async () => {
@@ -850,12 +853,12 @@ export default function Home() {
                   <div className="text-3xl font-bold text-white mb-2">{formatCurrency(totalPortfolioValue)}</div>
                                      <div className="flex items-center space-x-2">
                      <TrendingUp className="h-4 w-4 text-slate-300" />
-                     <span className="text-slate-300 text-sm font-medium">
-                       {portfolioEvolutionData.length > 1 
-                         ? `+${portfolioGrowth}% desde ${portfolioEvolutionData[0].month}`
-                         : 'Evolução desde janeiro/25'
-                       }
-                     </span>
+                                           <span className="text-slate-300 text-sm font-medium">
+                        {portfolioEvolutionData.length > 1 
+                          ? `+${portfolioGrowth}% desde ${(portfolioEvolutionData[0] as any).month}`
+                          : 'Evolução desde janeiro/25'
+                        }
+                      </span>
                    </div>
                 </div>
                 
