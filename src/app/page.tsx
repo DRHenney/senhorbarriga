@@ -97,9 +97,75 @@ export default function Home() {
     price: "",
   });
 
+  // Estado para edição de tokens
+  const [editingToken, setEditingToken] = useState<{
+    id: number;
+    name: string;
+    symbol: string;
+    amount: number;
+    price: number;
+  } | null>(null);
+
+  const [editForm, setEditForm] = useState({
+    action: "add" as "add" | "remove",
+    amount: "",
+  });
+
   // Verificar se todos os campos estão preenchidos
   const isFormComplete = newToken.name && newToken.symbol && newToken.amount && newToken.price;
 
+  // Função para iniciar edição de token
+  const editToken = (token: any) => {
+    setEditingToken(token);
+    setEditForm({ action: "add", amount: "" });
+  };
+
+  // Função para cancelar edição
+  const cancelEdit = () => {
+    setEditingToken(null);
+    setEditForm({ action: "add", amount: "" });
+  };
+
+  // Função para aplicar edição
+  const applyEdit = () => {
+    if (!editingToken || !editForm.amount) return;
+
+    const editAmount = parseFloat(editForm.amount);
+    if (isNaN(editAmount) || editAmount <= 0) {
+      alert("Por favor, insira uma quantidade válida.");
+      return;
+    }
+
+    const currentToken = tokens.find(t => t.id === editingToken.id);
+    if (!currentToken) return;
+
+    let updatedToken;
+    if (editForm.action === "add") {
+      // Adicionar tokens
+      const newAmount = currentToken.amount + editAmount;
+      updatedToken = {
+        ...currentToken,
+        amount: newAmount,
+        value: newAmount * currentToken.price,
+      };
+    } else {
+      // Remover tokens
+      if (editAmount > currentToken.amount) {
+        alert("Não é possível remover mais tokens do que você possui!");
+        return;
+      }
+      const newAmount = currentToken.amount - editAmount;
+      updatedToken = {
+        ...currentToken,
+        amount: newAmount,
+        value: newAmount * currentToken.price,
+      };
+    }
+
+    setTokens(tokens.map(t => t.id === editingToken.id ? updatedToken : t));
+    setEditingToken(null);
+    setEditForm({ action: "add", amount: "" });
+  };
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -399,34 +465,117 @@ export default function Home() {
             {/* Lista de tokens */}
             <div className="space-y-3">
               {tokens.map((token) => (
-                <div key={token.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 bg-gradient-to-r from-slate-500 to-slate-600 rounded-full flex items-center justify-center text-white font-bold">
-                      {token.symbol.charAt(0)}
+                <div key={token.id} className="p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                  {editingToken?.id === token.id ? (
+                    // Modo de edição
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-10 h-10 bg-gradient-to-r from-slate-500 to-slate-600 rounded-full flex items-center justify-center text-white font-bold">
+                          {token.symbol.charAt(0)}
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-slate-900">{token.name}</h3>
+                          <p className="text-sm text-slate-600">{token.symbol}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm text-slate-600">Quantidade atual: {token.amount} {token.symbol}</p>
+                          <p className="text-sm text-slate-500">Preço: ${token.price.toLocaleString()}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center space-x-4">
+                        <div className="flex space-x-2">
+                          <Button
+                            variant={editForm.action === "add" ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setEditForm({ ...editForm, action: "add" })}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            Adicionar
+                          </Button>
+                          <Button
+                            variant={editForm.action === "remove" ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setEditForm({ ...editForm, action: "remove" })}
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                          >
+                            Remover
+                          </Button>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-slate-700">
+                            {editForm.action === "add" ? "Quantidade a adicionar" : "Quantidade a remover"}
+                          </label>
+                          <Input
+                            type="number"
+                            placeholder="0.00"
+                            value={editForm.amount}
+                            onChange={(e) => setEditForm({ ...editForm, amount: e.target.value })}
+                            className="h-10 text-base border-2 border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-600 text-slate-900 font-medium"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-end space-x-2">
+                        <Button
+                          variant="outline"
+                          onClick={cancelEdit}
+                          className="border-slate-300 text-slate-700 hover:bg-slate-50"
+                        >
+                          Cancelar
+                        </Button>
+                        <Button
+                          onClick={applyEdit}
+                          disabled={!editForm.amount}
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          {editForm.action === "add" ? "Adicionar" : "Remover"}
+                        </Button>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-slate-900">{token.name}</h3>
-                      <p className="text-sm text-slate-600">{token.symbol}</p>
+                  ) : (
+                    // Modo de visualização
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-10 h-10 bg-gradient-to-r from-slate-500 to-slate-600 rounded-full flex items-center justify-center text-white font-bold">
+                          {token.symbol.charAt(0)}
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-slate-900">{token.name}</h3>
+                          <p className="text-sm text-slate-600">{token.symbol}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-6">
+                        <div className="text-right">
+                          <p className="text-sm text-slate-600">{token.amount} {token.symbol}</p>
+                          <p className="text-sm text-slate-500">${token.price.toLocaleString()}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-slate-900">{formatCurrency(token.value)}</p>
+                          <p className="text-sm text-slate-500">{portfolioTotal > 0 ? ((token.value / portfolioTotal) * 100).toFixed(1) : '0.0'}% do portfólio</p>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => editToken(token)}
+                            className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                          >
+                            Editar
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeToken(token.id)}
+                            className="text-slate-500 hover:text-red-600 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center space-x-6">
-                    <div className="text-right">
-                      <p className="text-sm text-slate-600">{token.amount} {token.symbol}</p>
-                      <p className="text-sm text-slate-500">${token.price.toLocaleString()}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-slate-900">{formatCurrency(token.value)}</p>
-                      <p className="text-sm text-slate-500">{((token.value / portfolioTotal) * 100).toFixed(1)}% do portfólio</p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeToken(token.id)}
-                      className="text-slate-500 hover:text-slate-700 hover:bg-slate-100"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  )}
                 </div>
               ))}
             </div>
