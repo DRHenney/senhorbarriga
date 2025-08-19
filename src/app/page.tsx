@@ -677,11 +677,12 @@ export default function Home() {
 
   // Editar registro
   const editRecord = (record: any) => {
+    console.log('✏️ Editando registro:', record);
     setEditingRecord({
       id: record.id,
-      poolLiquidity: record.poolLiquidity,
-      gridBot: record.gridBot,
-      recordDate: record.recordDate.split('T')[0],
+      poolLiquidity: record.poolLiquidity || 0,
+      gridBot: record.gridBot || 0,
+      recordDate: record.recordDate ? record.recordDate.split('T')[0] : new Date().toISOString().split('T')[0],
       notes: record.notes || "",
     });
   };
@@ -692,15 +693,27 @@ export default function Home() {
 
     console.log('🔄 Aplicando edição de registro:', editingRecord);
 
-    // Validação básica
-    if (!editingRecord.poolLiquidity || !editingRecord.gridBot || !editingRecord.recordDate) {
+    // Encontrar o registro original para usar valores padrão
+    const originalRecord = records.find(r => r.id === editingRecord.id);
+    if (!originalRecord) {
       toast({
-        title: "⚠️ Aviso",
-        description: "Por favor, preencha todos os campos obrigatórios.",
+        title: "❌ Erro",
+        description: "Registro original não encontrado",
         variant: "destructive",
       });
       return;
     }
+
+    // Usar valores editados ou manter os originais
+    const finalData = {
+      id: editingRecord.id,
+      poolLiquidity: editingRecord.poolLiquidity || originalRecord.poolLiquidity,
+      gridBot: editingRecord.gridBot || originalRecord.gridBot,
+      recordDate: editingRecord.recordDate || originalRecord.recordDate.split('T')[0],
+      notes: editingRecord.notes !== undefined ? editingRecord.notes : (originalRecord.notes || ""),
+    };
+
+    console.log('📤 Dados finais para envio:', finalData);
 
     try {
       const response = await fetch('/api/records', {
@@ -708,13 +721,7 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          id: editingRecord.id,
-          poolLiquidity: editingRecord.poolLiquidity,
-          gridBot: editingRecord.gridBot,
-          recordDate: editingRecord.recordDate,
-          notes: editingRecord.notes || "",
-        }),
+        body: JSON.stringify(finalData),
       });
       
       const data = await response.json();
