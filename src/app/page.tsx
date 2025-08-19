@@ -256,6 +256,50 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
   return allMonths;
 };
 
+// Componente de Tooltip Customizado
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg shadow-lg p-4 min-w-[200px]">
+        <div className="mb-2">
+          <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+            {label}
+          </p>
+        </div>
+        <div className="space-y-2">
+          {payload.map((entry: any, index: number) => (
+            <div key={index} className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div 
+                  className="w-3 h-3 rounded-full" 
+                  style={{ backgroundColor: entry.color }}
+                />
+                <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                  {entry.name}
+                </span>
+              </div>
+              <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                {formatCurrency(entry.value)}
+              </span>
+            </div>
+          ))}
+          <div className="pt-2 border-t border-slate-200 dark:border-slate-600">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                Total
+              </span>
+              <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                {formatCurrency(payload.reduce((sum: number, entry: any) => sum + entry.value, 0))}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function Home() {
   const [newEntry, setNewEntry] = useState({
     poolLiquidity: "",
@@ -1099,15 +1143,7 @@ export default function Home() {
                          fontSize={12}
                          tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
                        />
-                       <Tooltip 
-                         formatter={(value) => formatCurrency(Number(value))}
-                         contentStyle={{
-                           backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                           border: '1px solid #334155',
-                           borderRadius: '8px',
-                           color: 'white'
-                         }}
-                       />
+                       <Tooltip content={<CustomTooltip />} />
                        <Line 
                          type="monotone" 
                          dataKey="value" 
@@ -1541,18 +1577,7 @@ export default function Home() {
                        tick={{ fill: '#6b7280', fontSize: 12 }}
                        tickFormatter={(value) => `$${value.toLocaleString()}`}
                      />
-                     <Tooltip 
-                       formatter={(value) => formatCurrency(Number(value))}
-                       contentStyle={{
-                         backgroundColor: 'hsl(var(--card))',
-                         border: '1px solid hsl(var(--border))',
-                         borderRadius: '8px',
-                         color: 'hsl(var(--card-foreground))',
-                         boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
-                         fontSize: '14px',
-                         fontWeight: '500'
-                       }}
-                     />
+                     <Tooltip content={<CustomTooltip />} />
                      <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={4} name="Pool de Liquidez" />
                      <Bar dataKey="gridBot" fill="#6b7280" radius={4} name="Grid Bot" />
                    </BarChart>
@@ -2078,18 +2103,7 @@ export default function Home() {
                        tick={{ fill: '#6b7280', fontSize: 12 }}
                        tickFormatter={(value) => `$${value.toLocaleString()}`}
                      />
-                     <Tooltip 
-                       formatter={(value) => formatCurrency(Number(value))}
-                       contentStyle={{
-                         backgroundColor: 'hsl(var(--card))',
-                         border: '1px solid hsl(var(--border))',
-                         borderRadius: '8px',
-                         color: 'hsl(var(--card-foreground))',
-                         boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
-                         fontSize: '14px',
-                         fontWeight: '500'
-                       }}
-                     />
+                     <Tooltip content={<CustomTooltip />} />
                      <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={4} name="Pool de Liquidez" />
                      <Bar dataKey="gridBot" fill="#6b7280" radius={4} name="Grid Bot" />
                    </BarChart>
