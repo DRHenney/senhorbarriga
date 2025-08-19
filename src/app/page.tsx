@@ -191,10 +191,9 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
   // Converter para array e ordenar por data
   const sortedData = Object.values(monthlyData)
     .sort((a: any, b: any) => a.date - b.date)
-    .map((item: any, index: number, array: any[]) => ({
+    .map((item: any) => ({
       month: item.month,
-      // Adicionar tokens apenas ao último mês com dados reais
-      value: item.value + (index === array.length - 1 ? tokensTotal : 0),
+      value: item.value, // Não adicionar tokens aqui
       date: item.date
     }));
 
@@ -229,15 +228,19 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
     
     const finalData = Object.values(uniqueData).sort((a: any, b: any) => a.date - b.date);
     
-    // Adicionar tokens apenas ao último mês com dados reais
+    // Adicionar tokens apenas ao último mês com dados reais (se não for zero)
     if (finalData.length > 0) {
       const lastIndex = finalData.length - 1;
       const lastItem = finalData[lastIndex] as any;
-      finalData[lastIndex] = {
-        month: lastItem.month,
-        value: lastItem.value + tokensTotal,
-        date: lastItem.date
-      };
+      
+      // Só adicionar tokens se o valor do mês não for zero (ou seja, se há dados reais)
+      if (lastItem.value > 0) {
+        finalData[lastIndex] = {
+          month: lastItem.month,
+          value: lastItem.value + tokensTotal,
+          date: lastItem.date
+        };
+      }
     }
     
     return finalData;
