@@ -8,9 +8,13 @@ import { eq, desc } from 'drizzle-orm';
 // GET - Buscar registros do usuário
 export async function GET() {
   try {
+    console.log('🔍 GET /api/records - Iniciando busca de registros');
+    
     const session = await getServerSession(authOptions);
+    console.log('👤 Sessão encontrada:', !!session?.user?.email);
     
     if (!session?.user?.email) {
+      console.log('❌ Usuário não autenticado');
       return NextResponse.json({ 
         success: false, 
         message: 'Usuário não autenticado' 
@@ -18,24 +22,32 @@ export async function GET() {
     }
 
     const userEmail = session.user.email;
+    console.log('📧 Email do usuário:', userEmail);
 
     // Buscar usuário pelo email
     const user = await db.query.users.findFirst({
       where: (users, { eq }) => eq(users.email, userEmail),
     });
 
+    console.log('👤 Usuário encontrado:', !!user);
+
     if (!user) {
+      console.log('❌ Usuário não encontrado no banco');
       return NextResponse.json({ 
         success: false, 
         message: 'Usuário não encontrado' 
       }, { status: 404 });
     }
 
+    console.log('🆔 ID do usuário:', user.id);
+
     // Buscar registros do usuário ordenados por data (mais recente primeiro)
     const records = await db.query.weeklyRecords.findMany({
       where: (weeklyRecords, { eq }) => eq(weeklyRecords.userId, user.id),
       orderBy: (weeklyRecords, { desc }) => [desc(weeklyRecords.recordDate)],
     });
+
+    console.log('📊 Registros encontrados:', records.length);
 
     return NextResponse.json({
       success: true,
@@ -48,6 +60,7 @@ export async function GET() {
     });
 
   } catch (error) {
+    console.error('❌ Erro na API de registros:', error);
     return NextResponse.json({ 
       success: false, 
       message: 'Erro interno do servidor' 
@@ -58,9 +71,13 @@ export async function GET() {
 // POST - Criar novo registro
 export async function POST(request: NextRequest) {
   try {
+    console.log('➕ POST /api/records - Criando novo registro');
+    
     const session = await getServerSession(authOptions);
+    console.log('👤 Sessão encontrada:', !!session?.user?.email);
     
     if (!session?.user?.email) {
+      console.log('❌ Usuário não autenticado');
       return NextResponse.json({ 
         success: false, 
         message: 'Usuário não autenticado' 
@@ -68,11 +85,15 @@ export async function POST(request: NextRequest) {
     }
 
     const userEmail = session.user.email;
+    console.log('📧 Email do usuário:', userEmail);
 
     const body = await request.json();
     const { poolLiquidity, gridBot, recordDate, notes } = body;
+    
+    console.log('📝 Dados recebidos:', { poolLiquidity, gridBot, recordDate, notes });
 
     if (!poolLiquidity || !gridBot || !recordDate) {
+      console.log('❌ Dados obrigatórios faltando');
       return NextResponse.json({ 
         success: false, 
         message: 'Pool de liquidez, Grid Bot e data são obrigatórios' 
@@ -84,20 +105,28 @@ export async function POST(request: NextRequest) {
       where: (users, { eq }) => eq(users.email, userEmail),
     });
 
+    console.log('👤 Usuário encontrado:', !!user);
+
     if (!user) {
+      console.log('❌ Usuário não encontrado no banco');
       return NextResponse.json({ 
         success: false, 
         message: 'Usuário não encontrado' 
       }, { status: 404 });
     }
 
+    console.log('🆔 ID do usuário:', user.id);
+
     // Calcular total
     const total = parseFloat(poolLiquidity) + parseFloat(gridBot);
+    console.log('💰 Total calculado:', total);
 
     // Calcular semana e ano
     const date = new Date(recordDate);
     const year = date.getFullYear();
     const weekNumber = getWeekNumber(date);
+    
+    console.log('📅 Data processada:', { date, year, weekNumber });
 
     // Criar registro no banco
     const newRecord = await db.insert(weeklyRecords).values({
@@ -111,6 +140,8 @@ export async function POST(request: NextRequest) {
       notes: notes || null,
     }).returning();
 
+    console.log('✅ Registro criado com sucesso:', newRecord[0]);
+
     return NextResponse.json({
       success: true,
       record: {
@@ -122,6 +153,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
+    console.error('❌ Erro ao criar registro:', error);
     return NextResponse.json({ 
       success: false, 
       message: 'Erro interno do servidor' 
