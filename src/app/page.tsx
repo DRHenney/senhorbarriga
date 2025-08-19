@@ -967,6 +967,15 @@ export default function Home() {
     }
   };
 
+  // Função para obter cores baseadas no tema
+  const getChartColors = () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    return {
+      poolLiquidity: isDark ? '#3b82f6' : '#1e40af', // Azul mais profundo
+      gridBot: isDark ? '#64748b' : '#475569', // Cinza mais sofisticado
+    };
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       {/* Header com gradiente Slate */}
@@ -1439,36 +1448,52 @@ export default function Home() {
             <CardContent className="pt-6">
                              {evolutionTab === "weekly" ? (
                  <ResponsiveContainer width="100%" height={350}>
-                   <BarChart data={barChartData}>
-                     <CartesianGrid vertical={false} stroke="#e2e8f0" />
+                   <BarChart 
+                     data={barChartData}
+                     style={{
+                       background: 'linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%)',
+                       borderRadius: '12px',
+                       padding: '20px',
+                       border: '1px solid hsl(var(--border))',
+                       boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                     }}
+                   >
+                     <CartesianGrid 
+                       vertical={false} 
+                       stroke="hsl(var(--border))" 
+                       strokeDasharray="3 3"
+                       opacity={0.3}
+                     />
                      <XAxis
                        dataKey="week"
                        tickLine={false}
                        tickMargin={10}
                        axisLine={false}
-                       stroke="#64748b"
+                       stroke="hsl(var(--muted-foreground))"
+                       tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                      />
                      <YAxis
                        tickLine={false}
                        tickMargin={10}
                        axisLine={false}
-                       stroke="#64748b"
+                       stroke="hsl(var(--muted-foreground))"
+                       tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                        tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
                      />
                      <Tooltip 
                        formatter={(value) => formatCurrency(Number(value))}
                        contentStyle={{
-                         backgroundColor: 'rgba(15, 23, 42, 0.98)',
-                         border: '1px solid #334155',
+                         backgroundColor: 'hsl(var(--card))',
+                         border: '1px solid hsl(var(--border))',
                          borderRadius: '8px',
-                         color: 'white',
-                         boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.5)',
+                         color: 'hsl(var(--card-foreground))',
+                         boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
                          fontSize: '14px',
                          fontWeight: '500'
                        }}
                      />
-                     <Bar dataKey="poolLiquidity" fill="#60a5fa" radius={4} name="Pool de Liquidez" />
-                     <Bar dataKey="gridBot" fill="#34d399" radius={4} name="Grid Bot" />
+                     <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={4} name="Pool de Liquidez" />
+                     <Bar dataKey="gridBot" fill="#6b7280" radius={4} name="Grid Bot" />
                    </BarChart>
                  </ResponsiveContainer>
               ) : (
@@ -1960,36 +1985,52 @@ export default function Home() {
                 </div>
               ) : (
                                  <ResponsiveContainer width="100%" height={350}>
-                   <BarChart data={monthlyData}>
-                     <CartesianGrid vertical={false} stroke="#e2e8f0" />
+                   <BarChart 
+                     data={monthlyData}
+                     style={{
+                       background: 'linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%)',
+                       borderRadius: '12px',
+                       padding: '20px',
+                       border: '1px solid hsl(var(--border))',
+                       boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                     }}
+                   >
+                     <CartesianGrid 
+                       vertical={false} 
+                       stroke="hsl(var(--border))" 
+                       strokeDasharray="3 3"
+                       opacity={0.3}
+                     />
                      <XAxis
                        dataKey="name"
                        tickLine={false}
                        tickMargin={10}
                        axisLine={false}
-                       stroke="#64748b"
+                       stroke="hsl(var(--muted-foreground))"
+                       tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                      />
                      <YAxis
                        tickLine={false}
                        tickMargin={10}
                        axisLine={false}
-                       stroke="#64748b"
+                       stroke="hsl(var(--muted-foreground))"
+                       tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                        tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
                      />
                      <Tooltip 
                        formatter={(value) => formatCurrency(Number(value))}
                        contentStyle={{
-                         backgroundColor: 'rgba(15, 23, 42, 0.98)',
-                         border: '1px solid #334155',
+                         backgroundColor: 'hsl(var(--card))',
+                         border: '1px solid hsl(var(--border))',
                          borderRadius: '8px',
-                         color: 'white',
-                         boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.5)',
+                         color: 'hsl(var(--card-foreground))',
+                         boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
                          fontSize: '14px',
                          fontWeight: '500'
                        }}
                      />
-                     <Bar dataKey="poolLiquidity" fill="#60a5fa" radius={4} name="Pool de Liquidez" />
-                     <Bar dataKey="gridBot" fill="#34d399" radius={4} name="Grid Bot" />
+                     <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={4} name="Pool de Liquidez" />
+                     <Bar dataKey="gridBot" fill="#6b7280" radius={4} name="Grid Bot" />
                    </BarChart>
                  </ResponsiveContainer>
               )}
