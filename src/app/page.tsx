@@ -150,6 +150,9 @@ const initialTokens: Array<{
 
 // Função para calcular dados de evolução do portfólio baseados nos registros reais
 const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
+  // Calcular valor total dos tokens
+  const tokensTotal = tokens.reduce((sum, token) => sum + (token.value || 0), 0);
+
   // Se não há registros, usar dados de exemplo desde janeiro de 2025
   if (records.length === 0) {
     return [
@@ -160,12 +163,9 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
       { month: "Mai/25", value: 32500, date: new Date(2025, 4, 1) },
       { month: "Jun/25", value: 34100, date: new Date(2025, 5, 1) },
       { month: "Jul/25", value: 35800, date: new Date(2025, 6, 1) },
-      { month: "Ago/25", value: 37200, date: new Date(2025, 7, 1) },
+      { month: "Ago/25", value: 37200 + tokensTotal, date: new Date(2025, 7, 1) }, // Adicionar tokens apenas ao último mês
     ];
   }
-
-  // Calcular valor total dos tokens
-  const tokensTotal = tokens.reduce((sum, token) => sum + (token.value || 0), 0);
 
   // Agrupar registros por mês
   const monthlyData = records.reduce((acc: any, record) => {
@@ -191,9 +191,10 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
   // Converter para array e ordenar por data
   const sortedData = Object.values(monthlyData)
     .sort((a: any, b: any) => a.date - b.date)
-    .map((item: any) => ({
+    .map((item: any, index: number, array: any[]) => ({
       month: item.month,
-      value: item.value + tokensTotal, // Incluir tokens no total
+      // Adicionar tokens apenas ao último mês com dados reais
+      value: item.value + (index === array.length - 1 ? tokensTotal : 0),
       date: item.date
     }));
 
@@ -217,16 +218,29 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
     // Combinar com dados existentes
     const combinedData = [...months, ...sortedData];
     
-    // Remover duplicatas e ordenar
+    // Remover duplicatas e ordenar, priorizando dados reais
     const uniqueData = combinedData.reduce((acc: any, item) => {
       const key = `${item.date.getFullYear()}-${item.date.getMonth()}`;
-      if (!acc[key]) {
+      if (!acc[key] || item.value > acc[key].value) { // Priorizar dados reais
         acc[key] = item;
       }
       return acc;
     }, {});
     
-    return Object.values(uniqueData).sort((a: any, b: any) => a.date - b.date);
+    const finalData = Object.values(uniqueData).sort((a: any, b: any) => a.date - b.date);
+    
+    // Adicionar tokens apenas ao último mês com dados reais
+    if (finalData.length > 0) {
+      const lastIndex = finalData.length - 1;
+      const lastItem = finalData[lastIndex] as any;
+      finalData[lastIndex] = {
+        month: lastItem.month,
+        value: lastItem.value + tokensTotal,
+        date: lastItem.date
+      };
+    }
+    
+    return finalData;
   }
 
   return sortedData;
