@@ -164,9 +164,13 @@ export async function POST(request: NextRequest) {
 // PUT - Atualizar registro existente
 export async function PUT(request: NextRequest) {
   try {
+    console.log('🔄 PUT /api/records - Atualizando registro');
+    
     const session = await getServerSession(authOptions);
+    console.log('👤 Sessão encontrada:', !!session?.user?.email);
     
     if (!session?.user?.email) {
+      console.log('❌ Usuário não autenticado');
       return NextResponse.json({ 
         success: false, 
         message: 'Usuário não autenticado' 
@@ -174,11 +178,15 @@ export async function PUT(request: NextRequest) {
     }
 
     const userEmail = session.user.email;
+    console.log('📧 Email do usuário:', userEmail);
 
     const body = await request.json();
     const { id, poolLiquidity, gridBot, recordDate, notes } = body;
+    
+    console.log('📝 Dados recebidos:', { id, poolLiquidity, gridBot, recordDate, notes });
 
     if (!id || !poolLiquidity || !gridBot || !recordDate) {
+      console.log('❌ Campos obrigatórios faltando:', { id: !!id, poolLiquidity: !!poolLiquidity, gridBot: !!gridBot, recordDate: !!recordDate });
       return NextResponse.json({ 
         success: false, 
         message: 'ID, Pool de liquidez, Grid Bot e data são obrigatórios' 
@@ -190,12 +198,17 @@ export async function PUT(request: NextRequest) {
       where: (users, { eq }) => eq(users.email, userEmail),
     });
 
+    console.log('👤 Usuário encontrado:', !!user);
+
     if (!user) {
+      console.log('❌ Usuário não encontrado no banco');
       return NextResponse.json({ 
         success: false, 
         message: 'Usuário não encontrado' 
       }, { status: 404 });
     }
+
+    console.log('🆔 ID do usuário:', user.id);
 
     // Verificar se o registro pertence ao usuário
     const existingRecord = await db.query.weeklyRecords.findFirst({
@@ -203,7 +216,10 @@ export async function PUT(request: NextRequest) {
         and(eq(weeklyRecords.id, id), eq(weeklyRecords.userId, user.id)),
     });
 
+    console.log('📋 Registro existente encontrado:', !!existingRecord);
+
     if (!existingRecord) {
+      console.log('❌ Registro não encontrado para o usuário');
       return NextResponse.json({ 
         success: false, 
         message: 'Registro não encontrado' 
@@ -212,11 +228,14 @@ export async function PUT(request: NextRequest) {
 
     // Calcular total
     const total = parseFloat(poolLiquidity) + parseFloat(gridBot);
+    console.log('💰 Total calculado:', total);
 
     // Calcular semana e ano
     const date = new Date(recordDate);
     const year = date.getFullYear();
     const weekNumber = getWeekNumber(date);
+    
+    console.log('📅 Data processada:', { date, year, weekNumber });
 
     // Atualizar registro no banco
     const updatedRecord = await db.update(weeklyRecords)
@@ -233,6 +252,8 @@ export async function PUT(request: NextRequest) {
       .where(eq(weeklyRecords.id, id))
       .returning();
 
+    console.log('✅ Registro atualizado com sucesso:', updatedRecord[0]);
+
     return NextResponse.json({
       success: true,
       record: {
@@ -244,6 +265,7 @@ export async function PUT(request: NextRequest) {
     });
 
   } catch (error) {
+    console.error('❌ Erro ao atualizar registro:', error);
     return NextResponse.json({ 
       success: false, 
       message: 'Erro interno do servidor' 

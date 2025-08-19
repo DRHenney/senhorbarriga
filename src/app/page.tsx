@@ -690,8 +690,15 @@ export default function Home() {
   const applyRecordEdit = async () => {
     if (!editingRecord) return;
 
+    console.log('🔄 Aplicando edição de registro:', editingRecord);
+
     // Validar campos obrigatórios
     if (!editingRecord.poolLiquidity || !editingRecord.gridBot || !editingRecord.recordDate) {
+      console.log('❌ Campos obrigatórios faltando:', {
+        poolLiquidity: !!editingRecord.poolLiquidity,
+        gridBot: !!editingRecord.gridBot,
+        recordDate: !!editingRecord.recordDate
+      });
       toast({
         title: "⚠️ Aviso",
         description: "Por favor, preencha todos os campos obrigatórios (Pool de Liquidez, Grid Bot e Data).",
@@ -704,7 +711,10 @@ export default function Home() {
     const poolValue = parseFloat(editingRecord.poolLiquidity);
     const gridValue = parseFloat(editingRecord.gridBot);
     
+    console.log('💰 Valores convertidos:', { poolValue, gridValue });
+    
     if (isNaN(poolValue) || isNaN(gridValue) || poolValue < 0 || gridValue < 0) {
+      console.log('❌ Valores inválidos:', { poolValue, gridValue });
       toast({
         title: "⚠️ Aviso",
         description: "Por favor, insira valores válidos para Pool de Liquidez e Grid Bot.",
@@ -713,22 +723,29 @@ export default function Home() {
       return;
     }
 
+    const requestBody = {
+      id: editingRecord.id,
+      poolLiquidity: poolValue,
+      gridBot: gridValue,
+      recordDate: editingRecord.recordDate,
+      notes: editingRecord.notes || "",
+    };
+
+    console.log('📤 Enviando dados para API:', requestBody);
+
     try {
       const response = await fetch('/api/records', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          id: editingRecord.id,
-          poolLiquidity: poolValue,
-          gridBot: gridValue,
-          recordDate: editingRecord.recordDate,
-          notes: editingRecord.notes || "",
-        }),
+        body: JSON.stringify(requestBody),
       });
       
+      console.log('📥 Resposta da API:', response.status);
+      
       const data = await response.json();
+      console.log('📋 Dados da resposta:', data);
       
       if (data.success) {
         setRecords(records.map(r => r.id === editingRecord.id ? data.record : r));
@@ -747,6 +764,7 @@ export default function Home() {
         });
       }
     } catch (error) {
+      console.error('❌ Erro na requisição:', error);
       toast({
         title: "❌ Erro",
         description: "Erro ao atualizar registro",
