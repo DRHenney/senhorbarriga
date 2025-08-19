@@ -1467,8 +1467,8 @@ export default function Home() {
                          fontWeight: '500'
                        }}
                      />
-                     <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={4} name="Pool de Liquidez" />
-                     <Bar dataKey="gridBot" fill="#10b981" radius={4} name="Grid Bot" />
+                     <Bar dataKey="poolLiquidity" fill="#60a5fa" radius={4} name="Pool de Liquidez" />
+                     <Bar dataKey="gridBot" fill="#34d399" radius={4} name="Grid Bot" />
                    </BarChart>
                  </ResponsiveContainer>
               ) : (
@@ -1988,8 +1988,8 @@ export default function Home() {
                          fontWeight: '500'
                        }}
                      />
-                     <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={4} name="Pool de Liquidez" />
-                     <Bar dataKey="gridBot" fill="#10b981" radius={4} name="Grid Bot" />
+                     <Bar dataKey="poolLiquidity" fill="#60a5fa" radius={4} name="Pool de Liquidez" />
+                     <Bar dataKey="gridBot" fill="#34d399" radius={4} name="Grid Bot" />
                    </BarChart>
                  </ResponsiveContainer>
               )}
