@@ -20,14 +20,54 @@ const chartData = [
   { week: "Semana 5", poolLiquidity: 5800, gridBot: 1600, total: 7400 },
 ];
 
-// Dados para o gráfico de barras
-const barChartData = [
-  { week: "Semana 1", poolLiquidity: 5000, gridBot: 1200 },
-  { week: "Semana 2", poolLiquidity: 5200, gridBot: 1350 },
-  { week: "Semana 3", poolLiquidity: 5400, gridBot: 1400 },
-  { week: "Semana 4", poolLiquidity: 5600, gridBot: 1500 },
-  { week: "Semana 5", poolLiquidity: 5800, gridBot: 1600 },
-];
+// Dados para o gráfico de barras (serão calculados dinamicamente)
+const getBarChartData = (records: any[]) => {
+  if (records.length === 0) {
+    // Dados padrão quando não há registros
+    return [
+      { week: "Semana 1", poolLiquidity: 5000, gridBot: 1200 },
+      { week: "Semana 2", poolLiquidity: 5200, gridBot: 1350 },
+      { week: "Semana 3", poolLiquidity: 5400, gridBot: 1400 },
+      { week: "Semana 4", poolLiquidity: 5600, gridBot: 1500 },
+      { week: "Semana 5", poolLiquidity: 5800, gridBot: 1600 },
+    ];
+  }
+
+  // Agrupar registros por semana
+  const weeklyData = records.reduce((acc: any, record) => {
+    const date = new Date(record.recordDate);
+    const weekKey = `${date.getFullYear()}-W${record.weekNumber}`;
+    
+    if (!acc[weekKey]) {
+      acc[weekKey] = {
+        week: `Semana ${record.weekNumber}`,
+        poolLiquidity: 0,
+        gridBot: 0,
+        total: 0,
+        date: date
+      };
+    }
+    
+    acc[weekKey].poolLiquidity += record.poolLiquidity;
+    acc[weekKey].gridBot += record.gridBot;
+    acc[weekKey].total += record.total;
+    
+    return acc;
+  }, {});
+
+  // Converter para array e ordenar por data
+  const sortedData = Object.values(weeklyData)
+    .sort((a: any, b: any) => a.date - b.date)
+    .slice(-5) // Pegar apenas as últimas 5 semanas
+    .map((item: any) => ({
+      week: item.week,
+      poolLiquidity: item.poolLiquidity,
+      gridBot: item.gridBot,
+      total: item.total
+    }));
+
+  return sortedData;
+};
 
 const pieData = [
   { name: "Pool Liquidez", value: 5800, color: "#475569" },
@@ -253,9 +293,11 @@ export default function Home() {
     }).format(value);
   };
 
-  const totalValue = chartData[chartData.length - 1]?.total || 0;
-  const poolLiquidity = chartData[chartData.length - 1]?.poolLiquidity || 0;
-  const gridBot = chartData[chartData.length - 1]?.gridBot || 0;
+  // Calcular dados dinâmicos baseados nos registros
+  const barChartData = getBarChartData(records);
+  const totalValue = barChartData.length > 0 ? barChartData[barChartData.length - 1]?.total || 0 : chartData[chartData.length - 1]?.total || 0;
+  const poolLiquidity = barChartData.length > 0 ? barChartData[barChartData.length - 1]?.poolLiquidity || 0 : chartData[chartData.length - 1]?.poolLiquidity || 0;
+  const gridBot = barChartData.length > 0 ? barChartData[barChartData.length - 1]?.gridBot || 0 : chartData[chartData.length - 1]?.gridBot || 0;
 
   // Calcular valor total do portfólio de tokens
   const portfolioTotal = tokens.reduce((sum, token) => {
@@ -1074,12 +1116,23 @@ export default function Home() {
             <CardFooter className="flex-col items-start gap-2 text-sm border-t border-slate-200">
               {evolutionTab === "weekly" ? (
                 <>
-                  <div className="flex gap-2 leading-none font-medium text-slate-700">
-                    Crescimento de {((barChartData[barChartData.length - 1].poolLiquidity + barChartData[barChartData.length - 1].gridBot - barChartData[0].poolLiquidity - barChartData[0].gridBot) / (barChartData[0].poolLiquidity + barChartData[0].gridBot) * 100).toFixed(1)}% no período <TrendingUp className="h-4 w-4" />
-                  </div>
-                  <div className="text-slate-600 leading-none">
-                    Mostrando evolução semanal dos investimentos nas últimas 5 semanas
-                  </div>
+                                     <div className="flex gap-2 leading-none font-medium text-slate-700">
+                     {barChartData.length > 1 ? (
+                       <>
+                         Crescimento de {((barChartData[barChartData.length - 1].poolLiquidity + barChartData[barChartData.length - 1].gridBot - barChartData[0].poolLiquidity - barChartData[0].gridBot) / (barChartData[0].poolLiquidity + barChartData[0].gridBot) * 100).toFixed(1)}% no período <TrendingUp className="h-4 w-4" />
+                       </>
+                     ) : (
+                       <>
+                         {records.length > 0 ? 'Dados baseados nos seus registros' : 'Dados de exemplo'} <TrendingUp className="h-4 w-4" />
+                       </>
+                     )}
+                   </div>
+                                     <div className="text-slate-600 leading-none">
+                     {records.length > 0 
+                       ? `Mostrando evolução baseada em ${records.length} registros (últimas ${barChartData.length} semanas)`
+                       : 'Mostrando evolução semanal dos investimentos nas últimas 5 semanas (dados de exemplo)'
+                     }
+                   </div>
                 </>
               ) : (
                 <>
