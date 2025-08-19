@@ -944,48 +944,131 @@ export default function Home() {
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="space-y-4">
-                  {records.length === 0 ? (
-                    <div className="text-center py-8">
-                      <Calendar className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                      <p className="text-slate-600">Nenhum registro encontrado</p>
-                      <p className="text-sm text-slate-500">Adicione registros semanais para ver o histórico</p>
-                    </div>
-                  ) : (
-                                         <div className="space-y-3 max-h-80 overflow-y-auto">
+                                 <div className="space-y-4">
+                   {records.length === 0 ? (
+                     <div className="text-center py-8">
+                       <Calendar className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                       <p className="text-slate-600">Nenhum registro encontrado</p>
+                       <p className="text-sm text-slate-500">Adicione registros semanais para ver o histórico</p>
+                     </div>
+                   ) : (
+                     <div className="space-y-3 max-h-80 overflow-y-auto">
                        {records.slice(0, 10).map((record) => (
                          <div key={record.id} className="p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
-                           <div className="flex items-center justify-between">
-                             <div className="flex items-center space-x-4">
-                               <div>
-                                 <p className="text-sm font-medium text-slate-700">
-                                   {new Date(record.recordDate).toLocaleDateString('pt-BR', {
-                                     day: '2-digit',
-                                     month: '2-digit',
-                                     year: 'numeric'
-                                   })}
-                                 </p>
-                                 {record.notes && (
-                                   <p className="text-xs text-slate-500 italic">{record.notes}</p>
-                                 )}
+                           {editingRecord?.id === record.id ? (
+                             // Modo de edição
+                             <div className="space-y-4">
+                               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                 <div className="space-y-2">
+                                   <label className="text-sm font-medium text-slate-700">Pool de Liquidez ($)</label>
+                                   <Input
+                                     type="number"
+                                     placeholder="0.00"
+                                     value={editingRecord.poolLiquidity}
+                                     onChange={(e) => setEditingRecord({ ...editingRecord, poolLiquidity: parseFloat(e.target.value) || 0 })}
+                                     className="h-10 text-sm border-2 border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
+                                   />
+                                 </div>
+                                 <div className="space-y-2">
+                                   <label className="text-sm font-medium text-slate-700">Grid Bot ($)</label>
+                                   <Input
+                                     type="number"
+                                     placeholder="0.00"
+                                     value={editingRecord.gridBot}
+                                     onChange={(e) => setEditingRecord({ ...editingRecord, gridBot: parseFloat(e.target.value) || 0 })}
+                                     className="h-10 text-sm border-2 border-slate-300 focus:border-green-500 focus:ring-2 focus:ring-green-100 bg-white"
+                                   />
+                                 </div>
+                                 <div className="space-y-2">
+                                   <label className="text-sm font-medium text-slate-700">Data</label>
+                                   <Input
+                                     type="date"
+                                     value={editingRecord.recordDate}
+                                     onChange={(e) => setEditingRecord({ ...editingRecord, recordDate: e.target.value })}
+                                     className="h-10 text-sm border-2 border-slate-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 bg-white"
+                                   />
+                                 </div>
+                                 <div className="space-y-2">
+                                   <label className="text-sm font-medium text-slate-700">Observações</label>
+                                   <Input
+                                     type="text"
+                                     placeholder="Opcional"
+                                     value={editingRecord.notes || ""}
+                                     onChange={(e) => setEditingRecord({ ...editingRecord, notes: e.target.value })}
+                                     className="h-10 text-sm border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 bg-white"
+                                   />
+                                 </div>
+                               </div>
+                               <div className="flex justify-end space-x-2">
+                                 <Button
+                                   variant="outline"
+                                   size="sm"
+                                   onClick={() => setEditingRecord(null)}
+                                   className="border-slate-300 text-slate-700 hover:bg-slate-50"
+                                 >
+                                   Cancelar
+                                 </Button>
+                                 <Button
+                                   size="sm"
+                                   onClick={applyRecordEdit}
+                                   className="bg-blue-600 hover:bg-blue-700 text-white"
+                                 >
+                                   Salvar
+                                 </Button>
                                </div>
                              </div>
-                            <div className="flex items-center space-x-4">
-                              <div className="text-right">
-                                <p className="text-sm text-slate-600">Pool: {formatCurrency(record.poolLiquidity)}</p>
-                                <p className="text-sm text-slate-600">Grid: {formatCurrency(record.gridBot)}</p>
-                              </div>
-                              <div className="text-right">
-                                <p className="font-semibold text-slate-900">{formatCurrency(record.total)}</p>
-                                <p className="text-sm text-slate-500">Total</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                           ) : (
+                             // Modo de visualização
+                             <div className="flex items-center justify-between">
+                               <div className="flex items-center space-x-4">
+                                 <div>
+                                   <p className="text-sm font-medium text-slate-700">
+                                     {new Date(record.recordDate).toLocaleDateString('pt-BR', {
+                                       day: '2-digit',
+                                       month: '2-digit',
+                                       year: 'numeric'
+                                     })}
+                                   </p>
+                                   {record.notes && (
+                                     <p className="text-xs text-slate-500 italic">{record.notes}</p>
+                                   )}
+                                 </div>
+                               </div>
+                               <div className="flex items-center space-x-4">
+                                 <div className="text-right">
+                                   <p className="text-sm text-slate-600">Pool: {formatCurrency(record.poolLiquidity)}</p>
+                                   <p className="text-sm text-slate-600">Grid: {formatCurrency(record.gridBot)}</p>
+                                 </div>
+                                 <div className="text-right">
+                                   <p className="font-semibold text-slate-900">{formatCurrency(record.total)}</p>
+                                   <p className="text-sm text-slate-500">Total</p>
+                                 </div>
+                                 <div className="flex space-x-2">
+                                   <Button
+                                     variant="outline"
+                                     size="sm"
+                                     onClick={() => editRecord(record)}
+                                     className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                                   >
+                                     Editar
+                                   </Button>
+                                   <Button
+                                     variant="ghost"
+                                     size="sm"
+                                     onClick={() => removeRecord(record.id)}
+                                     className="text-slate-500 hover:text-red-600 hover:bg-red-50"
+                                   >
+                                     <Trash2 className="h-4 w-4" />
+                                   </Button>
+                                 </div>
+                               </div>
+                             </div>
+                           )}
+                         </div>
+                       ))}
+                     </div>
+                   )}
+                 </div>
               )}
             </CardContent>
             <CardFooter className="flex-col items-start gap-2 text-sm border-t border-slate-200">
