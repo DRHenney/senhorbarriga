@@ -1437,37 +1437,38 @@ export default function Home() {
               </div>
             </CardHeader>
             <CardContent className="pt-6">
-              {evolutionTab === "weekly" ? (
-                <ResponsiveContainer width="100%" height={350}>
-                  <BarChart data={barChartData}>
-                    <CartesianGrid vertical={false} stroke="#e2e8f0" />
-                    <XAxis
-                      dataKey="week"
-                      tickLine={false}
-                      tickMargin={10}
-                      axisLine={false}
-                      stroke="#64748b"
-                    />
-                    <YAxis
-                      tickLine={false}
-                      tickMargin={10}
-                      axisLine={false}
-                      stroke="#64748b"
-                      tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-                    />
-                    <Tooltip 
-                      formatter={(value) => formatCurrency(Number(value))}
-                      contentStyle={{
-                        backgroundColor: 'white',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                      }}
-                    />
-                    <Bar dataKey="poolLiquidity" fill="#475569" radius={4} name="Pool de Liquidez" />
-                    <Bar dataKey="gridBot" fill="#64748b" radius={4} name="Grid Bot" />
-                  </BarChart>
-                </ResponsiveContainer>
+                             {evolutionTab === "weekly" ? (
+                 <ResponsiveContainer width="100%" height={350}>
+                   <BarChart data={barChartData}>
+                     <CartesianGrid vertical={false} stroke="#e2e8f0" />
+                     <XAxis
+                       dataKey="week"
+                       tickLine={false}
+                       tickMargin={10}
+                       axisLine={false}
+                       stroke="#64748b"
+                     />
+                     <YAxis
+                       tickLine={false}
+                       tickMargin={10}
+                       axisLine={false}
+                       stroke="#64748b"
+                       tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                     />
+                     <Tooltip 
+                       formatter={(value) => formatCurrency(Number(value))}
+                       contentStyle={{
+                         backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                         border: '1px solid #334155',
+                         borderRadius: '8px',
+                         color: 'white',
+                         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)'
+                       }}
+                     />
+                     <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={4} name="Pool de Liquidez" />
+                     <Bar dataKey="gridBot" fill="#10b981" radius={4} name="Grid Bot" />
+                   </BarChart>
+                 </ResponsiveContainer>
               ) : (
                                  <div className="space-y-4">
                    {records.length === 0 ? (
@@ -1956,36 +1957,37 @@ export default function Home() {
                   </div>
                 </div>
               ) : (
-                <ResponsiveContainer width="100%" height={350}>
-                  <BarChart data={monthlyData}>
-                    <CartesianGrid vertical={false} stroke="#e2e8f0" />
-                    <XAxis
-                      dataKey="name"
-                      tickLine={false}
-                      tickMargin={10}
-                      axisLine={false}
-                      stroke="#64748b"
-                    />
-                    <YAxis
-                      tickLine={false}
-                      tickMargin={10}
-                      axisLine={false}
-                      stroke="#64748b"
-                      tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-                    />
-                    <Tooltip 
-                      formatter={(value) => formatCurrency(Number(value))}
-                      contentStyle={{
-                        backgroundColor: 'white',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                      }}
-                    />
-                    <Bar dataKey="poolLiquidity" fill="#475569" radius={4} name="Pool de Liquidez" />
-                    <Bar dataKey="gridBot" fill="#64748b" radius={4} name="Grid Bot" />
-                  </BarChart>
-                </ResponsiveContainer>
+                                 <ResponsiveContainer width="100%" height={350}>
+                   <BarChart data={monthlyData}>
+                     <CartesianGrid vertical={false} stroke="#e2e8f0" />
+                     <XAxis
+                       dataKey="name"
+                       tickLine={false}
+                       tickMargin={10}
+                       axisLine={false}
+                       stroke="#64748b"
+                     />
+                     <YAxis
+                       tickLine={false}
+                       tickMargin={10}
+                       axisLine={false}
+                       stroke="#64748b"
+                       tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                     />
+                     <Tooltip 
+                       formatter={(value) => formatCurrency(Number(value))}
+                       contentStyle={{
+                         backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                         border: '1px solid #334155',
+                         borderRadius: '8px',
+                         color: 'white',
+                         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)'
+                       }}
+                     />
+                     <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={4} name="Pool de Liquidez" />
+                     <Bar dataKey="gridBot" fill="#10b981" radius={4} name="Grid Bot" />
+                   </BarChart>
+                 </ResponsiveContainer>
               )}
             </CardContent>
             <CardFooter className="flex-col items-start gap-2 text-sm border-t border-slate-200">
