@@ -1478,7 +1478,7 @@ export default function Home() {
                        axisLine={false}
                        stroke="#6b7280"
                        tick={{ fill: '#6b7280', fontSize: 12 }}
-                       tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                       tickFormatter={(value) => `$${value.toLocaleString()}`}
                      />
                      <Tooltip 
                        formatter={(value) => formatCurrency(Number(value))}
@@ -2015,7 +2015,7 @@ export default function Home() {
                        axisLine={false}
                        stroke="#6b7280"
                        tick={{ fill: '#6b7280', fontSize: 12 }}
-                       tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                       tickFormatter={(value) => `$${value.toLocaleString()}`}
                      />
                      <Tooltip 
                        formatter={(value) => formatCurrency(Number(value))}
