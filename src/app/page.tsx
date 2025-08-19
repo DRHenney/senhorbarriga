@@ -1339,20 +1339,20 @@ export default function Home() {
                         <div className="w-10 h-10 bg-gradient-to-r from-slate-500 to-slate-600 rounded-full flex items-center justify-center text-white font-bold">
                           {token.symbol.charAt(0)}
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-slate-900">{token.name}</h3>
-                          <p className="text-sm text-slate-600">{token.symbol}</p>
-                        </div>
+                                                 <div>
+                           <h3 className="font-semibold text-slate-900 dark:text-slate-100">{token.name}</h3>
+                           <p className="text-sm text-slate-600 dark:text-slate-400">{token.symbol}</p>
+                         </div>
                       </div>
                       <div className="flex items-center space-x-6">
                                                  <div className="text-right">
-                           <p className="text-sm text-slate-600">{token.amount.toFixed(2)} {token.symbol}</p>
-                           <p className="text-sm text-slate-500">Preço médio: ${token.price.toFixed(2)}</p>
+                           <p className="text-sm text-slate-600 dark:text-slate-400">{token.amount.toFixed(2)} {token.symbol}</p>
+                           <p className="text-sm text-slate-500 dark:text-slate-500">Preço médio: ${token.price.toFixed(2)}</p>
                          </div>
-                        <div className="text-right">
-                          <p className="font-semibold text-slate-900">{formatCurrency(token.value)}</p>
-                          <p className="text-sm text-slate-500">{portfolioTotal > 0 ? ((token.value / portfolioTotal) * 100).toFixed(1) : '0.0'}% do portfólio</p>
-                        </div>
+                                                 <div className="text-right">
+                           <p className="font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(token.value)}</p>
+                           <p className="text-sm text-slate-500 dark:text-slate-500">{portfolioTotal > 0 ? ((token.value / portfolioTotal) * 100).toFixed(1) : '0.0'}% do portfólio</p>
+                         </div>
                         <div className="flex space-x-2">
                           <Button
                             variant="outline"
