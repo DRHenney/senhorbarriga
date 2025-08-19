@@ -127,7 +127,7 @@ export default function Home() {
   };
 
   // Função para aplicar edição
-  const applyEdit = () => {
+  const applyEdit = async () => {
     if (!editingToken || !editForm.amount) return;
 
     const editAmount = parseFloat(editForm.amount);
