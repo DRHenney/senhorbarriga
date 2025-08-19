@@ -690,13 +690,42 @@ export default function Home() {
   const applyRecordEdit = async () => {
     if (!editingRecord) return;
 
+    // Validar campos obrigatórios
+    if (!editingRecord.poolLiquidity || !editingRecord.gridBot || !editingRecord.recordDate) {
+      toast({
+        title: "⚠️ Aviso",
+        description: "Por favor, preencha todos os campos obrigatórios (Pool de Liquidez, Grid Bot e Data).",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validar se os valores são números válidos
+    const poolValue = parseFloat(editingRecord.poolLiquidity);
+    const gridValue = parseFloat(editingRecord.gridBot);
+    
+    if (isNaN(poolValue) || isNaN(gridValue) || poolValue < 0 || gridValue < 0) {
+      toast({
+        title: "⚠️ Aviso",
+        description: "Por favor, insira valores válidos para Pool de Liquidez e Grid Bot.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const response = await fetch('/api/records', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(editingRecord),
+        body: JSON.stringify({
+          id: editingRecord.id,
+          poolLiquidity: poolValue,
+          gridBot: gridValue,
+          recordDate: editingRecord.recordDate,
+          notes: editingRecord.notes || "",
+        }),
       });
       
       const data = await response.json();
