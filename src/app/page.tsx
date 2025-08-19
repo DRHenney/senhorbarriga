@@ -1469,15 +1469,15 @@ export default function Home() {
                        tickLine={false}
                        tickMargin={10}
                        axisLine={false}
-                       stroke="hsl(var(--foreground))"
-                       tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }}
+                       stroke="#6b7280"
+                       tick={{ fill: '#6b7280', fontSize: 12 }}
                      />
                      <YAxis
                        tickLine={false}
                        tickMargin={10}
                        axisLine={false}
-                       stroke="hsl(var(--foreground))"
-                       tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }}
+                       stroke="#6b7280"
+                       tick={{ fill: '#6b7280', fontSize: 12 }}
                        tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
                      />
                      <Tooltip 
@@ -2006,15 +2006,15 @@ export default function Home() {
                        tickLine={false}
                        tickMargin={10}
                        axisLine={false}
-                       stroke="hsl(var(--foreground))"
-                       tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }}
+                       stroke="#6b7280"
+                       tick={{ fill: '#6b7280', fontSize: 12 }}
                      />
                      <YAxis
                        tickLine={false}
                        tickMargin={10}
                        axisLine={false}
-                       stroke="hsl(var(--foreground))"
-                       tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }}
+                       stroke="#6b7280"
+                       tick={{ fill: '#6b7280', fontSize: 12 }}
                        tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
                      />
                      <Tooltip 
