@@ -168,6 +168,7 @@ export default function Home() {
   };
 
   const formatCurrency = (value: number) => {
+    if (isNaN(value) || !isFinite(value)) return "$0.00";
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
@@ -179,7 +180,10 @@ export default function Home() {
   const gridBot = chartData[chartData.length - 1]?.gridBot || 0;
 
   // Calcular valor total do portfólio de tokens
-  const portfolioTotal = tokens.reduce((sum, token) => sum + token.value, 0);
+  const portfolioTotal = tokens.reduce((sum, token) => {
+    const tokenValue = token.value || 0;
+    return sum + (isNaN(tokenValue) ? 0 : tokenValue);
+  }, 0);
 
   // Calcular valor total geral (DeFi + Tokens)
   const totalPortfolioValue = totalValue + portfolioTotal;
@@ -212,12 +216,27 @@ export default function Home() {
   const addToken = async () => {
     if (newToken.name && newToken.symbol && newToken.amount && newToken.price) {
       try {
+        const amount = parseFloat(newToken.amount);
+        const price = parseFloat(newToken.price);
+        
+        if (isNaN(amount) || isNaN(price) || amount <= 0 || price <= 0) {
+          alert('Por favor, insira valores válidos para quantidade e preço.');
+          return;
+        }
+
+        const tokenData = {
+          ...newToken,
+          amount,
+          price,
+          value: amount * price,
+        };
+
         const response = await fetch('/api/tokens', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(newToken),
+          body: JSON.stringify(tokenData),
         });
         
         const data = await response.json();
