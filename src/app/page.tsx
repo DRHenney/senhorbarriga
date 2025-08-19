@@ -1270,13 +1270,13 @@ export default function Home() {
                            <label className="text-sm font-medium text-slate-700">
                              {editForm.action === "add" ? "Quantidade a adicionar" : "Quantidade a remover"}
                            </label>
-                           <Input
-                             type="number"
-                             placeholder="0.00"
-                             value={editForm.amount}
-                             onChange={(e) => setEditForm({ ...editForm, amount: e.target.value })}
-                             className="h-10 text-base border-2 border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-600 text-slate-900 font-medium"
-                           />
+                                                       <Input
+                              type="number"
+                              placeholder="0.00"
+                              value={editForm.amount}
+                              onChange={(e) => setEditForm({ ...editForm, amount: e.target.value })}
+                              className="h-10 text-base border-2 border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-500 text-slate-900 font-medium"
+                            />
                          </div>
                          
                          {editForm.action === "add" && (
@@ -1284,13 +1284,13 @@ export default function Home() {
                              <label className="text-sm font-medium text-slate-700">
                                Preço por token ($) - Opcional
                              </label>
-                             <Input
-                               type="number"
-                               placeholder={`${token.price.toFixed(2)} (preço atual)`}
-                               value={editForm.price}
-                               onChange={(e) => setEditForm({ ...editForm, price: e.target.value })}
-                               className="h-10 text-base border-2 border-slate-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-600 text-slate-900 font-medium"
-                             />
+                                                           <Input
+                                type="number"
+                                placeholder={`${token.price.toFixed(2)} (preço atual)`}
+                                value={editForm.price}
+                                onChange={(e) => setEditForm({ ...editForm, price: e.target.value })}
+                                className="h-10 text-base border-2 border-slate-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-500 text-slate-900 font-medium"
+                              />
                              <p className="text-xs text-slate-500">
                                Deixe vazio para usar o preço atual. Se informado, será calculado o preço médio ponderado.
                              </p>
@@ -1469,42 +1469,42 @@ export default function Home() {
                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                  <div className="space-y-2">
                                    <label className="text-sm font-medium text-slate-700">Pool de Liquidez ($)</label>
-                                   <Input
-                                     type="number"
-                                     placeholder="0.00"
-                                     value={editingRecord.poolLiquidity}
-                                     onChange={(e) => setEditingRecord({ ...editingRecord, poolLiquidity: parseFloat(e.target.value) || 0 })}
-                                     className="h-10 text-sm border-2 border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
-                                   />
+                                                                       <Input
+                                      type="number"
+                                      placeholder="0.00"
+                                      value={editingRecord.poolLiquidity}
+                                      onChange={(e) => setEditingRecord({ ...editingRecord, poolLiquidity: parseFloat(e.target.value) || 0 })}
+                                      className="h-10 text-sm border-2 border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white text-slate-900 font-medium placeholder:text-slate-500"
+                                    />
                                  </div>
                                  <div className="space-y-2">
                                    <label className="text-sm font-medium text-slate-700">Grid Bot ($)</label>
-                                   <Input
-                                     type="number"
-                                     placeholder="0.00"
-                                     value={editingRecord.gridBot}
-                                     onChange={(e) => setEditingRecord({ ...editingRecord, gridBot: parseFloat(e.target.value) || 0 })}
-                                     className="h-10 text-sm border-2 border-slate-300 focus:border-green-500 focus:ring-2 focus:ring-green-100 bg-white"
-                                   />
+                                                                       <Input
+                                      type="number"
+                                      placeholder="0.00"
+                                      value={editingRecord.gridBot}
+                                      onChange={(e) => setEditingRecord({ ...editingRecord, gridBot: parseFloat(e.target.value) || 0 })}
+                                      className="h-10 text-sm border-2 border-slate-300 focus:border-green-500 focus:ring-2 focus:ring-green-100 bg-white text-slate-900 font-medium placeholder:text-slate-500"
+                                    />
                                  </div>
                                  <div className="space-y-2">
                                    <label className="text-sm font-medium text-slate-700">Data</label>
-                                   <Input
-                                     type="date"
-                                     value={editingRecord.recordDate}
-                                     onChange={(e) => setEditingRecord({ ...editingRecord, recordDate: e.target.value })}
-                                     className="h-10 text-sm border-2 border-slate-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 bg-white"
-                                   />
+                                                                       <Input
+                                      type="date"
+                                      value={editingRecord.recordDate}
+                                      onChange={(e) => setEditingRecord({ ...editingRecord, recordDate: e.target.value })}
+                                      className="h-10 text-sm border-2 border-slate-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 bg-white text-slate-900 font-medium"
+                                    />
                                  </div>
                                  <div className="space-y-2">
                                    <label className="text-sm font-medium text-slate-700">Observações</label>
-                                   <Input
-                                     type="text"
-                                     placeholder="Opcional"
-                                     value={editingRecord.notes || ""}
-                                     onChange={(e) => setEditingRecord({ ...editingRecord, notes: e.target.value })}
-                                     className="h-10 text-sm border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 bg-white"
-                                   />
+                                                                       <Input
+                                      type="text"
+                                      placeholder="Opcional"
+                                      value={editingRecord.notes || ""}
+                                      onChange={(e) => setEditingRecord({ ...editingRecord, notes: e.target.value })}
+                                      className="h-10 text-sm border-2 border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 bg-white text-slate-900 font-medium placeholder:text-slate-500"
+                                    />
                                  </div>
                                </div>
                                <div className="flex justify-end space-x-2">
