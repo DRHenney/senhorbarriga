@@ -523,11 +523,18 @@ export default function Home() {
     return sum + (isNaN(tokenValue) ? 0 : tokenValue);
   }, 0);
 
-  // Calcular valor total geral (DeFi + Tokens)
-  const totalPortfolioValue = totalValue + portfolioTotal;
-
   // Calcular dados de evolução do portfólio
   const portfolioEvolutionData = getPortfolioEvolutionData(records, tokens);
+  
+  // Calcular valor total de todos os registros (soma acumulada)
+  const totalRecordsValue = records.reduce((sum, record) => {
+    const poolValue = record.poolLiquidity || 0;
+    const gridValue = record.gridBot || 0;
+    return sum + poolValue + gridValue;
+  }, 0);
+  
+  // Calcular valor total geral: registros acumulados + tokens
+  const totalPortfolioValue = totalRecordsValue + portfolioTotal;
   
   // Calcular crescimento percentual
   let portfolioGrowth = "0.0";
