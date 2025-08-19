@@ -36,10 +36,10 @@ const getBarChartData = (records: any[]) => {
     const currentYear = currentDate.getFullYear();
     
     return [
-      { week: new Date(currentYear, currentMonth, 1).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }), poolLiquidity: 5000, gridBot: 1200, total: 6200 },
-      { week: new Date(currentYear, currentMonth, 8).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }), poolLiquidity: 5200, gridBot: 1350, total: 6550 },
-      { week: new Date(currentYear, currentMonth, 15).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }), poolLiquidity: 5400, gridBot: 1400, total: 6800 },
-      { week: new Date(currentYear, currentMonth, 22).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }), poolLiquidity: 5600, gridBot: 1500, total: 7100 },
+      { week: new Date(currentYear, currentMonth, 1).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }), poolLiquidity: 5000, gridBot: 1200, total: 6200 },
+      { week: new Date(currentYear, currentMonth, 8).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }), poolLiquidity: 5200, gridBot: 1350, total: 6550 },
+      { week: new Date(currentYear, currentMonth, 15).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }), poolLiquidity: 5400, gridBot: 1400, total: 6800 },
+      { week: new Date(currentYear, currentMonth, 22).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }), poolLiquidity: 5600, gridBot: 1500, total: 7100 },
     ];
   }
 
@@ -54,7 +54,7 @@ const getBarChartData = (records: any[]) => {
     
     // Filtrar apenas registros do mês atual
     if (date.getMonth() === currentMonth && date.getFullYear() === currentYear) {
-      const dateKey = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      const dateKey = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
       
       if (!acc[dateKey]) {
         acc[dateKey] = {
