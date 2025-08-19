@@ -153,20 +153,6 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
   // Calcular valor total dos tokens
   const tokensTotal = tokens.reduce((sum, token) => sum + (token.value || 0), 0);
 
-  // Se não há registros, usar dados de exemplo desde janeiro de 2025
-  if (records.length === 0) {
-    return [
-      { month: "Jan/25", value: 28000, date: new Date(2025, 0, 1) },
-      { month: "Fev/25", value: 29500, date: new Date(2025, 1, 1) },
-      { month: "Mar/25", value: 31200, date: new Date(2025, 2, 1) },
-      { month: "Abr/25", value: 29800, date: new Date(2025, 3, 1) },
-      { month: "Mai/25", value: 32500, date: new Date(2025, 4, 1) },
-      { month: "Jun/25", value: 34100, date: new Date(2025, 5, 1) },
-      { month: "Jul/25", value: 35800, date: new Date(2025, 6, 1) },
-      { month: "Ago/25", value: 37200 + tokensTotal, date: new Date(2025, 7, 1) }, // Adicionar tokens apenas ao último mês
-    ];
-  }
-
   // Agrupar registros por mês
   const monthlyData = records.reduce((acc: any, record) => {
     const date = new Date(record.recordDate);
@@ -193,60 +179,81 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
     .sort((a: any, b: any) => a.date - b.date)
     .map((item: any) => ({
       month: item.month,
-      value: item.value, // Não adicionar tokens aqui
+      value: item.value,
       date: item.date
     }));
 
-  // Se não há dados suficientes, adicionar meses desde janeiro de 2025
-  if (sortedData.length === 0 || sortedData[0].date.getFullYear() > 2025 || 
-      (sortedData[0].date.getFullYear() === 2025 && sortedData[0].date.getMonth() > 0)) {
+  // Sempre criar array completo desde janeiro de 2025
+  const startDate = new Date(2025, 0, 1); // Janeiro de 2025
+  const currentDate = new Date();
+  const allMonths = [];
+  
+  for (let d = new Date(startDate); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
+    const monthName = d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+    const monthKey = `${d.getFullYear()}-${d.getMonth()}`;
     
-    const startDate = new Date(2025, 0, 1); // Janeiro de 2025
-    const currentDate = new Date();
-    const months = [];
+    // Verificar se há dados reais para este mês
+    const realData = sortedData.find((item: any) => {
+      const itemDate = new Date(item.date);
+      return itemDate.getFullYear() === d.getFullYear() && itemDate.getMonth() === d.getMonth();
+    });
     
-    for (let d = new Date(startDate); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
-      const monthName = d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
-      months.push({
+    if (realData) {
+      // Usar dados reais
+      allMonths.push({
         month: monthName,
-        value: 0,
+        value: realData.value,
+        date: new Date(d)
+      });
+    } else {
+      // Usar dados históricos de exemplo para meses sem registros
+      const historicalData = {
+        "Jan/25": 28000,
+        "Fev/25": 29500,
+        "Mar/25": 31200,
+        "Abr/25": 29800,
+        "Mai/25": 32500,
+        "Jun/25": 34100,
+        "Jul/25": 35800,
+        "Ago/25": 37200,
+        "Set/25": 38500,
+        "Out/25": 39800,
+        "Nov/25": 41200,
+        "Dez/25": 42500
+      };
+      
+      allMonths.push({
+        month: monthName,
+        value: historicalData[monthName as keyof typeof historicalData] || 0,
         date: new Date(d)
       });
     }
-    
-    // Combinar com dados existentes
-    const combinedData = [...months, ...sortedData];
-    
-    // Remover duplicatas e ordenar, priorizando dados reais
-    const uniqueData = combinedData.reduce((acc: any, item) => {
-      const key = `${item.date.getFullYear()}-${item.date.getMonth()}`;
-      if (!acc[key] || item.value > acc[key].value) { // Priorizar dados reais
-        acc[key] = item;
-      }
-      return acc;
-    }, {});
-    
-    const finalData = Object.values(uniqueData).sort((a: any, b: any) => a.date - b.date);
-    
-    // Adicionar tokens apenas ao último mês com dados reais (se não for zero)
-    if (finalData.length > 0) {
-      const lastIndex = finalData.length - 1;
-      const lastItem = finalData[lastIndex] as any;
-      
-      // Só adicionar tokens se o valor do mês não for zero (ou seja, se há dados reais)
-      if (lastItem.value > 0) {
-        finalData[lastIndex] = {
-          month: lastItem.month,
-          value: lastItem.value + tokensTotal,
-          date: lastItem.date
-        };
-      }
-    }
-    
-    return finalData;
   }
-
-  return sortedData;
+  
+  // Adicionar tokens apenas ao último mês com dados reais (se não for zero)
+  if (allMonths.length > 0) {
+    const lastIndex = allMonths.length - 1;
+    const lastItem = allMonths[lastIndex] as any;
+    
+    // Verificar se o último mês tem dados reais (não históricos)
+    const lastMonthKey = `${lastItem.date.getFullYear()}-${lastItem.date.getMonth()}`;
+    const hasRealData = sortedData.some((item: any) => {
+      const itemDate = new Date(item.date);
+      return itemDate.getFullYear() === lastItem.date.getFullYear() && 
+             itemDate.getMonth() === lastItem.date.getMonth();
+    });
+    
+    // Só adicionar tokens se há dados reais no último mês
+    if (hasRealData && lastItem.value > 0) {
+      allMonths[lastIndex] = {
+        month: lastItem.month,
+        value: lastItem.value + tokensTotal,
+        date: lastItem.date
+      };
+    }
+  }
+  
+  return allMonths;
 };
 
 export default function Home() {
