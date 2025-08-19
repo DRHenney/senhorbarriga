@@ -10,6 +10,8 @@ import { Plus, TrendingUp, DollarSign, BarChart3, Target, Zap, Coins, Trash2, Ca
 import Link from "next/link";
 import DatabaseStatus from "@/components/DatabaseStatus";
 import UserNav from "@/components/auth/UserNav";
+import { useToast } from "@/components/ui/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 // Dados de exemplo
 const chartData = [
@@ -295,6 +297,9 @@ export default function Home() {
     amount: number;
     price: number;
   } | null>(null);
+
+  // Hook para notificações toast
+  const { toast } = useToast();
 
   const [editForm, setEditForm] = useState({
     action: "add" as "add" | "remove",
@@ -605,12 +610,25 @@ export default function Home() {
             recordDate: new Date().toISOString().split('T')[0],
             notes: "" 
           });
-          alert('Registro adicionado com sucesso!');
+          toast({
+            title: "✅ Sucesso!",
+            description: "Registro adicionado com sucesso!",
+            variant: "default",
+            className: "bg-green-50 border-green-200 text-green-800",
+          });
         } else {
-          alert('Erro ao adicionar registro: ' + data.message);
+          toast({
+            title: "❌ Erro",
+            description: `Erro ao adicionar registro: ${data.message}`,
+            variant: "destructive",
+          });
         }
       } catch (error) {
-        alert('Erro ao adicionar registro');
+        toast({
+          title: "❌ Erro",
+          description: "Erro ao adicionar registro",
+          variant: "destructive",
+        });
       }
     }
   };
@@ -644,12 +662,25 @@ export default function Home() {
       if (data.success) {
         setRecords(records.map(r => r.id === editingRecord.id ? data.record : r));
         setEditingRecord(null);
-        alert('Registro atualizado com sucesso!');
+        toast({
+          title: "✅ Sucesso!",
+          description: "Registro atualizado com sucesso!",
+          variant: "default",
+          className: "bg-green-50 border-green-200 text-green-800",
+        });
       } else {
-        alert('Erro ao atualizar registro: ' + data.message);
+        toast({
+          title: "❌ Erro",
+          description: `Erro ao atualizar registro: ${data.message}`,
+          variant: "destructive",
+        });
       }
     } catch (error) {
-      alert('Erro ao atualizar registro');
+      toast({
+        title: "❌ Erro",
+        description: "Erro ao atualizar registro",
+        variant: "destructive",
+      });
     }
   };
 
@@ -665,12 +696,25 @@ export default function Home() {
         
         if (data.success) {
           setRecords(records.filter(r => r.id !== id));
-          alert('Registro removido com sucesso!');
+          toast({
+            title: "✅ Sucesso!",
+            description: "Registro removido com sucesso!",
+            variant: "default",
+            className: "bg-green-50 border-green-200 text-green-800",
+          });
         } else {
-          alert('Erro ao remover registro: ' + data.message);
+          toast({
+            title: "❌ Erro",
+            description: `Erro ao remover registro: ${data.message}`,
+            variant: "destructive",
+          });
         }
       } catch (error) {
-        alert('Erro ao remover registro');
+        toast({
+          title: "❌ Erro",
+          description: "Erro ao remover registro",
+          variant: "destructive",
+        });
       }
     }
   };
@@ -683,7 +727,11 @@ export default function Home() {
         const price = parseFloat(newToken.price);
         
         if (isNaN(amount) || isNaN(price) || amount <= 0 || price <= 0) {
-          alert('Por favor, insira valores válidos para quantidade e preço.');
+          toast({
+            title: "⚠️ Aviso",
+            description: "Por favor, insira valores válidos para quantidade e preço.",
+            variant: "destructive",
+          });
           return;
         }
 
@@ -707,12 +755,25 @@ export default function Home() {
         if (data.success) {
           setTokens([...tokens, data.token]);
           setNewToken({ name: "", symbol: "", amount: "", price: "" });
-          alert('Token adicionado com sucesso!');
+          toast({
+            title: "✅ Sucesso!",
+            description: "Token adicionado com sucesso!",
+            variant: "default",
+            className: "bg-green-50 border-green-200 text-green-800",
+          });
         } else {
-          alert('Erro ao adicionar token: ' + data.message);
+          toast({
+            title: "❌ Erro",
+            description: `Erro ao adicionar token: ${data.message}`,
+            variant: "destructive",
+          });
         }
       } catch (error) {
-        alert('Erro ao adicionar token');
+        toast({
+          title: "❌ Erro",
+          description: "Erro ao adicionar token",
+          variant: "destructive",
+        });
       }
     }
   };
@@ -728,7 +789,11 @@ export default function Home() {
       const capital = parseFloat(newOperation.capital);
       
       if (isNaN(capital) || capital <= 0) {
-        alert('Por favor, insira um valor válido para o capital.');
+        toast({
+          title: "⚠️ Aviso",
+          description: "Por favor, insira um valor válido para o capital.",
+          variant: "destructive",
+        });
         return;
       }
 
@@ -740,12 +805,20 @@ export default function Home() {
         
         if (isNaN(rangeMin) || isNaN(rangeMax) || isNaN(numGrids) || 
             rangeMin <= 0 || rangeMax <= 0 || numGrids <= 0) {
-          alert('Para grid bots, preencha range mínimo, máximo e número de grids.');
+          toast({
+            title: "⚠️ Aviso",
+            description: "Para grid bots, preencha range mínimo, máximo e número de grids.",
+            variant: "destructive",
+          });
           return;
         }
         
         if (rangeMin >= rangeMax) {
-          alert('O range mínimo deve ser menor que o máximo.');
+          toast({
+            title: "⚠️ Aviso",
+            description: "O range mínimo deve ser menor que o máximo.",
+            variant: "destructive",
+          });
           return;
         }
       }
@@ -773,9 +846,18 @@ export default function Home() {
         numGrids: "",
         notes: "",
       });
-      alert('Operação adicionada com sucesso!');
+      toast({
+        title: "✅ Sucesso!",
+        description: "Operação adicionada com sucesso!",
+        variant: "default",
+        className: "bg-green-50 border-green-200 text-green-800",
+      });
     } else {
-      alert('Por favor, preencha os campos obrigatórios.');
+      toast({
+        title: "⚠️ Aviso",
+        description: "Por favor, preencha os campos obrigatórios.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -799,7 +881,11 @@ export default function Home() {
     const capital = editingOperation.capital;
     
     if (isNaN(capital) || capital <= 0) {
-      alert('Por favor, insira um valor válido para o capital.');
+      toast({
+        title: "⚠️ Aviso",
+        description: "Por favor, insira um valor válido para o capital.",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -811,12 +897,20 @@ export default function Home() {
       
       if (!rangeMin || !rangeMax || !numGrids || 
           rangeMin <= 0 || rangeMax <= 0 || numGrids <= 0) {
-        alert('Para grid bots, preencha range mínimo, máximo e número de grids.');
+        toast({
+          title: "⚠️ Aviso",
+          description: "Para grid bots, preencha range mínimo, máximo e número de grids.",
+          variant: "destructive",
+        });
         return;
       }
       
       if (rangeMin >= rangeMax) {
-        alert('O range mínimo deve ser menor que o máximo.');
+        toast({
+          title: "⚠️ Aviso",
+          description: "O range mínimo deve ser menor que o máximo.",
+          variant: "destructive",
+        });
         return;
       }
     }
@@ -825,13 +919,23 @@ export default function Home() {
       op.id === editingOperation.id ? editingOperation : op
     ));
     setEditingOperation(null);
-    alert('Operação atualizada com sucesso!');
+    toast({
+      title: "✅ Sucesso!",
+      description: "Operação atualizada com sucesso!",
+      variant: "default",
+      className: "bg-green-50 border-green-200 text-green-800",
+    });
   };
 
   const removeOperation = (id: number) => {
     if (confirm('Tem certeza que deseja remover esta operação?')) {
       setActiveOperations(activeOperations.filter(op => op.id !== id));
-      alert('Operação removida com sucesso!');
+      toast({
+        title: "✅ Sucesso!",
+        description: "Operação removida com sucesso!",
+        variant: "default",
+        className: "bg-green-50 border-green-200 text-green-800",
+      });
     }
   };
 
@@ -1981,6 +2085,7 @@ export default function Home() {
           </Link>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }
