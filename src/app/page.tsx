@@ -13,21 +13,9 @@ import UserNav from "@/components/auth/UserNav";
 import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 
-// Dados de exemplo
-const chartData = [
-  { week: "Semana 1", poolLiquidity: 5000, gridBot: 1200, total: 6200 },
-  { week: "Semana 2", poolLiquidity: 5200, gridBot: 1350, total: 6550 },
-  { week: "Semana 3", poolLiquidity: 5400, gridBot: 1400, total: 6800 },
-  { week: "Semana 4", poolLiquidity: 5600, gridBot: 1500, total: 7100 },
-  { week: "Semana 5", poolLiquidity: 5800, gridBot: 1600, total: 7400 },
-];
 
-// Função para obter o número da semana
-const getWeekNumber = (date: Date) => {
-  const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-  const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
-  return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-};
+
+
 
 // Dados para o gráfico de barras (serão calculados dinamicamente)
 const getBarChartData = (records: any[]) => {
@@ -364,7 +352,11 @@ export default function Home() {
 
     const editAmount = parseFloat(editForm.amount);
     if (isNaN(editAmount) || editAmount <= 0) {
-      alert("Por favor, insira uma quantidade válida.");
+      toast({
+        title: "⚠️ Aviso",
+        description: "Por favor, insira uma quantidade válida.",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -377,7 +369,11 @@ export default function Home() {
       const editPrice = editForm.price ? parseFloat(editForm.price) : currentToken.price;
       
       if (isNaN(editPrice) || editPrice <= 0) {
-        alert("Por favor, insira um preço válido.");
+        toast({
+          title: "⚠️ Aviso",
+          description: "Por favor, insira um preço válido.",
+          variant: "destructive",
+        });
         return;
       }
 
@@ -392,8 +388,6 @@ export default function Home() {
       const newPrice = Number(averagePrice.toFixed(2));
       const finalValue = Number((newAmount * newPrice).toFixed(2));
       
-      // Debug removido para produção
-      
       updatedToken = {
         ...currentToken,
         amount: newAmount,
@@ -403,7 +397,11 @@ export default function Home() {
     } else {
       // Remover tokens (mantém o preço atual)
       if (editAmount > currentToken.amount) {
-        alert("Não é possível remover mais tokens do que você possui!");
+        toast({
+          title: "⚠️ Aviso",
+          description: "Não é possível remover mais tokens do que você possui!",
+          variant: "destructive",
+        });
         return;
       }
       const newAmount = Number((currentToken.amount - editAmount).toFixed(2));
@@ -432,15 +430,29 @@ export default function Home() {
       
       const data = await response.json();
       
-             if (data.success) {
-         setTokens(tokens.map(t => t.id === editingToken.id ? updatedToken : t));
-         setEditingToken(null);
-         setEditForm({ action: "add", amount: "", price: "" });
-       } else {
-        alert('Erro ao atualizar token: ' + data.message);
+      if (data.success) {
+        setTokens(tokens.map(t => t.id === editingToken.id ? updatedToken : t));
+        setEditingToken(null);
+        setEditForm({ action: "add", amount: "", price: "" });
+        toast({
+          title: "✅ Sucesso!",
+          description: "Token atualizado com sucesso!",
+          variant: "default",
+          className: "bg-green-50 border-green-200 text-green-800",
+        });
+      } else {
+        toast({
+          title: "❌ Erro",
+          description: `Erro ao atualizar token: ${data.message}`,
+          variant: "destructive",
+        });
       }
     } catch (error) {
-      alert('Erro ao atualizar token');
+      toast({
+        title: "❌ Erro",
+        description: "Erro ao atualizar token",
+        variant: "destructive",
+      });
     }
   };
 
@@ -455,7 +467,6 @@ export default function Home() {
   // Calcular dados dinâmicos baseados nos registros
   const barChartData = getBarChartData(records);
   const lastBarData = barChartData.length > 0 ? barChartData[barChartData.length - 1] : null;
-  const lastChartData = chartData.length > 0 ? chartData[chartData.length - 1] : null;
   
   // Calcular valor total do mês atual (soma de todas as entradas do mês)
   const currentDate = new Date();
@@ -472,8 +483,8 @@ export default function Home() {
       const gridValue = record.gridBot || 0;
       return sum + poolValue + gridValue;
     }, 0);
-  const poolLiquidity = lastBarData?.poolLiquidity || lastChartData?.poolLiquidity || 0;
-  const gridBot = lastBarData?.gridBot || lastChartData?.gridBot || 0;
+  const poolLiquidity = lastBarData?.poolLiquidity || 0;
+  const gridBot = lastBarData?.gridBot || 0;
   
   // Calcular dados dinâmicos para o gráfico de pizza
   const pieData = getPieData(poolLiquidity, gridBot);
