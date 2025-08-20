@@ -376,8 +376,8 @@ export default function Home() {
   });
 
   // Estados para preços em tempo real
-  const [isUpdatingPrices, setIsUpdatingPrices] = useState(false);
   const [lastPriceUpdate, setLastPriceUpdate] = useState<string | null>(null);
+  const [autoUpdateInterval, setAutoUpdateInterval] = useState<NodeJS.Timeout | null>(null);
 
   // Estados para operações ativas
   const [activeOperations, setActiveOperations] = useState<Array<{
@@ -633,34 +633,25 @@ export default function Home() {
     portfolioGrowth = (((lastValue - firstValue) / firstValue) * 100).toFixed(1);
   }
 
-  // Buscar preços em tempo real do CoinGecko
+  // Função para buscar preços em tempo real
   const fetchRealTimePrices = async (tokensList: any[], showLoading = true) => {
+    if (tokensList.length === 0) {
+      toast({
+        title: "⚠️ Aviso",
+        description: "Nenhum token para atualizar",
+        variant: "destructive",
+      });
+      return;
+    }
+
+
+
     try {
-      if (showLoading) {
-        setIsUpdatingPrices(true);
-      }
+      console.log('Buscando preços para tokens:', tokensList);
       
-      console.log('🔄 Buscando preços em tempo real no CoinGecko para:', tokensList.length, 'tokens');
-      console.log('📋 Tokens para buscar:', tokensList);
-      
-      const tokensToFetch = tokensList
-        .filter(token => token.symbol && token.symbol !== 'N/A')
-        .map(token => ({ symbol: token.symbol }));
+      const tokensToFetch = tokensList.map(token => ({ symbol: token.symbol }));
+      console.log('Tokens para buscar:', tokensToFetch);
 
-      console.log('🔍 Tokens filtrados para busca:', tokensToFetch);
-
-      if (tokensToFetch.length === 0) {
-        console.log('⚠️ Nenhum token válido para buscar preços');
-        toast({
-          title: "⚠️ Aviso",
-          description: "Nenhum token válido encontrado para buscar preços",
-          variant: "default",
-        });
-        return;
-      }
-
-      console.log('📡 Fazendo requisição para /api/prices/coingecko...');
-      
       const response = await fetch('/api/prices/coingecko', {
         method: 'POST',
         headers: {
@@ -669,69 +660,70 @@ export default function Home() {
         body: JSON.stringify({ tokens: tokensToFetch }),
       });
 
-      console.log('📥 Resposta recebida:', response.status, response.statusText);
+      console.log('Status da resposta:', response.status, response.statusText);
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        throw new Error(`Erro na API: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
-      console.log('📊 Dados da API recebidos:', data);
-      
-      if (data.success && data.results) {
-        console.log('✅ Preços em tempo real recebidos:', data.results);
-        
-        // Atualizar tokens com preços em tempo real
-        setTokens(prevTokens => 
-          prevTokens.map(token => {
-            const priceData = data.results.find((result: any) => 
-              result.success && result.symbol === token.symbol
-            );
-            
-            if (priceData) {
-              console.log(`💰 Atualizando preço para ${token.symbol}:`, priceData.data);
-              return {
-                ...token,
-                realTimePrice: priceData.data.priceUsd,
-                priceChange24h: priceData.data.priceChange24h,
-                lastUpdated: priceData.data.updatedAt,
-              };
-            }
-            
-            return token;
-          })
-        );
-        
-        setLastPriceUpdate(new Date().toISOString());
-        
-        const successCount = data.results.filter((r: any) => r.success).length;
-        const totalCount = data.results.length;
-        
-        toast({
-          title: "✅ Preços Atualizados!",
-          description: `${successCount}/${totalCount} tokens atualizados com sucesso!`,
-          variant: "default",
-          className: "bg-green-50 border-green-200 text-green-800",
+      console.log('Dados recebidos:', data);
+
+      if (data.success && data.prices) {
+        const updatedTokens = tokens.map(token => {
+          const priceData = data.prices.find((p: any) => p.symbol === token.symbol);
+          if (priceData && priceData.success) {
+            return {
+              ...token,
+              realTimePrice: priceData.priceUsd,
+              priceChange24h: priceData.priceChange24h,
+              lastUpdated: new Date().toLocaleString('pt-BR')
+            };
+          }
+          return token;
         });
+
+        setTokens(updatedTokens);
+        setLastPriceUpdate(new Date().toLocaleString('pt-BR'));
+        
+        const successCount = data.prices.filter((p: any) => p.success).length;
+        const totalCount = data.prices.length;
+        
+        if (showLoading) {
+          toast({
+            title: "✅ Sucesso",
+            description: `Preços atualizados: ${successCount}/${totalCount} tokens`,
+          });
+        }
       } else {
-        console.warn('⚠️ Erro ao buscar preços em tempo real:', data);
         toast({
           title: "❌ Erro",
-          description: data.message || "Erro ao buscar preços em tempo real",
+          description: "Erro ao buscar preços em tempo real",
           variant: "destructive",
         });
       }
     } catch (error) {
-      console.error('❌ Erro ao buscar preços em tempo real:', error);
+      console.error('Erro ao buscar preços:', error);
       toast({
         title: "❌ Erro",
-        description: `Erro ao buscar preços em tempo real: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+        description: "Erro ao buscar preços em tempo real",
         variant: "destructive",
       });
-    } finally {
-      if (showLoading) {
-        setIsUpdatingPrices(false);
-      }
+    }
+  };
+
+  // Função para iniciar atualização automática
+  const startAutoUpdate = () => {
+    if (tokens.length > 0) {
+      fetchRealTimePrices(tokens, false);
+    }
+  };
+
+  // Função para parar atualização automática
+  const stopAutoUpdate = () => {
+    if (autoUpdateInterval) {
+      clearInterval(autoUpdateInterval);
+      setAutoUpdateInterval(null);
     }
   };
 
@@ -833,20 +825,48 @@ export default function Home() {
     }
   };
 
-  // Carregar tokens ao montar o componente
+  // useEffect para carregar dados iniciais
   useEffect(() => {
-    // Verificar se o usuário está autenticado antes de carregar dados
-    const checkAuthAndLoad = async () => {
+    const loadData = async () => {
       try {
-        // Tentar carregar dados - se falhar por autenticação, não é um erro crítico
-        await Promise.allSettled([loadTokens(), loadRecords()]);
+        await Promise.allSettled([
+          loadTokens(),
+          loadRecords()
+        ]);
       } catch (error) {
-        console.error('Erro ao carregar dados iniciais:', error);
+        console.error('Erro ao carregar dados:', error);
+        toast({
+          title: "❌ Erro",
+          description: "Erro ao carregar dados",
+          variant: "destructive",
+        });
       }
     };
-    
-    checkAuthAndLoad();
+
+    loadData();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // useEffect para atualização automática de preços a cada 30 segundos
+  useEffect(() => {
+    if (tokens.length > 0) {
+      // Iniciar atualização automática
+      const interval = setInterval(() => {
+        startAutoUpdate();
+      }, 30000); // 30 segundos
+
+      setAutoUpdateInterval(interval);
+
+      // Fazer primeira atualização imediatamente
+      startAutoUpdate();
+
+      // Cleanup ao desmontar componente
+      return () => {
+        if (interval) {
+          clearInterval(interval);
+        }
+      };
+    }
+  }, [tokens.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Carregar registros do banco
   const loadRecords = async () => {
@@ -1475,7 +1495,7 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200 dark:border-slate-700">
+          <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200 dark:border-slate-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Grid Bot</CardTitle>
               <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
@@ -1491,7 +1511,7 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200 dark:border-slate-700">
+          <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200 dark:border-slate-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Portfólio Tokens</CardTitle>
               <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
@@ -1583,32 +1603,19 @@ export default function Home() {
               </Button>
             </div>
 
-            {/* Cabeçalho com botão de atualização de preços */}
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Seus Tokens</h3>
-                {lastPriceUpdate && (
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
-                    Última atualização: {new Date(lastPriceUpdate).toLocaleTimeString('pt-BR')}
-                  </p>
-                )}
+            {/* Header dos Tokens */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-gray-800">Seus Tokens</h2>
+                <div className="text-sm text-gray-600">
+                  {lastPriceUpdate && (
+                    <span>Última atualização: {lastPriceUpdate}</span>
+                  )}
+                </div>
               </div>
-              <Button
-                onClick={() => fetchRealTimePrices(tokens, true)}
-                disabled={isUpdatingPrices}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                {isUpdatingPrices ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Atualizando...
-                  </>
-                ) : (
-                  <>
-                    🔄 Atualizar Preços (CoinGecko)
-                  </>
-                )}
-              </Button>
+              <div className="text-sm text-blue-600 mb-2">
+                🔄 Atualização automática a cada 30 segundos via CoinGecko
+              </div>
             </div>
 
             {/* Lista de tokens */}
@@ -1766,7 +1773,7 @@ export default function Home() {
                               ⏳ Preço não disponível
                             </p>
                             <p className="text-xs text-slate-400 dark:text-slate-500">
-                                                             Clique em &quot;Atualizar Preços (CoinGecko)&quot;
+                              Aguardando atualização automática...
                             </p>
                           </div>
                         )}
@@ -1820,7 +1827,7 @@ export default function Home() {
                   <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
                     {tokens.filter(t => t.realTimePrice).length > 0 ? 
                       `${tokens.filter(t => t.realTimePrice).length}/${tokens.length} tokens com preços em tempo real` : 
-                      'Clique em &quot;Atualizar Preços (CoinGecko)&quot; para ver valores em tempo real'
+                      'Aguardando atualização automática de preços...'
                     }
                   </p>
                 </div>
