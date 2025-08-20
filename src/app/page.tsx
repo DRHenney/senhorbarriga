@@ -1061,8 +1061,10 @@ export default function Home() {
         // Fazer primeira atualização automática se há tokens
         if (processedTokens.length > 0) {
           console.log('🚀 Primeira atualização automática iniciada...');
+          console.log('📋 Tokens para primeira atualização:', processedTokens.map(t => t.symbol));
           // Aguardar um pouco para garantir que o estado foi atualizado
           setTimeout(() => {
+            console.log('⏰ Executando primeira atualização automática...');
             fetchRealTimePrices(processedTokens, false);
           }, 1000); // 1 segundo de delay
         } else {
