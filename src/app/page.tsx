@@ -496,6 +496,7 @@ export default function Home() {
   const [lastPriceUpdate, setLastPriceUpdate] = useState<string | null>(null);
   const [autoUpdateInterval, setAutoUpdateInterval] = useState<NodeJS.Timeout | null>(null);
   const [isLoadingTokens, setIsLoadingTokens] = useState(false);
+  const [isFetchingPrices, setIsFetchingPrices] = useState(false);
   
   // Estados para o temporizador de atualização
   const [countdownSeconds, setCountdownSeconds] = useState(30);
@@ -849,8 +850,7 @@ export default function Home() {
     portfolioGrowth = (((lastValue - firstValue) / firstValue) * 100).toFixed(1);
   }
 
-  // Estado para controlar se já está buscando preços
-  const [isFetchingPrices, setIsFetchingPrices] = useState(false);
+
 
   // Função para buscar preços em tempo real
   const fetchRealTimePrices = async (tokensList: any[], showLoading = false) => {
