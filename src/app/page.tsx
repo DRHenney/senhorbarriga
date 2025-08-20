@@ -875,6 +875,7 @@ export default function Home() {
       console.log('🔄 Atualizando preços automaticamente para:', tokensList.map(t => t.symbol));
       
       const tokensToFetch = tokensList.map(token => ({ symbol: token.symbol }));
+      console.log('🌐 Fazendo fetch para /api/prices/coingecko...');
 
       const response = await fetch('/api/prices/coingecko', {
         method: 'POST',
@@ -885,12 +886,16 @@ export default function Home() {
         cache: 'no-store'
       });
 
+      console.log('📥 Resposta recebida da API:', response.status, response.statusText);
+
       if (!response.ok) {
         console.error('❌ Erro na API:', response.status, response.statusText);
         return;
       }
 
+      console.log('📥 Fazendo parse da resposta JSON...');
       const data = await response.json();
+      console.log('📥 Parse JSON concluído, verificando dados...');
 
       if (data.success && data.results) {
         const updatedTokens = tokens.map(token => {
