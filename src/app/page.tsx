@@ -669,14 +669,14 @@ export default function Home() {
       const data = await response.json();
       console.log('Dados recebidos:', data);
 
-      if (data.success && data.prices) {
+      if (data.success && data.results) {
         const updatedTokens = tokens.map(token => {
-          const priceData = data.prices.find((p: any) => p.symbol === token.symbol);
+          const priceData = data.results.find((p: any) => p.symbol === token.symbol);
           if (priceData && priceData.success) {
             return {
               ...token,
-              realTimePrice: priceData.priceUsd,
-              priceChange24h: priceData.priceChange24h,
+              realTimePrice: priceData.data.priceUsd,
+              priceChange24h: priceData.data.priceChange24h,
               lastUpdated: new Date().toLocaleString('pt-BR')
             };
           }
@@ -686,8 +686,8 @@ export default function Home() {
         setTokens(updatedTokens);
         setLastPriceUpdate(new Date().toLocaleString('pt-BR'));
         
-        const successCount = data.prices.filter((p: any) => p.success).length;
-        const totalCount = data.prices.length;
+        const successCount = data.results.filter((p: any) => p.success).length;
+        const totalCount = data.results.length;
         
         if (showLoading) {
           toast({
