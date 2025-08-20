@@ -937,6 +937,14 @@ export default function Home() {
       console.log('🔄 fetchRealTimePrices terminando, definindo isFetchingPrices = false');
       setIsFetchingPrices(false);
     }
+
+    // Timeout de segurança para garantir que isFetchingPrices seja resetado
+    setTimeout(() => {
+      if (isFetchingPrices) {
+        console.log('⚠️ Timeout de segurança: forçando isFetchingPrices = false');
+        setIsFetchingPrices(false);
+      }
+    }, 10000); // 10 segundos
   };
 
   // Função para iniciar atualização automática
