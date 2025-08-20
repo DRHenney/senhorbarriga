@@ -431,7 +431,7 @@ export default function Home() {
     if (isNaN(editAmount) || editAmount <= 0) {
       toast({
         title: "⚠️ Aviso",
-        description: "Por favor, insira uma quantidade válida.",
+        description: "Por favor, insira uma quantidade válida maior que zero.",
         variant: "destructive",
       });
       return;
@@ -448,7 +448,7 @@ export default function Home() {
       if (isNaN(editPrice) || editPrice <= 0) {
         toast({
           title: "⚠️ Aviso",
-          description: "Por favor, insira um preço válido.",
+          description: "Por favor, insira um preço válido maior que zero.",
           variant: "destructive",
         });
         return;
@@ -465,6 +465,16 @@ export default function Home() {
       const newPrice = Number(averagePrice.toFixed(2));
       const finalValue = Number((newAmount * newPrice).toFixed(2));
       
+      // Mostrar resumo da operação
+      const confirmMessage = `Adicionar ${editAmount.toFixed(2)} ${currentToken.symbol} por $${editPrice.toFixed(2)}?\n\n` +
+        `Resultado: ${currentToken.amount.toFixed(2)} → ${newAmount.toFixed(2)} ${currentToken.symbol}\n` +
+        `Preço médio: $${currentToken.price.toFixed(2)} → $${newPrice.toFixed(2)}\n` +
+        `Valor total: ${formatCurrency(currentToken.value)} → ${formatCurrency(finalValue)}`;
+      
+      if (!confirm(confirmMessage)) {
+        return;
+      }
+      
       updatedToken = {
         ...currentToken,
         amount: newAmount,
@@ -476,13 +486,35 @@ export default function Home() {
       if (editAmount > currentToken.amount) {
         toast({
           title: "⚠️ Aviso",
-          description: "Não é possível remover mais tokens do que você possui!",
+          description: `Você possui apenas ${currentToken.amount.toFixed(2)} ${currentToken.symbol}. Não é possível remover ${editAmount.toFixed(2)} ${currentToken.symbol}.`,
           variant: "destructive",
         });
         return;
       }
+      
+      if (editAmount === currentToken.amount) {
+        // Se está removendo tudo, perguntar se quer deletar o token
+        if (confirm(`Você está removendo todos os ${currentToken.amount.toFixed(2)} ${currentToken.symbol}. Deseja remover completamente este token do portfólio?`)) {
+          await removeToken(currentToken.id);
+          return;
+        } else {
+          return;
+        }
+      }
+      
       const newAmount = Number((currentToken.amount - editAmount).toFixed(2));
       const newValue = Number((newAmount * currentToken.price).toFixed(2));
+      
+      // Mostrar resumo da operação
+      const confirmMessage = `Remover ${editAmount.toFixed(2)} ${currentToken.symbol}?\n\n` +
+        `Resultado: ${currentToken.amount.toFixed(2)} → ${newAmount.toFixed(2)} ${currentToken.symbol}\n` +
+        `Preço médio: $${currentToken.price.toFixed(2)} (mantido)\n` +
+        `Valor total: ${formatCurrency(currentToken.value)} → ${formatCurrency(newValue)}`;
+      
+      if (!confirm(confirmMessage)) {
+        return;
+      }
+      
       updatedToken = {
         ...currentToken,
         amount: newAmount,
@@ -511,9 +543,12 @@ export default function Home() {
         setTokens(tokens.map(t => t.id === editingToken.id ? updatedToken : t));
         setEditingToken(null);
         setEditForm({ action: "add", amount: "", price: "" });
+        
+        const actionText = editForm.action === "add" ? "adicionados" : "removidos";
+        const symbol = currentToken.symbol || 'tokens';
         toast({
           title: "✅ Sucesso!",
-          description: "Token atualizado com sucesso!",
+          description: `${editAmount.toFixed(2)} ${symbol} ${actionText} com sucesso!`,
           variant: "default",
           className: "bg-green-50 border-green-200 text-green-800",
         });
@@ -1466,22 +1501,24 @@ export default function Home() {
                             size="sm"
                             onClick={() => setEditForm({ ...editForm, action: "add" })}
                             className="bg-green-600 hover:bg-green-700 text-white"
+                            title="Adicionar mais tokens ao portfólio"
                           >
-                            Adicionar
+                            ➕ Adicionar
                           </Button>
                           <Button
                             variant={editForm.action === "remove" ? "default" : "outline"}
                             size="sm"
                             onClick={() => setEditForm({ ...editForm, action: "remove" })}
                             className="bg-red-600 hover:bg-red-700 text-white"
+                            title="Remover uma parcela dos tokens (vendas parciais)"
                           >
-                            Remover
+                            ➖ Remover
                           </Button>
                         </div>
                         
                                                                          <div className="space-y-2">
                           <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                            {editForm.action === "add" ? "Quantidade a adicionar" : "Quantidade a remover"}
+                            {editForm.action === "add" ? "Quantidade a adicionar (compras)" : "Quantidade a remover (vendas)"}
                           </label>
                           <Input
                             type="number"
@@ -1509,6 +1546,17 @@ export default function Home() {
                              </p>
                            </div>
                          )}
+                         
+                         {editForm.action === "remove" && (
+                           <div className="space-y-2">
+                             <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                               <p className="text-xs text-blue-700 dark:text-blue-300">
+                                 <strong>💡 Dica:</strong> Ao remover tokens, o preço médio permanece o mesmo. 
+                                 Se você remover todos os tokens, será perguntado se deseja deletar o token do portfólio.
+                               </p>
+                             </div>
+                           </div>
+                         )}
                       </div>
                       
                       <div className="flex justify-end space-x-2">
@@ -1522,9 +1570,9 @@ export default function Home() {
                         <Button
                           onClick={applyEdit}
                           disabled={!editForm.amount}
-                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                          className={editForm.action === "add" ? "bg-green-600 hover:bg-green-700 text-white" : "bg-red-600 hover:bg-red-700 text-white"}
                         >
-                          {editForm.action === "add" ? "Adicionar" : "Remover"}
+                          {editForm.action === "add" ? "✅ Adicionar Tokens" : "❌ Remover Tokens"}
                         </Button>
                       </div>
                     </div>
