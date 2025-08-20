@@ -1120,7 +1120,11 @@ export default function Home() {
       // Iniciar atualização automática
       const interval = setInterval(() => {
         console.log('⏰ Executando atualização automática...');
-        startAutoUpdate();
+        if (!isFetchingPrices) {
+          startAutoUpdate();
+        } else {
+          console.log('⏰ Atualização automática adiada - isFetchingPrices ainda true');
+        }
       }, 30000); // 30 segundos
 
       console.log('✅ Intervalo criado:', interval);
