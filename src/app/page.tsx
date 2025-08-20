@@ -1053,10 +1053,9 @@ export default function Home() {
         console.log('✅ Tokens processados e definidos no estado:', processedTokens.length);
         setTokens(processedTokens);
         
-        // Buscar preços em tempo real após carregar os tokens
+        // Não buscar preços automaticamente - deixar o setInterval gerenciar
         if (processedTokens.length > 0) {
-          console.log('🚀 Iniciando busca de preços em tempo real...');
-          fetchRealTimePrices(processedTokens, false); // Não mostrar loading na carga inicial
+          console.log('📋 Tokens carregados - aguardando primeira atualização automática em 30 segundos');
         } else {
           console.log('📭 Nenhum token para buscar preços');
         }
