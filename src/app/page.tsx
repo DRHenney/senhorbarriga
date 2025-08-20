@@ -1056,9 +1056,13 @@ export default function Home() {
         console.log('✅ Tokens processados e definidos no estado:', processedTokens.length);
         setTokens(processedTokens);
         
-        // Não buscar preços automaticamente - deixar o setInterval gerenciar
+        // Fazer primeira atualização imediata se há tokens
         if (processedTokens.length > 0) {
-          console.log('📋 Tokens carregados - aguardando primeira atualização automática em 30 segundos');
+          console.log('🚀 Primeira atualização imediata...');
+          // Aguardar um pouco para garantir que o estado foi atualizado
+          setTimeout(() => {
+            fetchRealTimePrices(processedTokens, false);
+          }, 500);
         } else {
           console.log('📭 Nenhum token para buscar preços');
         }
@@ -1130,20 +1134,14 @@ export default function Home() {
       // Iniciar atualização automática
       const interval = setInterval(() => {
         console.log('⏰ Executando atualização automática...');
-        console.log('⏰ Verificando isFetchingPrices:', { isFetchingPrices });
-        if (!isFetchingPrices) {
-          console.log('⏰ isFetchingPrices é false, executando startAutoUpdate...');
-          startAutoUpdate();
-        } else {
-          console.log('⏰ Atualização automática adiada - isFetchingPrices ainda true');
-        }
+        fetchRealTimePrices(tokens, false);
       }, 30000); // 30 segundos
 
       console.log('✅ Intervalo criado:', interval);
       setAutoUpdateInterval(interval);
       setNextUpdateTime(new Date(Date.now() + 30000));
       console.log('✅ Estados atualizados - autoUpdateInterval e nextUpdateTime definidos');
-      console.log('✅ Intervalo configurado - primeira atualização em 30 segundos');
+      console.log('✅ Intervalo configurado - próximas atualizações a cada 30 segundos');
 
       // Cleanup ao desmontar componente
       return () => {
