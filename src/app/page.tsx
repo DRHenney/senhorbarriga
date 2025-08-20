@@ -597,12 +597,29 @@ export default function Home() {
       const response = await fetch('/api/tokens');
       const data = await response.json();
       
-      if (data.success) {
+      if (data.success && Array.isArray(data.tokens)) {
         // Converter os valores string para number e corrigir casas decimais
         const processedTokens = data.tokens.map((token: any) => {
-          const amount = parseFloat(token.amount);
-          const price = parseFloat(token.price);
-          const value = parseFloat(token.value);
+          // Verificar se o token tem todas as propriedades necessárias
+          if (!token || typeof token !== 'object') {
+            console.warn('Token inválido encontrado:', token);
+            return null;
+          }
+
+          const amount = parseFloat(token.amount || '0');
+          const price = parseFloat(token.price || '0');
+          const value = parseFloat(token.value || '0');
+          
+          // Verificar se os valores são válidos
+          if (isNaN(amount) || isNaN(price) || isNaN(value)) {
+            console.warn('Valores inválidos no token:', token);
+            return {
+              ...token,
+              amount: 0,
+              price: 0,
+              value: 0
+            };
+          }
           
           // Verificar se precisa corrigir as casas decimais
           const needsCorrection = 
@@ -632,8 +649,8 @@ export default function Home() {
                 value: correctedToken.value,
               }),
             }).catch(error => {
-      // Erro silencioso para produção
-    });
+              console.error('Erro ao corrigir token:', error);
+            });
             
             return correctedToken;
           }
@@ -644,21 +661,32 @@ export default function Home() {
             price: Number(price.toFixed(2)),
             value: Number(value.toFixed(2))
           };
-        });
+        }).filter((token: any) => token !== null); // Remover tokens inválidos
         
         setTokens(processedTokens);
       } else {
-        // Erro silencioso para produção
+        console.warn('Resposta inválida da API de tokens:', data);
+        setTokens([]);
       }
     } catch (error) {
-      // Erro silencioso para produção
+      console.error('Erro ao carregar tokens:', error);
+      setTokens([]);
     }
   };
 
   // Carregar tokens ao montar o componente
   useEffect(() => {
-    loadTokens();
-    loadRecords();
+    // Verificar se o usuário está autenticado antes de carregar dados
+    const checkAuthAndLoad = async () => {
+      try {
+        // Tentar carregar dados - se falhar por autenticação, não é um erro crítico
+        await Promise.allSettled([loadTokens(), loadRecords()]);
+      } catch (error) {
+        console.error('Erro ao carregar dados iniciais:', error);
+      }
+    };
+    
+    checkAuthAndLoad();
   }, []);
 
   // Carregar registros do banco
@@ -667,13 +695,15 @@ export default function Home() {
       const response = await fetch('/api/records');
       const data = await response.json();
       
-      if (data.success) {
+      if (data.success && Array.isArray(data.records)) {
         setRecords(data.records);
       } else {
-        // Erro silencioso para produção
+        console.warn('Resposta inválida da API de registros:', data);
+        setRecords([]);
       }
     } catch (error) {
-      // Erro silencioso para produção
+      console.error('Erro ao carregar registros:', error);
+      setRecords([]);
     }
   };
 
