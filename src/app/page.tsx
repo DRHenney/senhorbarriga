@@ -1118,6 +1118,7 @@ export default function Home() {
       console.log('✅ Intervalo criado:', interval);
       setAutoUpdateInterval(interval);
       setNextUpdateTime(new Date(Date.now() + 30000));
+      console.log('✅ Estados atualizados - autoUpdateInterval e nextUpdateTime definidos');
 
       // Fazer primeira atualização imediatamente
       console.log('⚡ Primeira atualização imediata...');
@@ -1130,6 +1131,8 @@ export default function Home() {
           clearInterval(interval);
         }
       };
+    } else {
+      console.log('📭 Nenhum token para atualização automática');
     }
   }, [tokens.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
