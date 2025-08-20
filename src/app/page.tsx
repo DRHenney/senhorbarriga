@@ -501,7 +501,6 @@ export default function Home() {
   // Estados para o temporizador de atualização
   const [countdownSeconds, setCountdownSeconds] = useState(30);
   const [nextUpdateTime, setNextUpdateTime] = useState<Date | null>(null);
-  const [showActivationPrompt, setShowActivationPrompt] = useState(false);
 
   // Estados para operações ativas
   const [activeOperations, setActiveOperations] = useState<Array<{
@@ -853,16 +852,7 @@ export default function Home() {
 
 
 
-  // Função para ativar atualização automática
-  const activateAutoUpdate = () => {
-    console.log('🚀 Ativando atualização automática...');
-    setShowActivationPrompt(false);
-    
-    // Fazer primeira atualização imediata
-    if (tokens.length > 0) {
-      fetchRealTimePrices(tokens, false);
-    }
-  };
+
 
   // Função para buscar preços em tempo real
   const fetchRealTimePrices = async (tokensList: any[], showLoading = false) => {
@@ -1068,10 +1058,13 @@ export default function Home() {
         console.log('✅ Tokens processados e definidos no estado:', processedTokens.length);
         setTokens(processedTokens);
         
-        // Mostrar prompt de ativação se há tokens
+        // Fazer primeira atualização automática se há tokens
         if (processedTokens.length > 0) {
-          console.log('📋 Tokens carregados - mostrando prompt de ativação');
-          setShowActivationPrompt(true);
+          console.log('🚀 Primeira atualização automática iniciada...');
+          // Aguardar um pouco para garantir que o estado foi atualizado
+          setTimeout(() => {
+            fetchRealTimePrices(processedTokens, false);
+          }, 1000); // 1 segundo de delay
         } else {
           console.log('📭 Nenhum token para buscar preços');
         }
@@ -2026,33 +2019,6 @@ export default function Home() {
               </div>
 
             </div>
-
-            {/* Prompt de ativação */}
-            {showActivationPrompt && (
-              <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm">🚀</span>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-blue-900 dark:text-blue-100">
-                        Ativar Atualização Automática
-                      </h3>
-                      <p className="text-sm text-blue-700 dark:text-blue-300">
-                        Clique para iniciar a atualização automática de preços em tempo real
-                      </p>
-                    </div>
-                  </div>
-                  <Button
-                    onClick={activateAutoUpdate}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2"
-                  >
-                    Ativar Agora
-                  </Button>
-                </div>
-              </div>
-            )}
 
             {/* Lista de tokens */}
             <div className="space-y-3">
