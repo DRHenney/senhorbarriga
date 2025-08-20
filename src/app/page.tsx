@@ -633,14 +633,14 @@ export default function Home() {
     portfolioGrowth = (((lastValue - firstValue) / firstValue) * 100).toFixed(1);
   }
 
-  // Buscar preços em tempo real do DexScreener
+  // Buscar preços em tempo real do CoinGecko
   const fetchRealTimePrices = async (tokensList: any[], showLoading = true) => {
     try {
       if (showLoading) {
         setIsUpdatingPrices(true);
       }
       
-      console.log('🔄 Buscando preços em tempo real para:', tokensList.length, 'tokens');
+      console.log('🔄 Buscando preços em tempo real no CoinGecko para:', tokensList.length, 'tokens');
       console.log('📋 Tokens para buscar:', tokensList);
       
       const tokensToFetch = tokensList
@@ -659,9 +659,9 @@ export default function Home() {
         return;
       }
 
-      console.log('📡 Fazendo requisição para /api/prices/dexscreener...');
+      console.log('📡 Fazendo requisição para /api/prices/coingecko...');
       
-      const response = await fetch('/api/prices/dexscreener', {
+      const response = await fetch('/api/prices/coingecko', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1605,7 +1605,7 @@ export default function Home() {
                   </>
                 ) : (
                   <>
-                    🔄 Atualizar Preços
+                    🔄 Atualizar Preços (CoinGecko)
                   </>
                 )}
               </Button>
@@ -1766,7 +1766,7 @@ export default function Home() {
                               ⏳ Preço não disponível
                             </p>
                             <p className="text-xs text-slate-400 dark:text-slate-500">
-                                                             Clique em &quot;Atualizar Preços&quot;
+                                                             Clique em &quot;Atualizar Preços (CoinGecko)&quot;
                             </p>
                           </div>
                         )}
@@ -1820,7 +1820,7 @@ export default function Home() {
                   <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
                     {tokens.filter(t => t.realTimePrice).length > 0 ? 
                       `${tokens.filter(t => t.realTimePrice).length}/${tokens.length} tokens com preços em tempo real` : 
-                      'Clique em &quot;Atualizar Preços&quot; para ver valores em tempo real'
+                      'Clique em &quot;Atualizar Preços (CoinGecko)&quot; para ver valores em tempo real'
                     }
                   </p>
                 </div>
