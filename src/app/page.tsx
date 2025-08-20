@@ -943,12 +943,19 @@ export default function Home() {
 
   // Carregar tokens do banco
   const loadTokens = async () => {
-    if (isLoadingTokens) return; // Evitar carregamentos simultâneos
+    console.log('📥 loadTokens iniciado');
+    if (isLoadingTokens) {
+      console.log('⏳ loadTokens já em andamento, cancelando...');
+      return; // Evitar carregamentos simultâneos
+    }
     
     setIsLoadingTokens(true);
     try {
+      console.log('🌐 Fazendo fetch para /api/tokens...');
       const response = await fetch('/api/tokens');
       const data = await response.json();
+      
+      console.log('📥 Resposta da API tokens:', { success: data.success, tokensCount: data.tokens?.length });
       
       if (data.success && Array.isArray(data.tokens)) {
         // Converter os valores string para number e corrigir casas decimais
@@ -1014,11 +1021,15 @@ export default function Home() {
           };
         }).filter((token: any) => token !== null); // Remover tokens inválidos
         
+        console.log('✅ Tokens processados e definidos no estado:', processedTokens.length);
         setTokens(processedTokens);
         
         // Buscar preços em tempo real após carregar os tokens
         if (processedTokens.length > 0) {
+          console.log('🚀 Iniciando busca de preços em tempo real...');
           fetchRealTimePrices(processedTokens, false); // Não mostrar loading na carga inicial
+        } else {
+          console.log('📭 Nenhum token para buscar preços');
         }
       } else {
         console.warn('Resposta inválida da API de tokens:', data);
@@ -1055,8 +1066,14 @@ export default function Home() {
 
   // useEffect para gerenciar atualização automática de preços
   useEffect(() => {
+    console.log('🔄 useEffect de atualização automática executado:', { 
+      tokensLength: tokens.length, 
+      autoUpdateInterval: !!autoUpdateInterval 
+    });
+    
     // Limpar intervalo anterior se existir
     if (autoUpdateInterval) {
+      console.log('🧹 Limpando intervalo anterior');
       clearInterval(autoUpdateInterval);
       setAutoUpdateInterval(null);
     }
