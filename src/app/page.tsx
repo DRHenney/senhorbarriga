@@ -900,7 +900,7 @@ export default function Home() {
       console.log('📥 Parse JSON concluído, verificando dados...');
 
       if (data.success && data.results) {
-        const updatedTokens = tokens.map(token => {
+        const updatedTokens = tokensList.map(token => {
           const priceData = data.results.find((p: any) => p.symbol === token.symbol);
           if (priceData && priceData.success) {
             console.log(`✅ ${token.symbol}: $${priceData.data.priceUsd} (${priceData.data.priceChange24h > 0 ? '+' : ''}${priceData.data.priceChange24h.toFixed(2)}%)`);
@@ -916,7 +916,7 @@ export default function Home() {
 
         // Só atualizar se realmente houve mudanças
         const hasChanges = updatedTokens.some((token, index) => {
-          const originalToken = tokens[index];
+          const originalToken = tokensList[index];
           return token.realTimePrice !== originalToken.realTimePrice ||
                  token.priceChange24h !== originalToken.priceChange24h;
         });
