@@ -1,0 +1,1 @@
+ALTER TABLE "user_tokens" ADD COLUMN "purchase_date" timestamp DEFAULT now() NOT NULL;

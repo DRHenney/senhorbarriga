@@ -146,6 +146,7 @@ const initialTokens: Array<{
   amount: number;
   price: number;
   value: number;
+  purchaseDate: string;
 }> = [];
 
 // Função para calcular dados de evolução do portfólio baseados nos registros reais
@@ -329,6 +330,20 @@ const formatTokenAmount = (amount: number): string => {
   }
 };
 
+// Função para formatar data
+const formatDate = (dateString: string): string => {
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  } catch (error) {
+    return 'Data inválida';
+  }
+};
+
 // Função para calcular valor atual e lucro/prejuízo
 const calculateTokenMetrics = (token: any) => {
   const currentPrice = token.realTimePrice || token.price || 0;
@@ -434,6 +449,7 @@ export default function Home() {
     amount: number;
     price: number;
     value: number;
+    purchaseDate: string;
     realTimePrice?: number;
     priceChange24h?: number;
     lastUpdated?: string;
@@ -445,6 +461,7 @@ export default function Home() {
     symbol: "",
     amount: "",
     price: "",
+    purchaseDate: new Date().toISOString().split('T')[0], // Data atual como padrão
   });
   
   const [priceInputType, setPriceInputType] = useState<'perToken' | 'totalValue'>('perToken');
@@ -950,6 +967,7 @@ export default function Home() {
             amount: parseFloat(token.amount || '0'),
             price: parseFloat(token.price || '0'),
             value: parseFloat(token.value || '0'),
+            purchaseDate: token.purchaseDate || new Date().toISOString(),
           };
 
           const amount = safeToken.amount;
@@ -1312,6 +1330,7 @@ export default function Home() {
           amount: formatValue(amount),
           price: formatValue(price),
           value: formatValue(amount * price),
+          purchaseDate: newToken.purchaseDate,
         };
 
         console.log('📤 Enviando dados do token:', tokenData);
@@ -1342,13 +1361,14 @@ export default function Home() {
             amount: parseFloat(newTokenData.amount || '0'),
             price: parseFloat(newTokenData.price || '0'),
             value: parseFloat(newTokenData.value || '0'),
+            purchaseDate: newTokenData.purchaseDate || new Date().toISOString(),
           };
           
           console.log('📋 Token processado:', processedToken);
           console.log('📋 Novo array de tokens:', [...tokens, processedToken]);
           
           setTokens([...tokens, processedToken]);
-          setNewToken({ name: "", symbol: "", amount: "", price: "" });
+          setNewToken({ name: "", symbol: "", amount: "", price: "", purchaseDate: new Date().toISOString().split('T')[0] });
           
           console.log('✅ Estado atualizado, mostrando toast...');
           toast({
@@ -1771,7 +1791,7 @@ export default function Home() {
           </CardHeader>
           <CardContent className="pt-6">
             {/* Formulário para adicionar token */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
               <div className="space-y-3">
                 <label className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center">
                   <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
@@ -1854,6 +1874,18 @@ export default function Home() {
                     </div>
                   )}
                 </div>
+              </div>
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center">
+                  <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                  Data da Compra
+                </label>
+                <Input
+                  type="date"
+                  value={newToken.purchaseDate}
+                  onChange={(e) => setNewToken({ ...newToken, purchaseDate: e.target.value })}
+                  className="h-12 text-base border-2 border-slate-300 dark:border-slate-600 focus:border-red-500 focus:ring-4 focus:ring-red-100 dark:focus:ring-red-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100 font-medium"
+                />
               </div>
             </div>
             <div className="flex justify-end mb-6">
@@ -2029,6 +2061,9 @@ export default function Home() {
                           <p className="text-sm text-slate-600 dark:text-slate-400">{token.symbol || 'N/A'}</p>
                           <p className="text-xs text-slate-500 dark:text-slate-500">
                             {token.amount > 0 ? `${formatTokenAmount(token.amount)} tokens` : '0.00 tokens (acompanhamento)'}
+                          </p>
+                          <p className="text-xs text-slate-400 dark:text-slate-500">
+                            Comprado em: {formatDate(token.purchaseDate)}
                           </p>
                         </div>
                       </div>

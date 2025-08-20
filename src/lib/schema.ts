@@ -93,6 +93,7 @@ export const userTokens = pgTable('user_tokens', {
   amount: decimal('amount', { precision: 18, scale: 8 }).notNull(),
   price: decimal('price', { precision: 18, scale: 8 }).notNull(),
   value: decimal('value', { precision: 18, scale: 8 }).notNull(),
+  purchaseDate: timestamp('purchase_date').notNull().defaultNow(), // Data da compra
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });

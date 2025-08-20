@@ -60,8 +60,8 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { name, symbol, amount, price } = body;
-    console.log('📥 Dados recebidos:', { name, symbol, amount, price });
+    const { name, symbol, amount, price, purchaseDate } = body;
+    console.log('📥 Dados recebidos:', { name, symbol, amount, price, purchaseDate });
 
     if (!name || !symbol) {
       console.log('❌ Dados obrigatórios faltando');
@@ -102,6 +102,7 @@ export async function POST(request: Request) {
       amount: tokenAmount.toString(),
       price: tokenPrice.toString(),
       value: tokenValue.toString(),
+      purchaseDate: purchaseDate ? new Date(purchaseDate) : new Date(), // Usar data fornecida ou data atual
     }).returning();
 
     console.log('✅ Token criado:', newToken);
