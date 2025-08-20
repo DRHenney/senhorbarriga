@@ -265,6 +265,17 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
+// Função para formatar valores com precisão adequada
+const formatValue = (value: number) => {
+  if (value < 0.01) {
+    return Number(value.toFixed(8));
+  } else if (value < 1) {
+    return Number(value.toFixed(6));
+  } else {
+    return Number(value.toFixed(4));
+  }
+};
+
 // Componente de Tooltip Customizado
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -467,17 +478,6 @@ export default function Home() {
       const totalValue = currentValue + newValue;
       const totalAmount = currentToken.amount + editAmount;
       const averagePrice = totalValue / totalAmount;
-
-      // Função para formatar valores com precisão adequada
-      const formatValue = (value: number) => {
-        if (value < 0.01) {
-          return Number(value.toFixed(8));
-        } else if (value < 1) {
-          return Number(value.toFixed(6));
-        } else {
-          return Number(value.toFixed(4));
-        }
-      };
 
       const newAmount = formatValue(totalAmount);
       const newPrice = formatValue(averagePrice);
@@ -769,17 +769,6 @@ export default function Home() {
             return amount;
           };
 
-          // Para valores, manter precisão adequada
-          const formatValue = (value: number) => {
-            if (value < 0.01) {
-              return Number(value.toFixed(8));
-            } else if (value < 1) {
-              return Number(value.toFixed(6));
-            } else {
-              return Number(value.toFixed(4));
-            }
-          };
-
           return {
             ...safeToken,
             amount: formatAmount(amount),
@@ -1055,17 +1044,6 @@ export default function Home() {
           });
           return;
         }
-
-        // Função para formatar valores com precisão adequada
-        const formatValue = (value: number) => {
-          if (value < 0.01) {
-            return Number(value.toFixed(8));
-          } else if (value < 1) {
-            return Number(value.toFixed(6));
-          } else {
-            return Number(value.toFixed(4));
-          }
-        };
 
         const tokenData = {
           ...newToken,
