@@ -1123,10 +1123,19 @@ export default function Home() {
 
       // Fazer primeira atualização imediatamente
       console.log('⚡ Primeira atualização imediata...');
-      // Aguardar um pouco para garantir que isFetchingPrices seja false
+      // Aguardar mais tempo para garantir que isFetchingPrices seja false
       setTimeout(() => {
-        startAutoUpdate();
-      }, 100);
+        console.log('⏳ Verificando isFetchingPrices antes de startAutoUpdate:', { isFetchingPrices });
+        if (!isFetchingPrices) {
+          startAutoUpdate();
+        } else {
+          console.log('⏳ isFetchingPrices ainda true, aguardando mais...');
+          setTimeout(() => {
+            console.log('⏳ Tentando novamente, isFetchingPrices:', { isFetchingPrices });
+            startAutoUpdate();
+          }, 500);
+        }
+      }, 200);
 
       // Cleanup ao desmontar componente
       return () => {
