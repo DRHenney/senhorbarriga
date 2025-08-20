@@ -1061,7 +1061,7 @@ export default function Home() {
         // Fazer primeira atualização imediata se há tokens
         if (processedTokens.length > 0) {
           console.log('🚀 Primeira atualização imediata...');
-          console.log('📋 Tokens para primeira atualização:', processedTokens.map(t => t.symbol));
+          console.log('📋 Tokens para primeira atualização:', processedTokens.map((t: any) => t.symbol));
           // Executar imediatamente
           fetchRealTimePrices(processedTokens, false);
         } else {
