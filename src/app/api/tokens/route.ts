@@ -99,9 +99,9 @@ export async function POST(request: Request) {
       userId: user.id,
       name,
       symbol: symbol.toUpperCase(),
-      amount: tokenAmount.toFixed(2),
-      price: tokenPrice.toFixed(2),
-      value: tokenValue.toFixed(2),
+      amount: tokenAmount.toString(),
+      price: tokenPrice.toString(),
+      value: tokenValue.toString(),
     }).returning();
 
     console.log('✅ Token criado:', newToken);
@@ -157,9 +157,9 @@ export async function PUT(request: Request) {
     // Atualizar token no banco
     const updatedToken = await db.update(userTokens)
       .set({
-        amount: parseFloat(amount).toFixed(2),
-        price: parseFloat(price).toFixed(2),
-        value: parseFloat(value).toFixed(2),
+        amount: parseFloat(amount).toString(),
+        price: parseFloat(price).toString(),
+        value: parseFloat(value).toString(),
         updatedAt: new Date(),
       })
       .where(eq(userTokens.id, id))

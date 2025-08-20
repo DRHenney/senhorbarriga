@@ -468,14 +468,25 @@ export default function Home() {
       const totalAmount = currentToken.amount + editAmount;
       const averagePrice = totalValue / totalAmount;
 
-      const newAmount = Number(totalAmount.toFixed(2));
-      const newPrice = Number(averagePrice.toFixed(2));
-      const finalValue = Number((newAmount * newPrice).toFixed(2));
+      // Função para formatar valores com precisão adequada
+      const formatValue = (value: number) => {
+        if (value < 0.01) {
+          return Number(value.toFixed(8));
+        } else if (value < 1) {
+          return Number(value.toFixed(6));
+        } else {
+          return Number(value.toFixed(4));
+        }
+      };
+
+      const newAmount = formatValue(totalAmount);
+      const newPrice = formatValue(averagePrice);
+      const finalValue = formatValue(newAmount * newPrice);
       
       // Mostrar resumo da operação
-      const confirmMessage = `Adicionar ${editAmount.toFixed(2)} ${currentToken.symbol} por $${editPrice.toFixed(2)}?\n\n` +
-        `Resultado: ${currentToken.amount.toFixed(2)} → ${newAmount.toFixed(2)} ${currentToken.symbol}\n` +
-        `Preço médio: $${currentToken.price.toFixed(2)} → $${newPrice.toFixed(2)}\n` +
+      const confirmMessage = `Adicionar ${editAmount.toFixed(8)} ${currentToken.symbol} por $${editPrice.toFixed(8)}?\n\n` +
+        `Resultado: ${currentToken.amount.toFixed(8)} → ${newAmount.toFixed(8)} ${currentToken.symbol}\n` +
+        `Preço médio: $${currentToken.price.toFixed(8)} → $${newPrice.toFixed(8)}\n` +
         `Valor total: ${formatCurrency(currentToken.value)} → ${formatCurrency(finalValue)}`;
       
       if (!confirm(confirmMessage)) {
@@ -493,7 +504,7 @@ export default function Home() {
       if (editAmount > currentToken.amount) {
         toast({
           title: "⚠️ Aviso",
-          description: `Você possui apenas ${currentToken.amount.toFixed(2)} ${currentToken.symbol}. Não é possível remover ${editAmount.toFixed(2)} ${currentToken.symbol}.`,
+          description: `Você possui apenas ${currentToken.amount.toFixed(8)} ${currentToken.symbol}. Não é possível remover ${editAmount.toFixed(8)} ${currentToken.symbol}.`,
           variant: "destructive",
         });
         return;
@@ -501,7 +512,7 @@ export default function Home() {
       
       if (editAmount === currentToken.amount) {
         // Se está removendo tudo, perguntar se quer deletar o token
-        if (confirm(`Você está removendo todos os ${currentToken.amount.toFixed(2)} ${currentToken.symbol}. Deseja remover completamente este token do portfólio?`)) {
+        if (confirm(`Você está removendo todos os ${currentToken.amount.toFixed(8)} ${currentToken.symbol}. Deseja remover completamente este token do portfólio?`)) {
           await removeToken(currentToken.id);
           return;
         } else {
@@ -509,13 +520,13 @@ export default function Home() {
         }
       }
       
-      const newAmount = Number((currentToken.amount - editAmount).toFixed(2));
-      const newValue = Number((newAmount * currentToken.price).toFixed(2));
+      const newAmount = formatValue(currentToken.amount - editAmount);
+      const newValue = formatValue(newAmount * currentToken.price);
       
       // Mostrar resumo da operação
-      const confirmMessage = `Remover ${editAmount.toFixed(2)} ${currentToken.symbol}?\n\n` +
-        `Resultado: ${currentToken.amount.toFixed(2)} → ${newAmount.toFixed(2)} ${currentToken.symbol}\n` +
-        `Preço médio: $${currentToken.price.toFixed(2)} (mantido)\n` +
+      const confirmMessage = `Remover ${editAmount.toFixed(8)} ${currentToken.symbol}?\n\n` +
+        `Resultado: ${currentToken.amount.toFixed(8)} → ${newAmount.toFixed(8)} ${currentToken.symbol}\n` +
+        `Preço médio: $${currentToken.price.toFixed(8)} (mantido)\n` +
         `Valor total: ${formatCurrency(currentToken.value)} → ${formatCurrency(newValue)}`;
       
       if (!confirm(confirmMessage)) {
@@ -555,7 +566,7 @@ export default function Home() {
         const symbol = currentToken.symbol || 'tokens';
         toast({
           title: "✅ Sucesso!",
-          description: `${editAmount.toFixed(2)} ${symbol} ${actionText} com sucesso!`,
+          description: `${editAmount.toFixed(8)} ${symbol} ${actionText} com sucesso!`,
           variant: "default",
           className: "bg-green-50 border-green-200 text-green-800",
         });
@@ -737,46 +748,44 @@ export default function Home() {
             };
           }
           
-          // Verificar se precisa corrigir as casas decimais
-          const needsCorrection = 
-            amount.toString().includes('.') && amount.toString().split('.')[1]?.length > 2 ||
-            price.toString().includes('.') && price.toString().split('.')[1]?.length > 2 ||
-            value.toString().includes('.') && value.toString().split('.')[1]?.length > 2;
-          
-          if (needsCorrection) {
-            // Corrigir automaticamente no banco
-            const correctedToken = {
-              ...safeToken,
-              amount: Number(amount.toFixed(2)),
-              price: Number(price.toFixed(2)),
-              value: Number(value.toFixed(2))
-            };
-            
-            // Atualizar no banco de dados
-            fetch('/api/tokens', {
-              method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                id: token.id,
-                amount: correctedToken.amount,
-                price: correctedToken.price,
-                value: correctedToken.value,
-              }),
-            }).catch(error => {
-              console.error('Erro ao corrigir token:', error);
-            });
-            
-            return correctedToken;
-          }
-          
-                      return {
-              ...safeToken,
-              amount: Number(amount.toFixed(2)),
-              price: Number(price.toFixed(2)),
-              value: Number(value.toFixed(2))
-            };
+          // Manter precisão adequada para valores fracionários
+          // Para preços muito pequenos (< $0.01), manter até 8 casas decimais
+          // Para preços normais, manter até 4 casas decimais
+          const formatPrice = (price: number) => {
+            if (price < 0.01) {
+              return Number(price.toFixed(8));
+            } else if (price < 1) {
+              return Number(price.toFixed(6));
+            } else {
+              return Number(price.toFixed(4));
+            }
+          };
+
+          // Para quantidades, manter até 8 casas decimais se necessário
+          const formatAmount = (amount: number) => {
+            if (amount.toString().includes('.') && amount.toString().split('.')[1]?.length > 8) {
+              return Number(amount.toFixed(8));
+            }
+            return amount;
+          };
+
+          // Para valores, manter precisão adequada
+          const formatValue = (value: number) => {
+            if (value < 0.01) {
+              return Number(value.toFixed(8));
+            } else if (value < 1) {
+              return Number(value.toFixed(6));
+            } else {
+              return Number(value.toFixed(4));
+            }
+          };
+
+          return {
+            ...safeToken,
+            amount: formatAmount(amount),
+            price: formatPrice(price),
+            value: formatValue(value)
+          };
         }).filter((token: any) => token !== null); // Remover tokens inválidos
         
         setTokens(processedTokens);
@@ -1047,11 +1056,22 @@ export default function Home() {
           return;
         }
 
+        // Função para formatar valores com precisão adequada
+        const formatValue = (value: number) => {
+          if (value < 0.01) {
+            return Number(value.toFixed(8));
+          } else if (value < 1) {
+            return Number(value.toFixed(6));
+          } else {
+            return Number(value.toFixed(4));
+          }
+        };
+
         const tokenData = {
           ...newToken,
-          amount: Number(amount.toFixed(2)),
-          price: Number(price.toFixed(2)),
-          value: Number((amount * price).toFixed(2)),
+          amount: formatValue(amount),
+          price: formatValue(price),
+          value: formatValue(amount * price),
         };
 
         console.log('📤 Enviando dados do token:', tokenData);
@@ -1199,7 +1219,7 @@ export default function Home() {
         id: Date.now(),
         type: newOperation.type,
         pair: newOperation.pair.toUpperCase(),
-        capital: Number(capital.toFixed(2)),
+        capital: Number(capital.toFixed(4)),
         startDate: newOperation.startDate,
         rangeMin: newOperation.type === "grid" ? parseFloat(newOperation.rangeMin) : undefined,
         rangeMax: newOperation.type === "grid" ? parseFloat(newOperation.rangeMax) : undefined,
@@ -1616,10 +1636,10 @@ export default function Home() {
                         </div>
                         <div className="text-right">
                           <p className="text-sm text-slate-600 dark:text-slate-400">
-                            Quantidade atual: {token.amount > 0 ? `${token.amount.toFixed(2)} ${token.symbol || 'N/A'}` : `0.00 ${token.symbol || 'N/A'} (acompanhamento)`}
+                            Quantidade atual: {token.amount > 0 ? `${token.amount.toFixed(8)} ${token.symbol || 'N/A'}` : `0.00 ${token.symbol || 'N/A'} (acompanhamento)`}
                           </p>
                           <p className="text-sm text-slate-500 dark:text-slate-500">
-                            {token.price > 0 ? `Preço médio: $${token.price.toFixed(2)}` : 'Preço não definido'}
+                            {token.price > 0 ? `Preço médio: $${token.price.toFixed(8)}` : 'Preço não definido'}
                           </p>
                         </div>
                       </div>
@@ -1666,7 +1686,7 @@ export default function Home() {
                              </label>
                                                            <Input
                                 type="number"
-                                placeholder={`${token.price.toFixed(2)} (preço atual)`}
+                                placeholder={`${token.price.toFixed(8)} (preço atual)`}
                                 value={editForm.price}
                                 onChange={(e) => setEditForm({ ...editForm, price: e.target.value })}
                                 className="h-10 text-base border-2 border-slate-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-500 text-slate-900 font-medium"
@@ -1722,10 +1742,10 @@ export default function Home() {
                         {/* Informações básicas do token */}
                         <div className="text-right">
                           <p className="text-sm text-slate-600 dark:text-slate-400">
-                            {token.amount > 0 ? `${token.amount.toFixed(2)} ${token.symbol || 'N/A'}` : `0.00 ${token.symbol || 'N/A'} (acompanhamento)`}
+                            {token.amount > 0 ? `${token.amount.toFixed(8)} ${token.symbol || 'N/A'}` : `0.00 ${token.symbol || 'N/A'} (acompanhamento)`}
                           </p>
                           <p className="text-sm text-slate-500 dark:text-slate-500">
-                            {token.price > 0 ? `Preço médio: $${token.price.toFixed(2)}` : 'Preço não definido'}
+                            {token.price > 0 ? `Preço médio: $${token.price.toFixed(8)}` : 'Preço não definido'}
                           </p>
                         </div>
 
@@ -1758,12 +1778,16 @@ export default function Home() {
 
                         {/* Valor do portfólio */}
                         <div className="text-right">
-                          <p className="font-semibold text-slate-900 dark:text-slate-100">
-                            {token.value > 0 ? formatCurrency(token.value) : 'Token de acompanhamento'}
-                          </p>
-                          <p className="text-sm text-slate-500 dark:text-slate-500">
-                            {token.value > 0 && portfolioTotal > 0 ? `${((token.value / portfolioTotal) * 100).toFixed(1)}% do portfólio` : '0.0% do portfólio'}
-                          </p>
+                          {token.value > 0 && (
+                            <>
+                              <p className="font-semibold text-slate-900 dark:text-slate-100">
+                                {formatCurrency(token.value)}
+                              </p>
+                              <p className="text-sm text-slate-500 dark:text-slate-500">
+                                {portfolioTotal > 0 ? `${((token.value / portfolioTotal) * 100).toFixed(1)}% do portfólio` : '0.0% do portfólio'}
+                              </p>
+                            </>
+                          )}
                         </div>
                         <div className="flex space-x-2">
                           <Button
