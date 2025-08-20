@@ -14,7 +14,8 @@ async function fetchTokenData(symbol: string) {
         'User-Agent': 'SenhorBarriga-Portfolio/1.0',
         'X-CG-API-KEY': COINGECKO_API_KEY
       },
-      next: { revalidate: 300 } // Cache por 5 minutos
+      // Remover cache para garantir dados sempre atualizados
+      cache: 'no-store'
     });
 
     if (!searchResponse.ok) {
@@ -42,7 +43,8 @@ async function fetchTokenData(symbol: string) {
         'User-Agent': 'SenhorBarriga-Portfolio/1.0',
         'X-CG-API-KEY': COINGECKO_API_KEY
       },
-      next: { revalidate: 60 } // Cache por 1 minuto
+      // Remover cache para garantir dados sempre atualizados
+      cache: 'no-store'
     });
 
     if (!detailResponse.ok) {
