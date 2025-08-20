@@ -854,7 +854,17 @@ export default function Home() {
 
   // Função para buscar preços em tempo real
   const fetchRealTimePrices = async (tokensList: any[], showLoading = false) => {
+    console.log('🔄 fetchRealTimePrices chamada:', {
+      tokensListLength: tokensList.length,
+      isFetchingPrices,
+      showLoading
+    });
+    
     if (tokensList.length === 0 || isFetchingPrices) {
+      console.log('❌ fetchRealTimePrices cancelada:', {
+        tokensListLength: tokensList.length,
+        isFetchingPrices
+      });
       return;
     }
 
@@ -935,7 +945,11 @@ export default function Home() {
       console.log('✅ Condições atendidas, iniciando fetchRealTimePrices...');
       fetchRealTimePrices(tokens, false);
     } else {
-      console.log('❌ Condições não atendidas para atualização automática');
+      console.log('❌ Condições não atendidas para atualização automática:', {
+        tokensLength: tokens.length,
+        isLoadingTokens,
+        isFetchingPrices
+      });
     }
   };
 
