@@ -606,15 +606,25 @@ export default function Home() {
             return null;
           }
 
-          const amount = parseFloat(token.amount || '0');
-          const price = parseFloat(token.price || '0');
-          const value = parseFloat(token.value || '0');
+          // Garantir que todas as propriedades existam
+          const safeToken = {
+            id: token.id || 0,
+            name: token.name || 'Token',
+            symbol: token.symbol || 'N/A',
+            amount: parseFloat(token.amount || '0'),
+            price: parseFloat(token.price || '0'),
+            value: parseFloat(token.value || '0'),
+          };
+
+          const amount = safeToken.amount;
+          const price = safeToken.price;
+          const value = safeToken.value;
           
           // Verificar se os valores são válidos
           if (isNaN(amount) || isNaN(price) || isNaN(value)) {
             console.warn('Valores inválidos no token:', token);
             return {
-              ...token,
+              ...safeToken,
               amount: 0,
               price: 0,
               value: 0
@@ -630,7 +640,7 @@ export default function Home() {
           if (needsCorrection) {
             // Corrigir automaticamente no banco
             const correctedToken = {
-              ...token,
+              ...safeToken,
               amount: Number(amount.toFixed(2)),
               price: Number(price.toFixed(2)),
               value: Number(value.toFixed(2))
@@ -655,12 +665,12 @@ export default function Home() {
             return correctedToken;
           }
           
-          return {
-            ...token,
-            amount: Number(amount.toFixed(2)),
-            price: Number(price.toFixed(2)),
-            value: Number(value.toFixed(2))
-          };
+                      return {
+              ...safeToken,
+              amount: Number(amount.toFixed(2)),
+              price: Number(price.toFixed(2)),
+              value: Number(value.toFixed(2))
+            };
         }).filter((token: any) => token !== null); // Remover tokens inválidos
         
         setTokens(processedTokens);
@@ -918,9 +928,22 @@ export default function Home() {
         if (data.success) {
           console.log('✅ Token adicionado com sucesso! Token retornado:', data.token);
           console.log('📋 Tokens atuais:', tokens);
-          console.log('📋 Novo array de tokens:', [...tokens, data.token]);
           
-          setTokens([...tokens, data.token]);
+          // Processar o token retornado para garantir que tenha todas as propriedades
+          const newTokenData = Array.isArray(data.token) ? data.token[0] : data.token;
+          const processedToken = {
+            id: newTokenData.id || 0,
+            name: newTokenData.name || 'Token',
+            symbol: newTokenData.symbol || 'N/A',
+            amount: parseFloat(newTokenData.amount || '0'),
+            price: parseFloat(newTokenData.price || '0'),
+            value: parseFloat(newTokenData.value || '0'),
+          };
+          
+          console.log('📋 Token processado:', processedToken);
+          console.log('📋 Novo array de tokens:', [...tokens, processedToken]);
+          
+          setTokens([...tokens, processedToken]);
           setNewToken({ name: "", symbol: "", amount: "", price: "" });
           
           console.log('✅ Estado atualizado, mostrando toast...');
@@ -1420,15 +1443,15 @@ export default function Home() {
                     <div className="space-y-4">
                       <div className="flex items-center space-x-4">
                         <div className="w-10 h-10 bg-gradient-to-r from-slate-500 to-slate-600 rounded-full flex items-center justify-center text-white font-bold">
-                          {token.symbol.charAt(0)}
+                          {token.symbol && token.symbol.length > 0 ? token.symbol.charAt(0) : '?'}
                         </div>
                                                 <div>
-                          <h3 className="font-semibold text-slate-900 dark:text-slate-100">{token.name}</h3>
-                          <p className="text-sm text-slate-600 dark:text-slate-400">{token.symbol}</p>
+                          <h3 className="font-semibold text-slate-900 dark:text-slate-100">{token.name || 'Token'}</h3>
+                          <p className="text-sm text-slate-600 dark:text-slate-400">{token.symbol || 'N/A'}</p>
                         </div>
                         <div className="text-right">
                           <p className="text-sm text-slate-600 dark:text-slate-400">
-                            Quantidade atual: {token.amount > 0 ? `${token.amount.toFixed(2)} ${token.symbol}` : `0.00 ${token.symbol} (acompanhamento)`}
+                            Quantidade atual: {token.amount > 0 ? `${token.amount.toFixed(2)} ${token.symbol || 'N/A'}` : `0.00 ${token.symbol || 'N/A'} (acompanhamento)`}
                           </p>
                           <p className="text-sm text-slate-500 dark:text-slate-500">
                             {token.price > 0 ? `Preço médio: $${token.price.toFixed(2)}` : 'Preço não definido'}
@@ -1510,17 +1533,17 @@ export default function Home() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
                         <div className="w-10 h-10 bg-gradient-to-r from-slate-500 to-slate-600 rounded-full flex items-center justify-center text-white font-bold">
-                          {token.symbol.charAt(0)}
+                          {token.symbol && token.symbol.length > 0 ? token.symbol.charAt(0) : '?'}
                         </div>
                                                  <div>
-                           <h3 className="font-semibold text-slate-900 dark:text-slate-100">{token.name}</h3>
-                           <p className="text-sm text-slate-600 dark:text-slate-400">{token.symbol}</p>
+                           <h3 className="font-semibold text-slate-900 dark:text-slate-100">{token.name || 'Token'}</h3>
+                           <p className="text-sm text-slate-600 dark:text-slate-400">{token.symbol || 'N/A'}</p>
                          </div>
                       </div>
                       <div className="flex items-center space-x-6">
                                                                          <div className="text-right">
                           <p className="text-sm text-slate-600 dark:text-slate-400">
-                            {token.amount > 0 ? `${token.amount.toFixed(2)} ${token.symbol}` : `0.00 ${token.symbol} (acompanhamento)`}
+                            {token.amount > 0 ? `${token.amount.toFixed(2)} ${token.symbol || 'N/A'}` : `0.00 ${token.symbol || 'N/A'} (acompanhamento)`}
                           </p>
                           <p className="text-sm text-slate-500 dark:text-slate-500">
                             {token.price > 0 ? `Preço médio: $${token.price.toFixed(2)}` : 'Preço não definido'}
