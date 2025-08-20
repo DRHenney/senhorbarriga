@@ -974,7 +974,7 @@ export default function Home() {
             amount: parseFloat(token.amount || '0'),
             price: parseFloat(token.price || '0'),
             value: parseFloat(token.value || '0'),
-            purchaseDate: token.purchaseDate || new Date().toISOString(),
+            purchaseDate: token.purchaseDate || token.createdAt || new Date().toISOString(),
           };
 
           const amount = safeToken.amount;

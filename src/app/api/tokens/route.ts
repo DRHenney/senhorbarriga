@@ -37,8 +37,18 @@ export async function GET() {
     console.log('✅ Usuário encontrado:', user.id);
     console.log('🔍 Buscando tokens do usuário...');
 
-    // Buscar tokens do usuário
-    const tokens = await db.select().from(userTokens).where(eq(userTokens.userId, user.id));
+    // Buscar tokens do usuário (sem purchase_date por enquanto)
+    const tokens = await db.select({
+      id: userTokens.id,
+      userId: userTokens.userId,
+      name: userTokens.name,
+      symbol: userTokens.symbol,
+      amount: userTokens.amount,
+      price: userTokens.price,
+      value: userTokens.value,
+      createdAt: userTokens.createdAt,
+      updatedAt: userTokens.updatedAt,
+    }).from(userTokens).where(eq(userTokens.userId, user.id));
     console.log('✅ Tokens encontrados:', tokens.length);
 
     return NextResponse.json({ 
@@ -105,7 +115,7 @@ export async function POST(request: Request) {
 
     console.log('💰 Valores calculados:', { tokenAmount, tokenPrice, tokenValue });
 
-    // Criar token no banco
+    // Criar token no banco (sem purchase_date por enquanto)
     const newToken = await db.insert(userTokens).values({
       userId: user.id,
       name,
@@ -113,7 +123,7 @@ export async function POST(request: Request) {
       amount: tokenAmount.toString(),
       price: tokenPrice.toString(),
       value: tokenValue.toString(),
-      purchaseDate: purchaseDate ? new Date(purchaseDate) : new Date(), // Usar data fornecida ou data atual
+      // purchaseDate será adicionado depois que a migração for aplicada
     }).returning();
 
     console.log('✅ Token criado:', newToken);
