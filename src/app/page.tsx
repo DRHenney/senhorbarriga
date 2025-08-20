@@ -276,6 +276,32 @@ const formatValue = (value: number) => {
   }
 };
 
+// Função para calcular valor atual e lucro/prejuízo
+const calculateTokenMetrics = (token: any) => {
+  const currentPrice = token.realTimePrice || token.price || 0;
+  const entryPrice = token.price || 0;
+  const amount = token.amount || 0;
+  
+  // Valor atual baseado no preço em tempo real
+  const currentValue = amount * currentPrice;
+  
+  // Valor de entrada
+  const entryValue = amount * entryPrice;
+  
+  // Lucro/prejuízo
+  const profitLoss = currentValue - entryValue;
+  const profitLossPercentage = entryValue > 0 ? (profitLoss / entryValue) * 100 : 0;
+  
+  return {
+    currentValue,
+    entryValue,
+    profitLoss,
+    profitLossPercentage,
+    currentPrice,
+    entryPrice
+  };
+};
+
 // Componente de Tooltip Customizado
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -1897,92 +1923,32 @@ export default function Home() {
                       </div>
                     </div>
                   ) : (
-                    // Modo de visualização
+                    // Modo de visualização - Nova apresentação leve
                     <div className="flex items-center justify-between">
+                      {/* Lado esquerdo - Informações básicas */}
                       <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 bg-gradient-to-r from-slate-500 to-slate-600 rounded-full flex items-center justify-center text-white font-bold">
+                        <div className="w-12 h-12 bg-gradient-to-r from-slate-500 to-slate-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
                           {token.symbol && token.symbol.length > 0 ? token.symbol.charAt(0) : '?'}
                         </div>
-                                                 <div>
-                           <h3 className="font-semibold text-slate-900 dark:text-slate-100">{token.name || 'Token'}</h3>
-                           <p className="text-sm text-slate-600 dark:text-slate-400">{token.symbol || 'N/A'}</p>
-                         </div>
-                      </div>
-                      <div className="flex items-center space-x-6">
-                        {/* Informações básicas do token */}
-                        <div className="text-right">
-                          <p className="text-sm text-slate-600 dark:text-slate-400">
-                            {token.amount > 0 ? `${token.amount.toFixed(8)} ${token.symbol || 'N/A'}` : `0.00 ${token.symbol || 'N/A'} (acompanhamento)`}
+                        <div>
+                          <h3 className="font-semibold text-slate-900 dark:text-slate-100 text-lg">{token.name || 'Token'}</h3>
+                          <p className="text-sm text-slate-600 dark:text-slate-400">{token.symbol || 'N/A'}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-500">
+                            {token.amount > 0 ? `${token.amount.toFixed(8)} tokens` : '0.00 tokens (acompanhamento)'}
                           </p>
-                          {editingPrice?.id === token.id ? (
-                            // Modo de edição do preço
-                            <div className="space-y-2">
-                              <div className="flex items-center space-x-2">
-                                <Input
-                                  type="number"
-                                  step="0.00000001"
-                                  placeholder="0.00000000"
-                                  value={editingPrice.newPrice}
-                                  onChange={(e) => setEditingPrice({
-                                    ...editingPrice,
-                                    newPrice: e.target.value
-                                  })}
-                                  className="h-8 text-xs border-2 border-orange-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 bg-white dark:bg-slate-700"
-                                />
-                                <Button
-                                  size="sm"
-                                  onClick={applyPriceEdit}
-                                  className="h-8 px-2 bg-green-600 hover:bg-green-700 text-white text-xs"
-                                >
-                                  ✓
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={cancelPriceEdit}
-                                  className="h-8 px-2 border-red-300 text-red-600 hover:bg-red-50 text-xs"
-                                >
-                                  ✕
-                                </Button>
-                              </div>
-                              <p className="text-xs text-orange-600 dark:text-orange-400">
-                                Editando preço de entrada...
-                              </p>
-                            </div>
-                          ) : (
-                            // Modo de visualização do preço
-                            <div className="flex items-center space-x-2">
-                              <p className="text-sm text-slate-500 dark:text-slate-500">
-                                {token.price > 0 ? `Preço médio: $${token.price.toFixed(8)}` : 'Preço não definido'}
-                              </p>
-                              {token.price === 0 && (
-                                <p className="text-xs text-orange-600 dark:text-orange-400">
-                                  Clique no ícone para definir o preço
-                                </p>
-                              )}
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => startPriceEdit(token)}
-                                className="h-6 w-6 p-0 text-slate-400 hover:text-orange-600 hover:bg-orange-50 transition-colors"
-                                title={token.price > 0 ? "Clique para editar o preço de entrada" : "Clique para definir o preço de entrada"}
-                              >
-                                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                </svg>
-                              </Button>
-                            </div>
-                          )}
                         </div>
+                      </div>
 
-                        {/* Preços em tempo real */}
+                      {/* Lado direito - Valores e lucro/prejuízo */}
+                      <div className="flex items-center space-x-6">
+                        {/* Preço atual e variação 24h */}
                         {token.realTimePrice ? (
                           <div className="text-right">
-                            <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
-                              💰 ${token.realTimePrice.toFixed(6)}
+                            <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                              ${token.realTimePrice.toFixed(6)}
                             </p>
                             {token.priceChange24h !== undefined && (
-                              <p className={`text-xs font-medium ${
+                              <p className={`text-sm font-medium ${
                                 token.priceChange24h > 0 
                                   ? 'text-green-600 dark:text-green-400' 
                                   : token.priceChange24h < 0 
@@ -1996,25 +1962,113 @@ export default function Home() {
                           </div>
                         ) : (
                           <div className="text-right">
-                            <p className="text-xs text-slate-400 dark:text-slate-500">
-                              ⏳ Aguardando atualização automática...
+                            <p className="text-sm text-slate-400 dark:text-slate-500">
+                              ⏳ Aguardando...
                             </p>
                           </div>
                         )}
 
-                        {/* Valor do portfólio */}
-                        <div className="text-right">
-                          {token.value > 0 && (
-                            <>
-                              <p className="font-semibold text-slate-900 dark:text-slate-100">
-                                {formatCurrency(token.value)}
+                        {/* Valor atual e lucro/prejuízo */}
+                        {(() => {
+                          const metrics = calculateTokenMetrics(token);
+                          return (
+                            <div className="text-right">
+                              <p className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                                {formatCurrency(metrics.currentValue)}
                               </p>
-                              <p className="text-sm text-slate-500 dark:text-slate-500">
-                                {portfolioTotal > 0 ? `${((token.value / portfolioTotal) * 100).toFixed(1)}% do portfólio` : '0.0% do portfólio'}
-                              </p>
-                            </>
-                          )}
-                        </div>
+                              {metrics.entryValue > 0 && (
+                                <div className="flex items-center space-x-2">
+                                  <span className={`text-sm font-medium ${
+                                    metrics.profitLoss > 0 
+                                      ? 'text-green-600 dark:text-green-400' 
+                                      : metrics.profitLoss < 0 
+                                        ? 'text-red-600 dark:text-red-400' 
+                                        : 'text-slate-500 dark:text-slate-400'
+                                  }`}>
+                                    {metrics.profitLoss > 0 ? '↗' : metrics.profitLoss < 0 ? '↘' : '→'} 
+                                    {formatCurrency(Math.abs(metrics.profitLoss))}
+                                  </span>
+                                  <span className={`text-xs ${
+                                    metrics.profitLossPercentage > 0 
+                                      ? 'text-green-600 dark:text-green-400' 
+                                      : metrics.profitLossPercentage < 0 
+                                        ? 'text-red-600 dark:text-red-400' 
+                                        : 'text-slate-500 dark:text-slate-400'
+                                  }`}>
+                                    ({metrics.profitLossPercentage > 0 ? '+' : ''}{metrics.profitLossPercentage.toFixed(2)}%)
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
+
+                                                 {/* Preço de entrada discreto */}
+                         {editingPrice?.id === token.id ? (
+                           // Modo de edição do preço
+                           <div className="text-right">
+                             <div className="flex items-center space-x-2">
+                               <Input
+                                 type="number"
+                                 step="0.00000001"
+                                 placeholder="0.00000000"
+                                 value={editingPrice.newPrice}
+                                 onChange={(e) => setEditingPrice({
+                                   ...editingPrice,
+                                   newPrice: e.target.value
+                                 })}
+                                 className="h-8 text-xs border-2 border-orange-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 bg-white dark:bg-slate-700"
+                               />
+                               <Button
+                                 size="sm"
+                                 onClick={applyPriceEdit}
+                                 className="h-8 px-2 bg-green-600 hover:bg-green-700 text-white text-xs"
+                               >
+                                 ✓
+                               </Button>
+                               <Button
+                                 size="sm"
+                                 variant="outline"
+                                 onClick={cancelPriceEdit}
+                                 className="h-8 px-2 border-red-300 text-red-600 hover:bg-red-50 text-xs"
+                               >
+                                 ✕
+                               </Button>
+                             </div>
+                             <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                               Editando preço de entrada...
+                             </p>
+                           </div>
+                         ) : (
+                           // Modo de visualização do preço
+                           <div className="text-right">
+                             <div className="flex items-center space-x-1">
+                               <p className="text-xs text-slate-500 dark:text-slate-500">
+                                 {token.price > 0 ? `Entrada: $${token.price.toFixed(6)}` : 'Preço não definido'}
+                               </p>
+                               {token.price > 0 && (
+                                 <Button
+                                   size="sm"
+                                   variant="ghost"
+                                   onClick={() => startPriceEdit(token)}
+                                   className="h-4 w-4 p-0 text-slate-400 hover:text-orange-600 hover:bg-orange-50 transition-colors"
+                                   title="Editar preço de entrada"
+                                 >
+                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                   </svg>
+                                 </Button>
+                               )}
+                             </div>
+                             {token.price === 0 && (
+                               <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                                 Clique no ícone para definir o preço
+                               </p>
+                             )}
+                           </div>
+                         )}
+
+                        {/* Botões de ação */}
                         <div className="flex space-x-2">
                           <Button
                             variant="outline"
