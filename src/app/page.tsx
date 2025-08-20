@@ -916,14 +916,21 @@ export default function Home() {
         console.log('📥 Dados da resposta:', data);
         
         if (data.success) {
+          console.log('✅ Token adicionado com sucesso! Token retornado:', data.token);
+          console.log('📋 Tokens atuais:', tokens);
+          console.log('📋 Novo array de tokens:', [...tokens, data.token]);
+          
           setTokens([...tokens, data.token]);
           setNewToken({ name: "", symbol: "", amount: "", price: "" });
+          
+          console.log('✅ Estado atualizado, mostrando toast...');
           toast({
             title: "✅ Sucesso!",
             description: "Token adicionado com sucesso!",
             variant: "default",
             className: "bg-green-50 border-green-200 text-green-800",
           });
+          console.log('✅ Toast exibido com sucesso!');
         } else {
           console.error('❌ Erro na API:', data);
           toast({
@@ -934,6 +941,9 @@ export default function Home() {
         }
       } catch (error) {
         console.error('❌ Erro na requisição:', error);
+        console.error('❌ Tipo do erro:', typeof error);
+        console.error('❌ Stack trace:', error instanceof Error ? error.stack : 'N/A');
+        
         toast({
           title: "❌ Erro",
           description: "Erro ao adicionar token",
