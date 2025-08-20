@@ -868,6 +868,8 @@ export default function Home() {
   const addToken = async () => {
     if (newToken.name && newToken.symbol) {
       try {
+        console.log('🚀 Iniciando adição de token:', newToken);
+        
         // Se quantidade e preço não foram fornecidos, usar valores padrão
         const amount = newToken.amount ? parseFloat(newToken.amount) : 0;
         const price = newToken.price ? parseFloat(newToken.price) : 0;
@@ -898,6 +900,8 @@ export default function Home() {
           value: Number((amount * price).toFixed(2)),
         };
 
+        console.log('📤 Enviando dados do token:', tokenData);
+
         const response = await fetch('/api/tokens', {
           method: 'POST',
           headers: {
@@ -906,7 +910,10 @@ export default function Home() {
           body: JSON.stringify(tokenData),
         });
         
+        console.log('📥 Resposta da API:', response.status, response.statusText);
+        
         const data = await response.json();
+        console.log('📥 Dados da resposta:', data);
         
         if (data.success) {
           setTokens([...tokens, data.token]);
@@ -918,6 +925,7 @@ export default function Home() {
             className: "bg-green-50 border-green-200 text-green-800",
           });
         } else {
+          console.error('❌ Erro na API:', data);
           toast({
             title: "❌ Erro",
             description: `Erro ao adicionar token: ${data.message}`,
@@ -925,6 +933,7 @@ export default function Home() {
           });
         }
       } catch (error) {
+        console.error('❌ Erro na requisição:', error);
         toast({
           title: "❌ Erro",
           description: "Erro ao adicionar token",

@@ -47,9 +47,12 @@ export async function GET() {
 // POST - Criar novo token
 export async function POST(request: Request) {
   try {
+    console.log('🔐 Verificando autenticação...');
     const session = await getServerSession(authOptions);
+    console.log('👤 Sessão:', session ? 'Autenticado' : 'Não autenticado');
     
     if (!session?.user?.email) {
+      console.log('❌ Usuário não autenticado');
       return NextResponse.json({ 
         success: false, 
         message: 'Usuário não autenticado' 
@@ -58,8 +61,10 @@ export async function POST(request: Request) {
 
     const body = await request.json();
     const { name, symbol, amount, price } = body;
+    console.log('📥 Dados recebidos:', { name, symbol, amount, price });
 
     if (!name || !symbol) {
+      console.log('❌ Dados obrigatórios faltando');
       return NextResponse.json({ 
         success: false, 
         message: 'Nome e símbolo são obrigatórios' 
@@ -67,21 +72,27 @@ export async function POST(request: Request) {
     }
 
     // Buscar usuário pelo email
+    console.log('🔍 Buscando usuário:', session.user.email);
     const user = await db.query.users.findFirst({
       where: (users, { eq }) => eq(users.email, session.user!.email!),
     });
 
     if (!user) {
+      console.log('❌ Usuário não encontrado no banco');
       return NextResponse.json({ 
         success: false, 
         message: 'Usuário não encontrado' 
       }, { status: 404 });
     }
 
+    console.log('✅ Usuário encontrado:', user.id);
+
     // Usar valores padrão se não fornecidos
     const tokenAmount = amount ? parseFloat(amount) : 0;
     const tokenPrice = price ? parseFloat(price) : 0;
     const tokenValue = tokenAmount * tokenPrice;
+
+    console.log('💰 Valores calculados:', { tokenAmount, tokenPrice, tokenValue });
 
     // Criar token no banco
     const newToken = await db.insert(userTokens).values({
@@ -93,12 +104,15 @@ export async function POST(request: Request) {
       value: tokenValue.toFixed(2),
     }).returning();
 
+    console.log('✅ Token criado:', newToken);
+
     return NextResponse.json({ 
       success: true, 
       token: newToken,
       message: 'Token criado com sucesso!' 
     }, { status: 201 });
   } catch (error) {
+    console.error('❌ Erro na API:', error);
     return NextResponse.json({ 
       success: false, 
       message: 'Erro interno do servidor'
