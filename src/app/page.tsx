@@ -397,6 +397,7 @@ export default function Home() {
   // Estados para preços em tempo real
   const [lastPriceUpdate, setLastPriceUpdate] = useState<string | null>(null);
   const [autoUpdateInterval, setAutoUpdateInterval] = useState<NodeJS.Timeout | null>(null);
+  const [isLoadingTokens, setIsLoadingTokens] = useState(false);
 
   // Estados para operações ativas
   const [activeOperations, setActiveOperations] = useState<Array<{
@@ -746,11 +747,16 @@ export default function Home() {
     portfolioGrowth = (((lastValue - firstValue) / firstValue) * 100).toFixed(1);
   }
 
+  // Estado para controlar se já está buscando preços
+  const [isFetchingPrices, setIsFetchingPrices] = useState(false);
+
   // Função para buscar preços em tempo real
   const fetchRealTimePrices = async (tokensList: any[], showLoading = false) => {
-    if (tokensList.length === 0) {
+    if (tokensList.length === 0 || isFetchingPrices) {
       return;
     }
+
+    setIsFetchingPrices(true);
 
     try {
       console.log('🔄 Atualizando preços automaticamente para:', tokensList.map(t => t.symbol));
@@ -788,8 +794,17 @@ export default function Home() {
           return token;
         });
 
-        setTokens(updatedTokens);
-        setLastPriceUpdate(new Date().toLocaleString('pt-BR'));
+        // Só atualizar se realmente houve mudanças
+        const hasChanges = updatedTokens.some((token, index) => {
+          const originalToken = tokens[index];
+          return token.realTimePrice !== originalToken.realTimePrice ||
+                 token.priceChange24h !== originalToken.priceChange24h;
+        });
+
+        if (hasChanges) {
+          setTokens(updatedTokens);
+          setLastPriceUpdate(new Date().toLocaleString('pt-BR'));
+        }
         
         const successCount = data.results.filter((p: any) => p.success).length;
         console.log(`📈 Atualização automática concluída: ${successCount}/${data.results.length} tokens`);
@@ -798,12 +813,14 @@ export default function Home() {
       }
     } catch (error) {
       console.error('❌ Erro na atualização automática:', error);
+    } finally {
+      setIsFetchingPrices(false);
     }
   };
 
   // Função para iniciar atualização automática
   const startAutoUpdate = () => {
-    if (tokens.length > 0) {
+    if (tokens.length > 0 && !isLoadingTokens) {
       fetchRealTimePrices(tokens, false);
     }
   };
@@ -812,6 +829,9 @@ export default function Home() {
 
   // Carregar tokens do banco
   const loadTokens = async () => {
+    if (isLoadingTokens) return; // Evitar carregamentos simultâneos
+    
+    setIsLoadingTokens(true);
     try {
       const response = await fetch('/api/tokens');
       const data = await response.json();
@@ -892,6 +912,8 @@ export default function Home() {
     } catch (error) {
       console.error('Erro ao carregar tokens:', error);
       setTokens([]);
+    } finally {
+      setIsLoadingTokens(false);
     }
   };
 
@@ -918,12 +940,13 @@ export default function Home() {
 
   // useEffect para atualização automática de preços a cada 30 segundos
   useEffect(() => {
-    if (tokens.length > 0) {
-      // Limpar intervalo anterior se existir
-      if (autoUpdateInterval) {
-        clearInterval(autoUpdateInterval);
-      }
+    // Limpar intervalo anterior se existir
+    if (autoUpdateInterval) {
+      clearInterval(autoUpdateInterval);
+    }
 
+    // Só iniciar atualização automática se houver tokens
+    if (tokens.length > 0) {
       // Iniciar atualização automática
       const interval = setInterval(() => {
         startAutoUpdate();
@@ -940,8 +963,26 @@ export default function Home() {
           clearInterval(interval);
         }
       };
+    } else {
+      // Se não há tokens, limpar o intervalo
+      setAutoUpdateInterval(null);
     }
-  }, [tokens.length]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // useEffect para iniciar atualização automática quando tokens são carregados
+  useEffect(() => {
+    if (tokens.length > 0 && !autoUpdateInterval) {
+      // Iniciar atualização automática apenas se não estiver rodando
+      const interval = setInterval(() => {
+        startAutoUpdate();
+      }, 30000); // 30 segundos
+
+      setAutoUpdateInterval(interval);
+
+      // Fazer primeira atualização imediatamente
+      startAutoUpdate();
+    }
+  }, [tokens.length > 0]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Carregar registros do banco
   const loadRecords = async () => {
