@@ -826,8 +826,18 @@ export default function Home() {
 
   // Função para iniciar atualização automática
   const startAutoUpdate = () => {
-    if (tokens.length > 0 && !isLoadingTokens) {
+    console.log('🔄 startAutoUpdate chamada:', { 
+      tokensLength: tokens.length, 
+      isLoadingTokens, 
+      isFetchingPrices,
+      autoUpdateInterval: !!autoUpdateInterval 
+    });
+    
+    if (tokens.length > 0 && !isLoadingTokens && !isFetchingPrices) {
+      console.log('✅ Condições atendidas, iniciando fetchRealTimePrices...');
       fetchRealTimePrices(tokens, false);
+    } else {
+      console.log('❌ Condições não atendidas para atualização automática');
     }
   };
 
@@ -944,42 +954,21 @@ export default function Home() {
     loadData();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // useEffect para atualização automática de preços a cada 30 segundos
+  // useEffect para gerenciar atualização automática de preços
   useEffect(() => {
     // Limpar intervalo anterior se existir
     if (autoUpdateInterval) {
       clearInterval(autoUpdateInterval);
+      setAutoUpdateInterval(null);
     }
 
     // Só iniciar atualização automática se houver tokens
     if (tokens.length > 0) {
+      console.log('🚀 Iniciando atualização automática para', tokens.length, 'tokens');
+      
       // Iniciar atualização automática
       const interval = setInterval(() => {
-        startAutoUpdate();
-      }, 30000); // 30 segundos
-
-      setAutoUpdateInterval(interval);
-
-      // Fazer primeira atualização imediatamente
-      startAutoUpdate();
-
-      // Cleanup ao desmontar componente
-      return () => {
-        if (interval) {
-          clearInterval(interval);
-        }
-      };
-    } else {
-      // Se não há tokens, limpar o intervalo
-      setAutoUpdateInterval(null);
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // useEffect para iniciar atualização automática quando tokens são carregados
-  useEffect(() => {
-    if (tokens.length > 0 && !autoUpdateInterval) {
-      // Iniciar atualização automática apenas se não estiver rodando
-      const interval = setInterval(() => {
+        console.log('⏰ Executando atualização automática...');
         startAutoUpdate();
       }, 30000); // 30 segundos
 
@@ -987,9 +976,22 @@ export default function Home() {
       setNextUpdateTime(new Date(Date.now() + 30000));
 
       // Fazer primeira atualização imediatamente
+      console.log('⚡ Primeira atualização imediata...');
       startAutoUpdate();
+
+      // Cleanup ao desmontar componente
+      return () => {
+        console.log('🧹 Limpando intervalo de atualização automática');
+        if (interval) {
+          clearInterval(interval);
+        }
+      };
+    } else {
+      console.log('📭 Nenhum token encontrado, desativando atualização automática');
+      setAutoUpdateInterval(null);
+      setNextUpdateTime(null);
     }
-  }, [tokens.length > 0]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [tokens.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // useEffect para gerenciar o countdown
   useEffect(() => {
@@ -1769,6 +1771,18 @@ export default function Home() {
                         • {countdownSeconds}s
                       </span>
                     )}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        console.log('🔧 Atualização manual solicitada');
+                        fetchRealTimePrices(tokens, true);
+                      }}
+                      className="h-6 px-2 text-xs border-blue-300 text-blue-600 hover:bg-blue-50"
+                      title="Atualizar preços manualmente"
+                    >
+                      🔄
+                    </Button>
                   </div>
                 </div>
               </div>
