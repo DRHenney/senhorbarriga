@@ -1101,6 +1101,7 @@ export default function Home() {
         startAutoUpdate();
       }, 30000); // 30 segundos
 
+      console.log('✅ Intervalo criado:', interval);
       setAutoUpdateInterval(interval);
       setNextUpdateTime(new Date(Date.now() + 30000));
 
@@ -1120,17 +1121,28 @@ export default function Home() {
 
   // useEffect para gerenciar o countdown
   useEffect(() => {
+    console.log('⏱️ useEffect countdown executado:', { 
+      nextUpdateTime: nextUpdateTime?.toISOString(), 
+      tokensLength: tokens.length,
+      countdownSeconds 
+    });
+
     if (!nextUpdateTime || tokens.length === 0) {
+      console.log('⏱️ Countdown desativado - sem nextUpdateTime ou tokens');
       setCountdownSeconds(30);
       return;
     }
 
+    console.log('⏱️ Iniciando countdown...');
     const countdownInterval = setInterval(() => {
       const now = new Date();
       const timeLeft = Math.max(0, Math.ceil((nextUpdateTime.getTime() - now.getTime()) / 1000));
       
+      console.log('⏱️ Countdown:', timeLeft, 'segundos restantes');
+      
       if (timeLeft === 0) {
         // Reset para próxima atualização
+        console.log('⏱️ Countdown zerado, resetando...');
         setNextUpdateTime(new Date(Date.now() + 30000));
         setCountdownSeconds(30);
       } else {
@@ -1138,7 +1150,10 @@ export default function Home() {
       }
     }, 1000);
 
-    return () => clearInterval(countdownInterval);
+    return () => {
+      console.log('⏱️ Limpando countdown interval');
+      clearInterval(countdownInterval);
+    };
   }, [nextUpdateTime, tokens.length]);
 
   // Carregar registros do banco
