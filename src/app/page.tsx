@@ -1058,15 +1058,12 @@ export default function Home() {
         console.log('✅ Tokens processados e definidos no estado:', processedTokens.length);
         setTokens(processedTokens);
         
-        // Fazer primeira atualização automática se há tokens
+        // Fazer primeira atualização imediata se há tokens
         if (processedTokens.length > 0) {
-          console.log('🚀 Primeira atualização automática iniciada...');
+          console.log('🚀 Primeira atualização imediata...');
           console.log('📋 Tokens para primeira atualização:', processedTokens.map(t => t.symbol));
-          // Aguardar um pouco para garantir que o estado foi atualizado
-          setTimeout(() => {
-            console.log('⏰ Executando primeira atualização automática...');
-            fetchRealTimePrices(processedTokens, false);
-          }, 1000); // 1 segundo de delay
+          // Executar imediatamente
+          fetchRealTimePrices(processedTokens, false);
         } else {
           console.log('📭 Nenhum token para buscar preços');
         }
