@@ -920,10 +920,13 @@ export default function Home() {
         });
 
         if (hasChanges) {
+          console.log('🔄 Atualizando tokens no estado:', updatedTokens.map(t => ({ symbol: t.symbol, realTimePrice: t.realTimePrice })));
           setTokens(updatedTokens);
           setLastPriceUpdate(new Date().toLocaleString('pt-BR'));
           // Reset do temporizador para próxima atualização
           setNextUpdateTime(new Date(Date.now() + 30000));
+        } else {
+          console.log('📊 Nenhuma mudança detectada nos preços');
         }
         
         const successCount = data.results.filter((p: any) => p.success).length;
