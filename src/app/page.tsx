@@ -641,16 +641,26 @@ export default function Home() {
       }
       
       console.log('🔄 Buscando preços em tempo real para:', tokensList.length, 'tokens');
+      console.log('📋 Tokens para buscar:', tokensList);
       
       const tokensToFetch = tokensList
         .filter(token => token.symbol && token.symbol !== 'N/A')
         .map(token => ({ symbol: token.symbol }));
 
+      console.log('🔍 Tokens filtrados para busca:', tokensToFetch);
+
       if (tokensToFetch.length === 0) {
         console.log('⚠️ Nenhum token válido para buscar preços');
+        toast({
+          title: "⚠️ Aviso",
+          description: "Nenhum token válido encontrado para buscar preços",
+          variant: "default",
+        });
         return;
       }
 
+      console.log('📡 Fazendo requisição para /api/prices/dexscreener...');
+      
       const response = await fetch('/api/prices/dexscreener', {
         method: 'POST',
         headers: {
@@ -659,7 +669,14 @@ export default function Home() {
         body: JSON.stringify({ tokens: tokensToFetch }),
       });
 
+      console.log('📥 Resposta recebida:', response.status, response.statusText);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
       const data = await response.json();
+      console.log('📊 Dados da API recebidos:', data);
       
       if (data.success && data.results) {
         console.log('✅ Preços em tempo real recebidos:', data.results);
@@ -672,6 +689,7 @@ export default function Home() {
             );
             
             if (priceData) {
+              console.log(`💰 Atualizando preço para ${token.symbol}:`, priceData.data);
               return {
                 ...token,
                 realTimePrice: priceData.data.priceUsd,
@@ -685,20 +703,29 @@ export default function Home() {
         );
         
         setLastPriceUpdate(new Date().toISOString());
+        
+        const successCount = data.results.filter((r: any) => r.success).length;
+        const totalCount = data.results.length;
+        
         toast({
           title: "✅ Preços Atualizados!",
-          description: "Preços em tempo real foram atualizados com sucesso!",
+          description: `${successCount}/${totalCount} tokens atualizados com sucesso!`,
           variant: "default",
           className: "bg-green-50 border-green-200 text-green-800",
         });
       } else {
         console.warn('⚠️ Erro ao buscar preços em tempo real:', data);
+        toast({
+          title: "❌ Erro",
+          description: data.message || "Erro ao buscar preços em tempo real",
+          variant: "destructive",
+        });
       }
     } catch (error) {
       console.error('❌ Erro ao buscar preços em tempo real:', error);
       toast({
         title: "❌ Erro",
-        description: "Erro ao buscar preços em tempo real",
+        description: `Erro ao buscar preços em tempo real: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
         variant: "destructive",
       });
     } finally {
