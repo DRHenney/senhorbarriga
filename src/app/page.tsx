@@ -398,6 +398,10 @@ export default function Home() {
   const [lastPriceUpdate, setLastPriceUpdate] = useState<string | null>(null);
   const [autoUpdateInterval, setAutoUpdateInterval] = useState<NodeJS.Timeout | null>(null);
   const [isLoadingTokens, setIsLoadingTokens] = useState(false);
+  
+  // Estados para o temporizador de atualização
+  const [countdownSeconds, setCountdownSeconds] = useState(30);
+  const [nextUpdateTime, setNextUpdateTime] = useState<Date | null>(null);
 
   // Estados para operações ativas
   const [activeOperations, setActiveOperations] = useState<Array<{
@@ -804,6 +808,8 @@ export default function Home() {
         if (hasChanges) {
           setTokens(updatedTokens);
           setLastPriceUpdate(new Date().toLocaleString('pt-BR'));
+          // Reset do temporizador para próxima atualização
+          setNextUpdateTime(new Date(Date.now() + 30000));
         }
         
         const successCount = data.results.filter((p: any) => p.success).length;
@@ -978,11 +984,35 @@ export default function Home() {
       }, 30000); // 30 segundos
 
       setAutoUpdateInterval(interval);
+      setNextUpdateTime(new Date(Date.now() + 30000));
 
       // Fazer primeira atualização imediatamente
       startAutoUpdate();
     }
   }, [tokens.length > 0]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // useEffect para gerenciar o countdown
+  useEffect(() => {
+    if (!nextUpdateTime || tokens.length === 0) {
+      setCountdownSeconds(30);
+      return;
+    }
+
+    const countdownInterval = setInterval(() => {
+      const now = new Date();
+      const timeLeft = Math.max(0, Math.ceil((nextUpdateTime.getTime() - now.getTime()) / 1000));
+      
+      if (timeLeft === 0) {
+        // Reset para próxima atualização
+        setNextUpdateTime(new Date(Date.now() + 30000));
+        setCountdownSeconds(30);
+      } else {
+        setCountdownSeconds(timeLeft);
+      }
+    }, 1000);
+
+    return () => clearInterval(countdownInterval);
+  }, [nextUpdateTime, tokens.length]);
 
   // Carregar registros do banco
   const loadRecords = async () => {
@@ -1734,6 +1764,11 @@ export default function Home() {
                     <span className="text-xs text-gray-500">
                       {autoUpdateInterval ? 'Atualização automática ativa' : 'Atualização automática inativa'}
                     </span>
+                    {autoUpdateInterval && tokens.length > 0 && (
+                      <span className="text-xs text-blue-600 dark:text-blue-400 font-mono">
+                        • {countdownSeconds}s
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -2008,6 +2043,11 @@ export default function Home() {
                       `${tokens.filter(t => t.realTimePrice).length}/${tokens.length} tokens com preços em tempo real` : 
                       'Aguardando atualização automática de preços...'
                     }
+                    {autoUpdateInterval && tokens.length > 0 && (
+                      <span className="text-blue-600 dark:text-blue-400 font-mono ml-2">
+                        • {countdownSeconds}s
+                      </span>
+                    )}
                   </p>
                 </div>
               </div>
