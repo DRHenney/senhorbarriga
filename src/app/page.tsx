@@ -1596,12 +1596,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <div className="text-sm text-blue-600 mb-2">
-                🔄 Atualização automática a cada 30 segundos via CoinGecko
-                {autoUpdateInterval && (
-                  <span className="ml-2 text-green-600">✓ Ativa</span>
-                )}
-              </div>
+
             </div>
 
             {/* Lista de tokens */}
