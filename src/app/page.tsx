@@ -393,6 +393,8 @@ export default function Home() {
     amount: "",
     price: "",
   });
+  
+  const [priceInputType, setPriceInputType] = useState<'perToken' | 'totalValue'>('perToken');
 
   // Estado para edição de tokens
   const [editingToken, setEditingToken] = useState<{
@@ -1225,7 +1227,7 @@ export default function Home() {
         
         // Se quantidade e preço não foram fornecidos, usar valores padrão
         const amount = newToken.amount ? parseFloat(newToken.amount) : 0;
-        const price = newToken.price ? parseFloat(newToken.price) : 0;
+        let price = newToken.price ? parseFloat(newToken.price) : 0;
         
         // Validar valores se foram fornecidos
         if (newToken.amount && (isNaN(amount) || amount < 0)) {
@@ -1244,6 +1246,12 @@ export default function Home() {
             variant: "destructive",
           });
           return;
+        }
+
+        // Se o usuário escolheu "Valor Total", calcular o preço por token
+        if (priceInputType === 'totalValue' && price > 0 && amount > 0) {
+          price = price / amount; // Calcular preço por token
+          console.log(`💰 Calculando preço por token: ${newToken.price} / ${amount} = ${price}`);
         }
 
         const tokenData = {
@@ -1751,15 +1759,48 @@ export default function Home() {
               <div className="space-y-3">
                 <label className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center">
                   <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
-                  Preço ($)
+                  {priceInputType === 'perToken' ? 'Preço por Token ($)' : 'Valor Total ($)'}
                 </label>
-                <Input
-                  type="number"
-                  placeholder="0.00"
-                  value={newToken.price}
-                  onChange={(e) => setNewToken({ ...newToken, price: e.target.value })}
-                  className="h-12 text-base border-2 border-slate-300 dark:border-slate-600 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 dark:focus:ring-orange-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100 font-medium"
-                />
+                <div className="space-y-2">
+                  <Input
+                    type="number"
+                    placeholder={priceInputType === 'perToken' ? "0.00" : "0.00"}
+                    value={newToken.price}
+                    onChange={(e) => setNewToken({ ...newToken, price: e.target.value })}
+                    className="h-12 text-base border-2 border-slate-300 dark:border-slate-600 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 dark:focus:ring-orange-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100 font-medium"
+                  />
+                  <div className="flex space-x-2">
+                    <Button
+                      size="sm"
+                      variant={priceInputType === 'perToken' ? "default" : "outline"}
+                      onClick={() => setPriceInputType('perToken')}
+                      className={`text-xs px-3 py-1 ${
+                        priceInputType === 'perToken' 
+                          ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+                          : 'border-orange-300 text-orange-600 hover:bg-orange-50'
+                      }`}
+                    >
+                      Por Token
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={priceInputType === 'totalValue' ? "default" : "outline"}
+                      onClick={() => setPriceInputType('totalValue')}
+                      className={`text-xs px-3 py-1 ${
+                        priceInputType === 'totalValue' 
+                          ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+                          : 'border-orange-300 text-orange-600 hover:bg-orange-50'
+                      }`}
+                    >
+                      Valor Total
+                    </Button>
+                  </div>
+                  {priceInputType === 'totalValue' && newToken.price && newToken.amount && (
+                    <div className="text-xs text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 p-2 rounded">
+                      💡 Preço por token será calculado automaticamente: ${newToken.price} ÷ {newToken.amount} = ${(parseFloat(newToken.price) / parseFloat(newToken.amount)).toFixed(8)}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             <div className="flex justify-end mb-6">
