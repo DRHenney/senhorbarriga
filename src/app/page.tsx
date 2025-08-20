@@ -868,6 +868,7 @@ export default function Home() {
       return;
     }
 
+    console.log('🔄 fetchRealTimePrices iniciando, definindo isFetchingPrices = true');
     setIsFetchingPrices(true);
 
     try {
@@ -928,6 +929,7 @@ export default function Home() {
     } catch (error) {
       console.error('❌ Erro na atualização automática:', error);
     } finally {
+      console.log('🔄 fetchRealTimePrices terminando, definindo isFetchingPrices = false');
       setIsFetchingPrices(false);
     }
   };
