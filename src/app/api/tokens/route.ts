@@ -59,10 +59,10 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { name, symbol, amount, price } = body;
 
-    if (!name || !symbol || !amount || !price) {
+    if (!name || !symbol) {
       return NextResponse.json({ 
         success: false, 
-        message: 'Todos os campos são obrigatórios' 
+        message: 'Nome e símbolo são obrigatórios' 
       }, { status: 400 });
     }
 
@@ -78,14 +78,19 @@ export async function POST(request: Request) {
       }, { status: 404 });
     }
 
+    // Usar valores padrão se não fornecidos
+    const tokenAmount = amount ? parseFloat(amount) : 0;
+    const tokenPrice = price ? parseFloat(price) : 0;
+    const tokenValue = tokenAmount * tokenPrice;
+
     // Criar token no banco
     const newToken = await db.insert(userTokens).values({
       userId: user.id,
       name,
       symbol: symbol.toUpperCase(),
-      amount: parseFloat(amount).toFixed(2),
-      price: parseFloat(price).toFixed(2),
-      value: (parseFloat(amount) * parseFloat(price)).toFixed(2),
+      amount: tokenAmount.toFixed(2),
+      price: tokenPrice.toFixed(2),
+      value: tokenValue.toFixed(2),
     }).returning();
 
     return NextResponse.json({ 

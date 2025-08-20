@@ -408,8 +408,8 @@ export default function Home() {
     notes?: string;
   } | null>(null);
 
-  // Verificar se todos os campos estão preenchidos
-  const isFormComplete = newToken.name && newToken.symbol && newToken.amount && newToken.price;
+  // Verificar se os campos obrigatórios estão preenchidos (nome e símbolo)
+  const isFormComplete = newToken.name && newToken.symbol;
 
   // Função para iniciar edição de token
   const editToken = (token: any) => {
@@ -836,15 +836,26 @@ export default function Home() {
 
   // Adicionar novo token
   const addToken = async () => {
-    if (newToken.name && newToken.symbol && newToken.amount && newToken.price) {
+    if (newToken.name && newToken.symbol) {
       try {
-        const amount = parseFloat(newToken.amount);
-        const price = parseFloat(newToken.price);
+        // Se quantidade e preço não foram fornecidos, usar valores padrão
+        const amount = newToken.amount ? parseFloat(newToken.amount) : 0;
+        const price = newToken.price ? parseFloat(newToken.price) : 0;
         
-        if (isNaN(amount) || isNaN(price) || amount <= 0 || price <= 0) {
+        // Validar valores se foram fornecidos
+        if (newToken.amount && (isNaN(amount) || amount < 0)) {
           toast({
             title: "⚠️ Aviso",
-            description: "Por favor, insira valores válidos para quantidade e preço.",
+            description: "Por favor, insira um valor válido para quantidade.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        if (newToken.price && (isNaN(price) || price < 0)) {
+          toast({
+            title: "⚠️ Aviso",
+            description: "Por favor, insira um valor válido para preço.",
             variant: "destructive",
           });
           return;
@@ -1347,7 +1358,7 @@ export default function Home() {
                 }`}
               >
                 <Plus className="h-5 w-5 mr-3" />
-                {isFormComplete ? 'Adicionar Token' : 'Preencha todos os campos'}
+                {isFormComplete ? 'Adicionar Token' : 'Preencha nome e símbolo'}
               </Button>
             </div>
 
@@ -1367,8 +1378,12 @@ export default function Home() {
                           <p className="text-sm text-slate-600 dark:text-slate-400">{token.symbol}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm text-slate-600 dark:text-slate-400">Quantidade atual: {token.amount.toFixed(2)} {token.symbol}</p>
-                          <p className="text-sm text-slate-500 dark:text-slate-500">Preço médio: ${token.price.toFixed(2)}</p>
+                          <p className="text-sm text-slate-600 dark:text-slate-400">
+                            Quantidade atual: {token.amount > 0 ? `${token.amount.toFixed(2)} ${token.symbol}` : `0.00 ${token.symbol} (acompanhamento)`}
+                          </p>
+                          <p className="text-sm text-slate-500 dark:text-slate-500">
+                            {token.price > 0 ? `Preço médio: $${token.price.toFixed(2)}` : 'Preço não definido'}
+                          </p>
                         </div>
                       </div>
                       
@@ -1454,14 +1469,22 @@ export default function Home() {
                          </div>
                       </div>
                       <div className="flex items-center space-x-6">
-                                                 <div className="text-right">
-                           <p className="text-sm text-slate-600 dark:text-slate-400">{token.amount.toFixed(2)} {token.symbol}</p>
-                           <p className="text-sm text-slate-500 dark:text-slate-500">Preço médio: ${token.price.toFixed(2)}</p>
-                         </div>
-                                                 <div className="text-right">
-                           <p className="font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(token.value)}</p>
-                           <p className="text-sm text-slate-500 dark:text-slate-500">{portfolioTotal > 0 ? ((token.value / portfolioTotal) * 100).toFixed(1) : '0.0'}% do portfólio</p>
-                         </div>
+                                                                         <div className="text-right">
+                          <p className="text-sm text-slate-600 dark:text-slate-400">
+                            {token.amount > 0 ? `${token.amount.toFixed(2)} ${token.symbol}` : `0.00 ${token.symbol} (acompanhamento)`}
+                          </p>
+                          <p className="text-sm text-slate-500 dark:text-slate-500">
+                            {token.price > 0 ? `Preço médio: $${token.price.toFixed(2)}` : 'Preço não definido'}
+                          </p>
+                        </div>
+                                                                         <div className="text-right">
+                          <p className="font-semibold text-slate-900 dark:text-slate-100">
+                            {token.value > 0 ? formatCurrency(token.value) : 'Token de acompanhamento'}
+                          </p>
+                          <p className="text-sm text-slate-500 dark:text-slate-500">
+                            {token.value > 0 && portfolioTotal > 0 ? `${((token.value / portfolioTotal) * 100).toFixed(1)}% do portfólio` : '0.0% do portfólio'}
+                          </p>
+                        </div>
                         <div className="flex space-x-2">
                           <Button
                             variant="outline"
