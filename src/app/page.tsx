@@ -1078,6 +1078,19 @@ export default function Home() {
       setAutoUpdateInterval(null);
     }
 
+    // Aguardar um pouco antes de desativar se não há tokens
+    if (tokens.length === 0) {
+      const timeout = setTimeout(() => {
+        if (tokens.length === 0) {
+          console.log('📭 Nenhum token encontrado após timeout, desativando atualização automática');
+          setAutoUpdateInterval(null);
+          setNextUpdateTime(null);
+        }
+      }, 3000); // Aguardar 3 segundos
+
+      return () => clearTimeout(timeout);
+    }
+
     // Só iniciar atualização automática se houver tokens
     if (tokens.length > 0) {
       console.log('🚀 Iniciando atualização automática para', tokens.length, 'tokens');
@@ -1102,10 +1115,6 @@ export default function Home() {
           clearInterval(interval);
         }
       };
-    } else {
-      console.log('📭 Nenhum token encontrado, desativando atualização automática');
-      setAutoUpdateInterval(null);
-      setNextUpdateTime(null);
     }
   }, [tokens.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
