@@ -377,6 +377,14 @@ export default function Home() {
     price: number;
   } | null>(null);
 
+  // Estado para edição rápida do preço
+  const [editingPrice, setEditingPrice] = useState<{
+    id: number;
+    symbol: string;
+    currentPrice: number;
+    newPrice: string;
+  } | null>(null);
+
   // Hook para notificações toast
   const { toast } = useToast();
 
@@ -439,6 +447,100 @@ export default function Home() {
   const cancelEdit = () => {
     setEditingToken(null);
     setEditForm({ action: "add", amount: "", price: "" });
+  };
+
+  // Função para iniciar edição rápida do preço
+  const startPriceEdit = (token: any) => {
+    setEditingPrice({
+      id: token.id,
+      symbol: token.symbol,
+      currentPrice: token.price,
+      newPrice: token.price.toString()
+    });
+  };
+
+  // Função para cancelar edição do preço
+  const cancelPriceEdit = () => {
+    setEditingPrice(null);
+  };
+
+  // Função para aplicar edição do preço
+  const applyPriceEdit = async () => {
+    if (!editingPrice || !editingPrice.newPrice) return;
+
+    const newPrice = parseFloat(editingPrice.newPrice);
+    if (isNaN(newPrice) || newPrice < 0) {
+      toast({
+        title: "⚠️ Aviso",
+        description: "Por favor, insira um preço válido.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const currentToken = tokens.find(t => t.id === editingPrice.id);
+    if (!currentToken) return;
+
+    const newValue = currentToken.amount * newPrice;
+    
+    // Mostrar confirmação
+    const confirmMessage = `Alterar preço de entrada do ${currentToken.symbol}?\n\n` +
+      `Preço atual: $${currentToken.price.toFixed(8)}\n` +
+      `Novo preço: $${newPrice.toFixed(8)}\n` +
+      `Valor total: ${formatCurrency(currentToken.value)} → ${formatCurrency(newValue)}`;
+
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+
+    const updatedToken = {
+      ...currentToken,
+      price: formatValue(newPrice),
+      value: formatValue(newValue)
+    };
+
+    // Atualizar no banco de dados
+    try {
+      const response = await fetch('/api/tokens', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: editingPrice.id,
+          amount: updatedToken.amount,
+          price: updatedToken.price,
+          value: updatedToken.value,
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setTokens(tokens.map(t => t.id === editingPrice.id ? updatedToken : t));
+        setEditingPrice(null);
+        
+        toast({
+          title: "✅ Sucesso!",
+          description: `Preço de entrada do ${currentToken.symbol} atualizado!`,
+          variant: "default",
+          className: "bg-green-50 border-green-200 text-green-800",
+        });
+      } else {
+        toast({
+          title: "❌ Erro",
+          description: `Erro ao atualizar preço: ${data.message}`,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar preço:', error);
+      toast({
+        title: "❌ Erro",
+        description: "Erro ao atualizar preço",
+        variant: "destructive",
+      });
+    }
   };
 
   // Função para aplicar edição
@@ -1722,9 +1824,65 @@ export default function Home() {
                           <p className="text-sm text-slate-600 dark:text-slate-400">
                             {token.amount > 0 ? `${token.amount.toFixed(8)} ${token.symbol || 'N/A'}` : `0.00 ${token.symbol || 'N/A'} (acompanhamento)`}
                           </p>
-                          <p className="text-sm text-slate-500 dark:text-slate-500">
-                            {token.price > 0 ? `Preço médio: $${token.price.toFixed(8)}` : 'Preço não definido'}
-                          </p>
+                          {editingPrice?.id === token.id ? (
+                            // Modo de edição do preço
+                            <div className="space-y-2">
+                              <div className="flex items-center space-x-2">
+                                <Input
+                                  type="number"
+                                  step="0.00000001"
+                                  placeholder="0.00000000"
+                                  value={editingPrice.newPrice}
+                                  onChange={(e) => setEditingPrice({
+                                    ...editingPrice,
+                                    newPrice: e.target.value
+                                  })}
+                                  className="h-8 text-xs border-2 border-orange-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 bg-white dark:bg-slate-700"
+                                />
+                                <Button
+                                  size="sm"
+                                  onClick={applyPriceEdit}
+                                  className="h-8 px-2 bg-green-600 hover:bg-green-700 text-white text-xs"
+                                >
+                                  ✓
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={cancelPriceEdit}
+                                  className="h-8 px-2 border-red-300 text-red-600 hover:bg-red-50 text-xs"
+                                >
+                                  ✕
+                                </Button>
+                              </div>
+                              <p className="text-xs text-orange-600 dark:text-orange-400">
+                                Editando preço de entrada...
+                              </p>
+                            </div>
+                          ) : (
+                            // Modo de visualização do preço
+                            <div className="flex items-center space-x-2">
+                              <p className="text-sm text-slate-500 dark:text-slate-500">
+                                {token.price > 0 ? `Preço médio: $${token.price.toFixed(8)}` : 'Preço não definido'}
+                              </p>
+                              {token.price === 0 && (
+                                <p className="text-xs text-orange-600 dark:text-orange-400">
+                                  Clique no ícone para definir o preço
+                                </p>
+                              )}
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => startPriceEdit(token)}
+                                className="h-6 w-6 p-0 text-slate-400 hover:text-orange-600 hover:bg-orange-50 transition-colors"
+                                title={token.price > 0 ? "Clique para editar o preço de entrada" : "Clique para definir o preço de entrada"}
+                              >
+                                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                              </Button>
+                            </div>
+                          )}
                         </div>
 
                         {/* Preços em tempo real */}
