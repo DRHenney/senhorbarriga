@@ -1127,22 +1127,7 @@ export default function Home() {
       setAutoUpdateInterval(interval);
       setNextUpdateTime(new Date(Date.now() + 30000));
       console.log('✅ Estados atualizados - autoUpdateInterval e nextUpdateTime definidos');
-
-      // Fazer primeira atualização imediatamente
-      console.log('⚡ Primeira atualização imediata...');
-      // Aguardar mais tempo para garantir que isFetchingPrices seja false
-      setTimeout(() => {
-        console.log('⏳ Verificando isFetchingPrices antes de startAutoUpdate:', { isFetchingPrices });
-        if (!isFetchingPrices) {
-          startAutoUpdate();
-        } else {
-          console.log('⏳ isFetchingPrices ainda true, aguardando mais...');
-          setTimeout(() => {
-            console.log('⏳ Tentando novamente, isFetchingPrices:', { isFetchingPrices });
-            startAutoUpdate();
-          }, 500);
-        }
-      }, 200);
+      console.log('✅ Intervalo configurado - primeira atualização em 30 segundos');
 
       // Cleanup ao desmontar componente
       return () => {
