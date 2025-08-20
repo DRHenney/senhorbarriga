@@ -1082,7 +1082,8 @@ export default function Home() {
   useEffect(() => {
     console.log('🔄 useEffect de atualização automática executado:', { 
       tokensLength: tokens.length, 
-      autoUpdateInterval: !!autoUpdateInterval 
+      autoUpdateInterval: !!autoUpdateInterval,
+      tokensIds: tokens.map(t => t.id)
     });
     
     // Limpar intervalo anterior se existir
@@ -1122,7 +1123,10 @@ export default function Home() {
 
       // Fazer primeira atualização imediatamente
       console.log('⚡ Primeira atualização imediata...');
-      startAutoUpdate();
+      // Aguardar um pouco para garantir que isFetchingPrices seja false
+      setTimeout(() => {
+        startAutoUpdate();
+      }, 100);
 
       // Cleanup ao desmontar componente
       return () => {
@@ -1134,7 +1138,7 @@ export default function Home() {
     } else {
       console.log('📭 Nenhum token para atualização automática');
     }
-  }, [tokens.length]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [tokens.length, tokens]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // useEffect para gerenciar o countdown
   useEffect(() => {
