@@ -8,38 +8,49 @@ import { eq } from 'drizzle-orm';
 // GET - Buscar tokens do usuário
 export async function GET() {
   try {
+    console.log('🔍 GET /api/tokens iniciado');
     const session = await getServerSession(authOptions);
+    console.log('👤 Sessão:', session ? 'Autenticado' : 'Não autenticado');
     
     if (!session?.user?.email) {
+      console.log('❌ Usuário não autenticado');
       return NextResponse.json({ 
         success: false, 
         message: 'Usuário não autenticado' 
       }, { status: 401 });
     }
 
+    console.log('🔍 Buscando usuário:', session.user.email);
     // Buscar usuário pelo email
     const user = await db.query.users.findFirst({
       where: (users, { eq }) => eq(users.email, session.user!.email!),
     });
 
     if (!user) {
+      console.log('❌ Usuário não encontrado');
       return NextResponse.json({ 
         success: false, 
         message: 'Usuário não encontrado' 
       }, { status: 404 });
     }
 
+    console.log('✅ Usuário encontrado:', user.id);
+    console.log('🔍 Buscando tokens do usuário...');
+
     // Buscar tokens do usuário
     const tokens = await db.select().from(userTokens).where(eq(userTokens.userId, user.id));
+    console.log('✅ Tokens encontrados:', tokens.length);
 
     return NextResponse.json({ 
       success: true, 
       tokens 
     });
   } catch (error) {
+    console.error('❌ Erro na API GET /api/tokens:', error);
     return NextResponse.json({ 
       success: false, 
-      message: 'Erro interno do servidor'
+      message: 'Erro interno do servidor',
+      error: error instanceof Error ? error.message : 'Erro desconhecido'
     }, { status: 500 });
   }
 }
