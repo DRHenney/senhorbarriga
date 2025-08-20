@@ -344,6 +344,9 @@ export default function Home() {
     amount: number;
     price: number;
     value: number;
+    realTimePrice?: number;
+    priceChange24h?: number;
+    lastUpdated?: string;
   }>>(initialTokens);
   const [activeTab, setActiveTab] = useState("current"); // "current" ou "monthly"
   const [evolutionTab, setEvolutionTab] = useState("weekly"); // "weekly" ou "records"
@@ -371,6 +374,10 @@ export default function Home() {
     amount: "",
     price: "",
   });
+
+  // Estados para preços em tempo real
+  const [isUpdatingPrices, setIsUpdatingPrices] = useState(false);
+  const [lastPriceUpdate, setLastPriceUpdate] = useState<string | null>(null);
 
   // Estados para operações ativas
   const [activeOperations, setActiveOperations] = useState<Array<{
@@ -626,6 +633,81 @@ export default function Home() {
     portfolioGrowth = (((lastValue - firstValue) / firstValue) * 100).toFixed(1);
   }
 
+  // Buscar preços em tempo real do DexScreener
+  const fetchRealTimePrices = async (tokensList: any[], showLoading = true) => {
+    try {
+      if (showLoading) {
+        setIsUpdatingPrices(true);
+      }
+      
+      console.log('🔄 Buscando preços em tempo real para:', tokensList.length, 'tokens');
+      
+      const tokensToFetch = tokensList
+        .filter(token => token.symbol && token.symbol !== 'N/A')
+        .map(token => ({ symbol: token.symbol }));
+
+      if (tokensToFetch.length === 0) {
+        console.log('⚠️ Nenhum token válido para buscar preços');
+        return;
+      }
+
+      const response = await fetch('/api/prices/dexscreener', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ tokens: tokensToFetch }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success && data.results) {
+        console.log('✅ Preços em tempo real recebidos:', data.results);
+        
+        // Atualizar tokens com preços em tempo real
+        setTokens(prevTokens => 
+          prevTokens.map(token => {
+            const priceData = data.results.find((result: any) => 
+              result.success && result.symbol === token.symbol
+            );
+            
+            if (priceData) {
+              return {
+                ...token,
+                realTimePrice: priceData.data.priceUsd,
+                priceChange24h: priceData.data.priceChange24h,
+                lastUpdated: priceData.data.updatedAt,
+              };
+            }
+            
+            return token;
+          })
+        );
+        
+        setLastPriceUpdate(new Date().toISOString());
+        toast({
+          title: "✅ Preços Atualizados!",
+          description: "Preços em tempo real foram atualizados com sucesso!",
+          variant: "default",
+          className: "bg-green-50 border-green-200 text-green-800",
+        });
+      } else {
+        console.warn('⚠️ Erro ao buscar preços em tempo real:', data);
+      }
+    } catch (error) {
+      console.error('❌ Erro ao buscar preços em tempo real:', error);
+      toast({
+        title: "❌ Erro",
+        description: "Erro ao buscar preços em tempo real",
+        variant: "destructive",
+      });
+    } finally {
+      if (showLoading) {
+        setIsUpdatingPrices(false);
+      }
+    }
+  };
+
   // Carregar tokens do banco
   const loadTokens = async () => {
     try {
@@ -709,6 +791,11 @@ export default function Home() {
         }).filter((token: any) => token !== null); // Remover tokens inválidos
         
         setTokens(processedTokens);
+        
+        // Buscar preços em tempo real após carregar os tokens
+        if (processedTokens.length > 0) {
+          fetchRealTimePrices(processedTokens, false); // Não mostrar loading na carga inicial
+        }
       } else {
         console.warn('Resposta inválida da API de tokens:', data);
         setTokens([]);
@@ -732,7 +819,7 @@ export default function Home() {
     };
     
     checkAuthAndLoad();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Carregar registros do banco
   const loadRecords = async () => {
@@ -1469,6 +1556,34 @@ export default function Home() {
               </Button>
             </div>
 
+            {/* Cabeçalho com botão de atualização de preços */}
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Seus Tokens</h3>
+                {lastPriceUpdate && (
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Última atualização: {new Date(lastPriceUpdate).toLocaleTimeString('pt-BR')}
+                  </p>
+                )}
+              </div>
+              <Button
+                onClick={() => fetchRealTimePrices(tokens, true)}
+                disabled={isUpdatingPrices}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {isUpdatingPrices ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Atualizando...
+                  </>
+                ) : (
+                  <>
+                    🔄 Atualizar Preços
+                  </>
+                )}
+              </Button>
+            </div>
+
             {/* Lista de tokens */}
             <div className="space-y-3">
               {tokens.map((token) => (
@@ -1589,7 +1704,8 @@ export default function Home() {
                          </div>
                       </div>
                       <div className="flex items-center space-x-6">
-                                                                         <div className="text-right">
+                        {/* Informações básicas do token */}
+                        <div className="text-right">
                           <p className="text-sm text-slate-600 dark:text-slate-400">
                             {token.amount > 0 ? `${token.amount.toFixed(2)} ${token.symbol || 'N/A'}` : `0.00 ${token.symbol || 'N/A'} (acompanhamento)`}
                           </p>
@@ -1597,7 +1713,39 @@ export default function Home() {
                             {token.price > 0 ? `Preço médio: $${token.price.toFixed(2)}` : 'Preço não definido'}
                           </p>
                         </div>
-                                                                         <div className="text-right">
+
+                        {/* Preços em tempo real */}
+                        {token.realTimePrice ? (
+                          <div className="text-right">
+                            <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                              💰 ${token.realTimePrice.toFixed(6)}
+                            </p>
+                            {token.priceChange24h !== undefined && (
+                              <p className={`text-xs font-medium ${
+                                token.priceChange24h > 0 
+                                  ? 'text-green-600 dark:text-green-400' 
+                                  : token.priceChange24h < 0 
+                                    ? 'text-red-600 dark:text-red-400' 
+                                    : 'text-slate-500 dark:text-slate-400'
+                              }`}>
+                                {token.priceChange24h > 0 ? '↗' : token.priceChange24h < 0 ? '↘' : '→'} 
+                                {Math.abs(token.priceChange24h).toFixed(2)}% (24h)
+                              </p>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="text-right">
+                            <p className="text-xs text-slate-400 dark:text-slate-500">
+                              ⏳ Preço não disponível
+                            </p>
+                            <p className="text-xs text-slate-400 dark:text-slate-500">
+                                                             Clique em &quot;Atualizar Preços&quot;
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Valor do portfólio */}
+                        <div className="text-right">
                           <p className="font-semibold text-slate-900 dark:text-slate-100">
                             {token.value > 0 ? formatCurrency(token.value) : 'Token de acompanhamento'}
                           </p>
@@ -1635,11 +1783,19 @@ export default function Home() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Valor Total do Portfólio</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">{tokens.length} tokens • Última atualização: agora</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    {tokens.length} tokens • 
+                    {lastPriceUpdate ? ` Preços atualizados: ${new Date(lastPriceUpdate).toLocaleTimeString('pt-BR')}` : ' Preços não atualizados'}
+                  </p>
                 </div>
                 <div className="text-right">
                   <p className="text-3xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(portfolioTotal)}</p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">+5.2% esta semana</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
+                    {tokens.filter(t => t.realTimePrice).length > 0 ? 
+                      `${tokens.filter(t => t.realTimePrice).length}/${tokens.length} tokens com preços em tempo real` : 
+                      'Clique em &quot;Atualizar Preços&quot; para ver valores em tempo real'
+                    }
+                  </p>
                 </div>
               </div>
             </div>
