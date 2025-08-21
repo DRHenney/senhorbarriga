@@ -908,6 +908,7 @@ export default function Home() {
               ...token,
               realTimePrice: priceData.data.priceUsd,
               priceChange24h: priceData.data.priceChange24h,
+              imageUrl: priceData.data.imageUrl || token.imageUrl, // Salvar URL da imagem
               lastUpdated: new Date().toLocaleString('pt-BR')
             };
           }
@@ -2027,8 +2028,22 @@ export default function Home() {
                     // Modo de edição
                     <div className="space-y-4">
                       <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 bg-gradient-to-r from-slate-500 to-slate-600 rounded-full flex items-center justify-center text-white font-bold">
-                          {token.symbol && token.symbol.length > 0 ? token.symbol.charAt(0) : '?'}
+                        <div className="w-10 h-10 bg-gradient-to-r from-slate-500 to-slate-600 rounded-full flex items-center justify-center text-white font-bold overflow-hidden">
+                          {token.imageUrl ? (
+                            <img 
+                              src={token.imageUrl} 
+                              alt={`${token.name} logo`}
+                              className="w-full h-full object-cover rounded-full"
+                              onError={(e) => {
+                                // Fallback para inicial se a imagem falhar
+                                e.currentTarget.style.display = 'none';
+                                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                              }}
+                            />
+                          ) : null}
+                          <span className={token.imageUrl ? 'hidden' : ''}>
+                            {token.symbol && token.symbol.length > 0 ? token.symbol.charAt(0) : '?'}
+                          </span>
                         </div>
                                                 <div>
                           <h3 className="font-semibold text-slate-900 dark:text-slate-100">{token.name || 'Token'}</h3>
@@ -2131,8 +2146,22 @@ export default function Home() {
                     <div className="flex items-center justify-between">
                       {/* Lado esquerdo - Informações básicas */}
                       <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-gradient-to-r from-slate-500 to-slate-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                          {token.symbol && token.symbol.length > 0 ? token.symbol.charAt(0) : '?'}
+                        <div className="w-12 h-12 bg-gradient-to-r from-slate-500 to-slate-600 rounded-full flex items-center justify-center text-white font-bold text-lg overflow-hidden">
+                          {token.imageUrl ? (
+                            <img 
+                              src={token.imageUrl} 
+                              alt={`${token.name} logo`}
+                              className="w-full h-full object-cover rounded-full"
+                              onError={(e) => {
+                                // Fallback para inicial se a imagem falhar
+                                e.currentTarget.style.display = 'none';
+                                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                              }}
+                            />
+                          ) : null}
+                          <span className={token.imageUrl ? 'hidden' : ''}>
+                            {token.symbol && token.symbol.length > 0 ? token.symbol.charAt(0) : '?'}
+                          </span>
                         </div>
                         <div>
                           <h3 className="font-semibold text-slate-900 dark:text-slate-100 text-lg">{token.name || 'Token'}</h3>

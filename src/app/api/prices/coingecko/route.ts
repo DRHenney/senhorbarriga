@@ -58,6 +58,7 @@ async function fetchTokenData(symbol: string) {
     return {
       symbol: token.symbol.toUpperCase(),
       name: token.name,
+      imageUrl: token.image || token.large || null, // URL da imagem do token
       priceUsd: parseFloat(detailData.market_data?.current_price?.usd || '0'),
       priceChange24h: parseFloat(detailData.market_data?.price_change_percentage_24h || '0'),
       volume24h: parseFloat(detailData.market_data?.total_volume?.usd || '0'),
