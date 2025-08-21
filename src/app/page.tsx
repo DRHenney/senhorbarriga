@@ -2051,10 +2051,10 @@ export default function Home() {
                         </div>
                         <div className="text-right">
                           <p className="text-sm text-slate-600 dark:text-slate-400">
-                            Quantidade atual: {token.amount > 0 ? `${token.amount.toFixed(8)} ${token.symbol || 'N/A'}` : `0.00 ${token.symbol || 'N/A'} (acompanhamento)`}
+                            Quantidade atual: {token.amount > 0 ? `${formatTokenAmount(token.amount)} ${token.symbol || 'N/A'}` : `0.00 ${token.symbol || 'N/A'} (acompanhamento)`}
                           </p>
                           <p className="text-sm text-slate-500 dark:text-slate-500">
-                            {token.price > 0 ? `Preço médio: $${token.price.toFixed(8)}` : 'Preço não definido'}
+                            {token.price > 0 ? `Preço médio: ${formatPrice(token.price)}` : 'Preço não definido'}
                           </p>
                         </div>
                       </div>
@@ -2101,7 +2101,7 @@ export default function Home() {
                              </label>
                                                            <Input
                                 type="number"
-                                placeholder={`${token.price.toFixed(8)} (preço atual)`}
+                                placeholder={`${formatPrice(token.price)} (preço atual)`}
                                 value={editForm.price}
                                 onChange={(e) => setEditForm({ ...editForm, price: e.target.value })}
                                 className="h-10 text-base border-2 border-slate-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-500 text-slate-900 font-medium"
