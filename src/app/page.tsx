@@ -1087,7 +1087,8 @@ export default function Home() {
       try {
         await Promise.allSettled([
           loadTokens(),
-          loadRecords()
+          loadRecords(),
+          loadOperations()
         ]);
       } catch (error) {
         console.error('Erro ao carregar dados:', error);
@@ -1210,6 +1211,26 @@ export default function Home() {
     } catch (error) {
       console.error('Erro ao carregar registros:', error);
       setRecords([]);
+    }
+  };
+
+  // Carregar operações do banco
+  const loadOperations = async () => {
+    try {
+      console.log('🔄 Carregando operações do banco de dados...');
+      const response = await fetch('/api/operations');
+      const data = await response.json();
+      
+      if (data.success && Array.isArray(data.operations)) {
+        console.log('✅ Operações carregadas:', data.operations.length);
+        setActiveOperations(data.operations);
+      } else {
+        console.warn('Resposta inválida da API de operações:', data);
+        setActiveOperations([]);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar operações:', error);
+      setActiveOperations([]);
     }
   };
 
@@ -1516,7 +1537,7 @@ export default function Home() {
   };
 
   // Funções para operações ativas
-  const addOperation = () => {
+  const addOperation = async () => {
     if (newOperation.pair && newOperation.capital && newOperation.startDate) {
       const capital = parseFloat(newOperation.capital);
       
@@ -1555,35 +1576,68 @@ export default function Home() {
         }
       }
 
-      const operation = {
-        id: Date.now(),
-        type: newOperation.type,
-        pair: newOperation.pair.toUpperCase(),
-        capital: Number(capital.toFixed(4)),
-        startDate: newOperation.startDate,
-        rangeMin: newOperation.type === "grid" ? parseFloat(newOperation.rangeMin) : undefined,
-        rangeMax: newOperation.type === "grid" ? parseFloat(newOperation.rangeMax) : undefined,
-        numGrids: newOperation.type === "grid" ? parseInt(newOperation.numGrids) : undefined,
-        notes: newOperation.notes || undefined,
-      };
+      try {
+        console.log('🔄 Salvando operação no banco de dados...');
+        
+        const response = await fetch('/api/operations', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: newOperation.type,
+            pair: newOperation.pair,
+            capital: capital,
+            startDate: newOperation.startDate,
+            rangeMin: newOperation.type === "grid" ? parseFloat(newOperation.rangeMin) : undefined,
+            rangeMax: newOperation.type === "grid" ? parseFloat(newOperation.rangeMax) : undefined,
+            numGrids: newOperation.type === "grid" ? parseInt(newOperation.numGrids) : undefined,
+            notes: newOperation.notes || undefined,
+          }),
+        });
 
-      setActiveOperations([...activeOperations, operation]);
-      setNewOperation({
-        type: "pool",
-        pair: "",
-        capital: "",
-        startDate: new Date().toISOString().split('T')[0],
-        rangeMin: "",
-        rangeMax: "",
-        numGrids: "",
-        notes: "",
-      });
-      toast({
-        title: "✅ Sucesso!",
-        description: "Operação adicionada com sucesso!",
-        variant: "default",
-        className: "bg-green-50 border-green-200 text-green-800",
-      });
+        const data = await response.json();
+
+        if (data.success) {
+          console.log('✅ Operação salva com sucesso:', data.operation);
+          
+          // Adicionar à lista local
+          setActiveOperations([...activeOperations, data.operation]);
+          
+          // Limpar formulário
+          setNewOperation({
+            type: "pool",
+            pair: "",
+            capital: "",
+            startDate: new Date().toISOString().split('T')[0],
+            rangeMin: "",
+            rangeMax: "",
+            numGrids: "",
+            notes: "",
+          });
+          
+          toast({
+            title: "✅ Sucesso!",
+            description: "Operação adicionada e salva no banco de dados!",
+            variant: "default",
+            className: "bg-green-50 border-green-200 text-green-800",
+          });
+        } else {
+          console.error('❌ Erro ao salvar operação:', data.message);
+          toast({
+            title: "❌ Erro",
+            description: `Erro ao salvar operação: ${data.message}`,
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error('❌ Erro na requisição:', error);
+        toast({
+          title: "❌ Erro",
+          description: "Erro ao salvar operação no banco de dados",
+          variant: "destructive",
+        });
+      }
     } else {
       toast({
         title: "⚠️ Aviso",
