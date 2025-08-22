@@ -241,61 +241,68 @@ const formatValue = (value: number) => {
 
 // Função para formatar preços de forma inteligente
 const formatPrice = (price: number): string => {
-  if (price === 0) return '$0.00';
+  const numPrice = Number(price);
+  if (isNaN(numPrice) || numPrice === 0) return 'R$ 0,00';
   
-  if (price < 0.0001) {
+  if (numPrice < 0.0001) {
     // Para valores muito pequenos, mostrar mais casas decimais
-    return `$${price.toFixed(8)}`;
-  } else if (price < 0.01) {
+    return `R$ ${numPrice.toFixed(8).replace('.', ',')}`;
+  } else if (numPrice < 0.01) {
     // Para valores pequenos, mostrar 6 casas decimais
-    return `$${price.toFixed(6)}`;
-  } else if (price < 1) {
+    return `R$ ${numPrice.toFixed(6).replace('.', ',')}`;
+  } else if (numPrice < 1) {
     // Para valores menores que 1, mostrar 4 casas decimais
-    return `$${price.toFixed(4)}`;
-  } else if (price < 1000) {
+    return `R$ ${numPrice.toFixed(4).replace('.', ',')}`;
+  } else if (numPrice < 1000) {
     // Para valores normais, mostrar 2 casas decimais
-    return `$${price.toFixed(2)}`;
+    return `R$ ${numPrice.toFixed(2).replace('.', ',')}`;
   } else {
-    // Para valores grandes, usar separadores de milhares
-    return `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    // Para valores grandes, usar separadores de milhares no formato brasileiro
+    return `R$ ${numPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
 };
 
 // Função para formatar valores monetários com separadores de milhares
 const formatCurrency = (value: number): string => {
-  if (value === 0) return '$0.00';
+  // Garantir que o valor seja um número
+  const numValue = Number(value);
+  if (isNaN(numValue) || numValue === 0) return 'R$ 0,00';
   
-  if (value < 0.01) {
+  if (numValue < 0.01) {
     // Para valores muito pequenos, mostrar mais precisão
-    return `$${value.toFixed(6)}`;
-  } else if (value < 1) {
+    return `R$ ${numValue.toFixed(6).replace('.', ',')}`;
+  } else if (numValue < 1) {
     // Para valores pequenos, mostrar 4 casas decimais
-    return `$${value.toFixed(4)}`;
+    return `R$ ${numValue.toFixed(4).replace('.', ',')}`;
   } else {
-    // Para valores normais e grandes, usar separadores de milhares
-    return `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    // Para valores normais e grandes, usar separadores de milhares no formato brasileiro
+    return `R$ ${numValue.toLocaleString('pt-BR', { 
+      minimumFractionDigits: 2, 
+      maximumFractionDigits: 2 
+    })}`;
   }
 };
 
 // Função para formatar quantidade de tokens
 const formatTokenAmount = (amount: number): string => {
-  if (amount === 0) return '0.00';
+  const numAmount = Number(amount);
+  if (isNaN(numAmount) || numAmount === 0) return '0,00';
   
-  if (amount < 0.000001) {
+  if (numAmount < 0.000001) {
     // Para quantidades muito pequenas
-    return amount.toFixed(8);
-  } else if (amount < 0.01) {
+    return numAmount.toFixed(8).replace('.', ',');
+  } else if (numAmount < 0.01) {
     // Para quantidades pequenas
-    return amount.toFixed(6);
-  } else if (amount < 1) {
+    return numAmount.toFixed(6).replace('.', ',');
+  } else if (numAmount < 1) {
     // Para quantidades menores que 1
-    return amount.toFixed(4);
-  } else if (amount < 1000) {
+    return numAmount.toFixed(4).replace('.', ',');
+  } else if (numAmount < 1000) {
     // Para quantidades normais
-    return amount.toFixed(2);
+    return numAmount.toFixed(2).replace('.', ',');
   } else {
-    // Para quantidades grandes, usar separadores de milhares
-    return amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    // Para quantidades grandes, usar separadores de milhares no formato brasileiro
+    return numAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 };
 
@@ -2946,7 +2953,7 @@ export default function Home() {
                                 </div>
                                 <div className="flex items-center space-x-4">
                                                                      <div className="text-right">
-                                     <p className="font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(operation.capital)}</p>
+                                     <p className="font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(Number(operation.capital))}</p>
                                      <p className="text-sm text-slate-500 dark:text-slate-500">
                                        Início: {new Date(operation.startDate).toLocaleDateString('pt-BR')}
                                      </p>
