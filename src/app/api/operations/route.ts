@@ -142,8 +142,7 @@ export async function POST(request: NextRequest) {
     console.error('❌ Erro ao criar operação:', error);
     console.error('📋 Detalhes do erro:', {
       name: error.name,
-      message: error.message,
-      stack: error.stack
+      message: error.message
     });
     return NextResponse.json({ 
       success: false, 

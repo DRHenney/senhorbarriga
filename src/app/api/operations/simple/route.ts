@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/database';
-import { activeOperations } from '@/lib/schema';
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,44 +18,37 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Inserir operação no banco com ID fixo para teste
-    const testData = {
-      userId: 'test-user-123', // ID fixo para teste
+    // Simular sucesso sem inserir no banco
+    const mockOperation = {
+      id: Math.floor(Math.random() * 1000),
+      userId: 'test-user-123',
       type,
       pair: pair.toUpperCase(),
       capital: capital.toString(),
-      startDate: new Date(startDate),
+      startDate: new Date(startDate).toISOString(),
       rangeMin: rangeMin ? rangeMin.toString() : null,
       rangeMax: rangeMax ? rangeMax.toString() : null,
       numGrids: numGrids ? parseInt(numGrids) : null,
       notes: notes || null,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
     
-    console.log('💾 Tentando inserir:', testData);
-    
-    const [newOperation] = await db
-      .insert(activeOperations)
-      .values(testData)
-      .returning();
-
-    console.log('✅ Operação criada com sucesso:', newOperation);
+    console.log('✅ Operação simulada com sucesso:', mockOperation);
 
     return NextResponse.json({
       success: true,
-      operation: newOperation
+      operation: mockOperation,
+      message: 'Operação simulada (sem inserção no banco)'
     });
 
   } catch (error) {
-    console.error('❌ Erro ao criar operação:', error);
-    console.error('📋 Detalhes do erro:', {
-      name: error.name,
-      message: error.message,
-      stack: error.stack
-    });
+    console.error('❌ Erro ao processar operação:', error);
     return NextResponse.json({ 
       success: false, 
       message: 'Erro interno do servidor',
-      error: error.message
+      error: error instanceof Error ? error.message : 'Erro desconhecido'
     }, { status: 500 });
   }
 }
