@@ -141,8 +141,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('❌ Erro ao criar operação:', error);
     console.error('📋 Detalhes do erro:', {
-      name: error.name,
-      message: error.message
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : String(error)
     });
     return NextResponse.json({ 
       success: false, 
