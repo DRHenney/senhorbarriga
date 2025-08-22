@@ -242,23 +242,23 @@ const formatValue = (value: number) => {
 // Função para formatar preços de forma inteligente
 const formatPrice = (price: number): string => {
   const numPrice = Number(price);
-  if (isNaN(numPrice) || numPrice === 0) return 'R$ 0,00';
+  if (isNaN(numPrice) || numPrice === 0) return '$0.00';
   
   if (numPrice < 0.0001) {
     // Para valores muito pequenos, mostrar mais casas decimais
-    return `R$ ${numPrice.toFixed(8).replace('.', ',')}`;
+    return `$${numPrice.toFixed(8)}`;
   } else if (numPrice < 0.01) {
     // Para valores pequenos, mostrar 6 casas decimais
-    return `R$ ${numPrice.toFixed(6).replace('.', ',')}`;
+    return `$${numPrice.toFixed(6)}`;
   } else if (numPrice < 1) {
     // Para valores menores que 1, mostrar 4 casas decimais
-    return `R$ ${numPrice.toFixed(4).replace('.', ',')}`;
+    return `$${numPrice.toFixed(4)}`;
   } else if (numPrice < 1000) {
     // Para valores normais, mostrar 2 casas decimais
-    return `R$ ${numPrice.toFixed(2).replace('.', ',')}`;
+    return `$${numPrice.toFixed(2)}`;
   } else {
-    // Para valores grandes, usar separadores de milhares no formato brasileiro
-    return `R$ ${numPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    // Para valores grandes, usar separadores de milhares no formato americano
+    return `$${numPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
 };
 
@@ -266,17 +266,17 @@ const formatPrice = (price: number): string => {
 const formatCurrency = (value: number): string => {
   // Garantir que o valor seja um número
   const numValue = Number(value);
-  if (isNaN(numValue) || numValue === 0) return 'R$ 0,00';
+  if (isNaN(numValue) || numValue === 0) return '$0.00';
   
   if (numValue < 0.01) {
     // Para valores muito pequenos, mostrar mais precisão
-    return `R$ ${numValue.toFixed(6).replace('.', ',')}`;
+    return `$${numValue.toFixed(6)}`;
   } else if (numValue < 1) {
     // Para valores pequenos, mostrar 4 casas decimais
-    return `R$ ${numValue.toFixed(4).replace('.', ',')}`;
+    return `$${numValue.toFixed(4)}`;
   } else {
-    // Para valores normais e grandes, usar separadores de milhares no formato brasileiro
-    return `R$ ${numValue.toLocaleString('pt-BR', { 
+    // Para valores normais e grandes, usar separadores de milhares no formato americano
+    return `$${numValue.toLocaleString('en-US', { 
       minimumFractionDigits: 2, 
       maximumFractionDigits: 2 
     })}`;
@@ -286,23 +286,23 @@ const formatCurrency = (value: number): string => {
 // Função para formatar quantidade de tokens
 const formatTokenAmount = (amount: number): string => {
   const numAmount = Number(amount);
-  if (isNaN(numAmount) || numAmount === 0) return '0,00';
+  if (isNaN(numAmount) || numAmount === 0) return '0.00';
   
   if (numAmount < 0.000001) {
     // Para quantidades muito pequenas
-    return numAmount.toFixed(8).replace('.', ',');
+    return numAmount.toFixed(8);
   } else if (numAmount < 0.01) {
     // Para quantidades pequenas
-    return numAmount.toFixed(6).replace('.', ',');
+    return numAmount.toFixed(6);
   } else if (numAmount < 1) {
     // Para quantidades menores que 1
-    return numAmount.toFixed(4).replace('.', ',');
+    return numAmount.toFixed(4);
   } else if (numAmount < 1000) {
     // Para quantidades normais
-    return numAmount.toFixed(2).replace('.', ',');
+    return numAmount.toFixed(2);
   } else {
-    // Para quantidades grandes, usar separadores de milhares no formato brasileiro
-    return numAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    // Para quantidades grandes, usar separadores de milhares no formato americano
+    return numAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 };
 
