@@ -50,9 +50,15 @@ export async function GET(request: NextRequest) {
 // POST - Criar nova operação
 export async function POST(request: NextRequest) {
   try {
+    console.log('🔍 Iniciando POST /api/operations');
+    
     const session = await getServerSession(authOptions);
+    console.log('👤 Sessão encontrada:', !!session);
+    console.log('📧 Email do usuário:', session?.user?.email);
+    console.log('🆔 ID do usuário:', session?.user?.id);
     
     if (!session?.user?.email) {
+      console.log('❌ Usuário não autenticado');
       return NextResponse.json({ 
         success: false, 
         message: 'Usuário não autenticado' 
@@ -97,6 +103,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Inserir operação no banco
+    console.log('💾 Inserindo operação no banco de dados...');
+    console.log('📊 Dados para inserção:', {
+      userId: session.user.id,
+      type,
+      pair: pair.toUpperCase(),
+      capital: capital.toString(),
+      startDate: new Date(startDate),
+      rangeMin: rangeMin ? rangeMin.toString() : null,
+      rangeMax: rangeMax ? rangeMax.toString() : null,
+      numGrids: numGrids ? parseInt(numGrids) : null,
+      notes: notes || null,
+    });
+    
     const [newOperation] = await db
       .insert(activeOperations)
       .values({
@@ -121,6 +140,11 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('❌ Erro ao criar operação:', error);
+    console.error('📋 Detalhes do erro:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    });
     return NextResponse.json({ 
       success: false, 
       message: 'Erro interno do servidor' 
