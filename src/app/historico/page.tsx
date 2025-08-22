@@ -6,54 +6,16 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Download, Filter } from "lucide-react";
 import Link from "next/link";
 
-// Dados históricos de exemplo
-const historicalData = [
-  {
-    week: "Semana 1",
-    date: "2024-01-01",
-    poolLiquidity: 5000,
-    gridBot: 1200,
-    total: 6200,
-    weeklyGrowth: 0,
-    cumulativeGrowth: 0,
-  },
-  {
-    week: "Semana 2",
-    date: "2024-01-08",
-    poolLiquidity: 5200,
-    gridBot: 1350,
-    total: 6550,
-    weeklyGrowth: 5.6,
-    cumulativeGrowth: 5.6,
-  },
-  {
-    week: "Semana 3",
-    date: "2024-01-15",
-    poolLiquidity: 5400,
-    gridBot: 1400,
-    total: 6800,
-    weeklyGrowth: 3.8,
-    cumulativeGrowth: 9.7,
-  },
-  {
-    week: "Semana 4",
-    date: "2024-01-22",
-    poolLiquidity: 5600,
-    gridBot: 1500,
-    total: 7100,
-    weeklyGrowth: 4.4,
-    cumulativeGrowth: 14.5,
-  },
-  {
-    week: "Semana 5",
-    date: "2024-01-29",
-    poolLiquidity: 5800,
-    gridBot: 1600,
-    total: 7400,
-    weeklyGrowth: 4.2,
-    cumulativeGrowth: 19.4,
-  },
-];
+// Array vazio para dados históricos - será carregado do banco
+const historicalData: Array<{
+  week: string;
+  date: string;
+  poolLiquidity: number;
+  gridBot: number;
+  total: number;
+  weeklyGrowth: number;
+  cumulativeGrowth: number;
+}> = [];
 
 // Funções de formatação
 const formatCurrency = (value: number) => {
@@ -68,9 +30,11 @@ const formatPercentage = (value: number) => {
 };
 
 // Cálculos dos resumos
-const totalInvested = historicalData[0]?.total || 0;
-const averageWeeklyGrowth = historicalData.reduce((acc, item) => acc + item.weeklyGrowth, 0) / (historicalData.length - 1);
-const period = `${historicalData.length} semanas`;
+const totalInvested = historicalData.length > 0 ? historicalData[0]?.total || 0 : 0;
+const averageWeeklyGrowth = historicalData.length > 1 
+  ? historicalData.reduce((acc, item) => acc + item.weeklyGrowth, 0) / (historicalData.length - 1)
+  : 0;
+const period = historicalData.length > 0 ? `${historicalData.length} semanas` : "Nenhum registro";
 
 export default function HistoricoPage() {
   return (
@@ -154,25 +118,43 @@ export default function HistoricoPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {historicalData.map((row) => (
-                  <TableRow key={row.week}>
-                    <TableCell className="font-medium">{row.week}</TableCell>
-                    <TableCell>{row.date}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(row.poolLiquidity)}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(row.gridBot)}</TableCell>
-                    <TableCell className="text-right font-medium">{formatCurrency(row.total)}</TableCell>
-                    <TableCell className="text-right">
-                      <span className={row.weeklyGrowth >= 0 ? "text-green-600" : "text-red-600"}>
-                        {formatPercentage(row.weeklyGrowth)}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <span className={row.cumulativeGrowth >= 0 ? "text-green-600" : "text-red-600"}>
-                        {formatPercentage(row.cumulativeGrowth)}
-                      </span>
+                {historicalData.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8">
+                      <div className="flex flex-col items-center space-y-2">
+                        <div className="text-muted-foreground text-lg">📊 Nenhum registro encontrado</div>
+                        <p className="text-sm text-muted-foreground max-w-md">
+                          Você ainda não possui registros financeiros. Comece adicionando seu primeiro registro na página inicial!
+                        </p>
+                        <Link href="/">
+                          <Button className="mt-2">
+                            Adicionar Primeiro Registro
+                          </Button>
+                        </Link>
+                      </div>
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  historicalData.map((row) => (
+                    <TableRow key={row.week}>
+                      <TableCell className="font-medium">{row.week}</TableCell>
+                      <TableCell>{row.date}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(row.poolLiquidity)}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(row.gridBot)}</TableCell>
+                      <TableCell className="text-right font-medium">{formatCurrency(row.total)}</TableCell>
+                      <TableCell className="text-right">
+                        <span className={row.weeklyGrowth >= 0 ? "text-green-600" : "text-red-600"}>
+                          {formatPercentage(row.weeklyGrowth)}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <span className={row.cumulativeGrowth >= 0 ? "text-green-600" : "text-red-600"}>
+                          {formatPercentage(row.cumulativeGrowth)}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </CardContent>

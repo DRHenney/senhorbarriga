@@ -20,17 +20,8 @@ import { Toaster } from "@/components/ui/toaster";
 // Dados para o gráfico de barras (serão calculados dinamicamente)
 const getBarChartData = (records: any[]) => {
   if (records.length === 0) {
-    // Dados padrão quando não há registros - apenas 4 semanas do mês atual
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
-    const currentYear = currentDate.getFullYear();
-    
-    return [
-      { week: new Date(currentYear, currentMonth, 1).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }), poolLiquidity: 5000, gridBot: 1200, total: 6200 },
-      { week: new Date(currentYear, currentMonth, 8).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }), poolLiquidity: 5200, gridBot: 1350, total: 6550 },
-      { week: new Date(currentYear, currentMonth, 15).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }), poolLiquidity: 5400, gridBot: 1400, total: 6800 },
-      { week: new Date(currentYear, currentMonth, 22).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }), poolLiquidity: 5600, gridBot: 1500, total: 7100 },
-    ];
+    // Retornar array vazio quando não há registros
+    return [];
   }
 
   // Obter o mês e ano atual
@@ -88,15 +79,8 @@ const getPieData = (poolLiquidity: number, gridBot: number) => [
 // Função para calcular dados mensais baseados nos registros
 const getMonthlyData = (records: any[]) => {
   if (records.length === 0) {
-    // Dados padrão quando não há registros
-    return [
-      { name: "Janeiro", poolLiquidity: 4800, gridBot: 1100, total: 5900 },
-      { name: "Fevereiro", poolLiquidity: 5200, gridBot: 1250, total: 6450 },
-      { name: "Março", poolLiquidity: 5400, gridBot: 1350, total: 6750 },
-      { name: "Abril", poolLiquidity: 5600, gridBot: 1450, total: 7050 },
-      { name: "Maio", poolLiquidity: 5800, gridBot: 1550, total: 7350 },
-      { name: "Junho", poolLiquidity: 6000, gridBot: 1650, total: 7650 },
-    ];
+    // Retornar array vazio quando não há registros
+    return [];
   }
 
   // Agrupar registros por mês
@@ -207,25 +191,10 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
         date: new Date(d)
       });
     } else {
-      // Usar dados históricos de exemplo para meses sem registros
-      const historicalData = {
-        "Jan/25": 28000,
-        "Fev/25": 29500,
-        "Mar/25": 31200,
-        "Abr/25": 29800,
-        "Mai/25": 32500,
-        "Jun/25": 34100,
-        "Jul/25": 35800,
-        "Ago/25": 37200,
-        "Set/25": 38500,
-        "Out/25": 39800,
-        "Nov/25": 41200,
-        "Dez/25": 42500
-      };
-      
+      // Para meses sem registros, usar valor zero
       allMonths.push({
         month: monthName,
-        value: historicalData[monthName as keyof typeof historicalData] || 0,
+        value: 0,
         date: new Date(d)
       });
     }
@@ -1768,36 +1737,46 @@ export default function Home() {
                 
                                  {/* Gráfico de Linha */}
                  <div className="flex-1">
-                   <ResponsiveContainer width="100%" height={200}>
-                     <LineChart data={portfolioEvolutionData}>
-                       <CartesianGrid vertical={false} stroke="#334155" strokeDasharray="3 3" />
-                       <XAxis
-                         dataKey="month"
-                         tickLine={false}
-                         tickMargin={10}
-                         axisLine={false}
-                         stroke="#64748b"
-                         fontSize={12}
-                       />
-                       <YAxis
-                         tickLine={false}
-                         tickMargin={10}
-                         axisLine={false}
-                         stroke="#64748b"
-                         fontSize={12}
-                         tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-                       />
-                       <Tooltip content={<CustomTooltip />} />
-                       <Line 
-                         type="monotone" 
-                         dataKey="value" 
-                         stroke="#64748b" 
-                         strokeWidth={3}
-                         dot={{ fill: '#64748b', strokeWidth: 2, r: 4 }}
-                         activeDot={{ r: 6, stroke: '#64748b', strokeWidth: 2 }}
-                       />
-                     </LineChart>
-                   </ResponsiveContainer>
+                   {portfolioEvolutionData.length === 0 || portfolioEvolutionData.every(item => item.value === 0) ? (
+                     <div className="flex flex-col items-center justify-center h-[200px] space-y-3">
+                       <TrendingUp className="h-12 w-12 text-slate-400" />
+                       <div className="text-center">
+                         <p className="text-slate-500 text-sm">Nenhum dado para exibir</p>
+                         <p className="text-slate-400 text-xs">Adicione registros para ver a evolução</p>
+                       </div>
+                     </div>
+                   ) : (
+                     <ResponsiveContainer width="100%" height={200}>
+                       <LineChart data={portfolioEvolutionData}>
+                         <CartesianGrid vertical={false} stroke="#334155" strokeDasharray="3 3" />
+                         <XAxis
+                           dataKey="month"
+                           tickLine={false}
+                           tickMargin={10}
+                           axisLine={false}
+                           stroke="#64748b"
+                           fontSize={12}
+                         />
+                         <YAxis
+                           tickLine={false}
+                           tickMargin={10}
+                           axisLine={false}
+                           stroke="#64748b"
+                           fontSize={12}
+                           tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                         />
+                         <Tooltip content={<CustomTooltip />} />
+                         <Line 
+                           type="monotone" 
+                           dataKey="value" 
+                           stroke="#64748b" 
+                           strokeWidth={3}
+                           dot={{ fill: '#64748b', strokeWidth: 2, r: 4 }}
+                           activeDot={{ r: 6, stroke: '#64748b', strokeWidth: 2 }}
+                         />
+                       </LineChart>
+                     </ResponsiveContainer>
+                   )}
                  </div>
               </div>
             </CardContent>
@@ -2458,6 +2437,21 @@ export default function Home() {
             </CardHeader>
             <CardContent className="pt-6">
                              {evolutionTab === "weekly" ? (
+                barChartData.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-[350px] space-y-4">
+                    <BarChart3 className="h-16 w-16 text-slate-400" />
+                    <div className="text-center">
+                      <h3 className="text-lg font-medium text-slate-900 mb-2">Nenhum dado para exibir</h3>
+                      <p className="text-slate-600 mb-4 max-w-md">
+                        Você ainda não possui registros financeiros. Adicione seu primeiro registro para começar a visualizar os gráficos!
+                      </p>
+                      <Button onClick={() => setEvolutionTab("records")} className="bg-blue-600 hover:bg-blue-700">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Adicionar Primeiro Registro
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
                  <ResponsiveContainer width="100%" height={350}>
                    <BarChart 
                      data={barChartData}
@@ -2496,6 +2490,7 @@ export default function Home() {
                      <Bar dataKey="gridBot" fill="#6b7280" radius={4} name="Grid Bot" />
                    </BarChart>
                  </ResponsiveContainer>
+                )
               ) : (
                                  <div className="space-y-4">
                    {records.length === 0 ? (
