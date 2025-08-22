@@ -1,126 +1,69 @@
-'use client';
+"use client";
 
-import { useAuth } from '@/hooks/useAuth';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Label } from "recharts";
 
-import { User, Shield, Database } from 'lucide-react';
+import { Plus, TrendingUp, DollarSign, BarChart3, Target, Zap, Coins, Trash2, Calendar, User } from "lucide-react";
+import Link from "next/link";
+import DatabaseStatus from "@/components/DatabaseStatus";
+import UserNav from "@/components/auth/UserNav";
+import { useToast } from "@/components/ui/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
-export default function DashboardPage() {
-  const { user, isAuthenticated, isLoading } = useAuth(true);
+// Importar todo o conteúdo original da aplicação aqui
+// (O conteúdo será movido do page.tsx original)
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-slate-900 mx-auto"></div>
-          <p className="mt-4 text-slate-600">Carregando...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return null; // Será redirecionado pelo hook
-  }
-
+export default function Dashboard() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200">
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">
-            Dashboard
-          </h1>
-          <p className="text-slate-600">
-            Bem-vindo, {user?.name || user?.email}!
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <div className="flex items-center space-x-4">
+            <img 
+              src="/logo.png" 
+              alt="Senhor Barriga DeFi" 
+              className="h-12 w-auto"
+            />
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                Senhor Barriga DeFi
+              </h1>
+              <p className="text-slate-600 dark:text-slate-400">
+                Dashboard de Finanças Pessoais
+              </p>
+            </div>
+          </div>
+          <UserNav />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">
-                Perfil do Usuário
-              </CardTitle>
-              <User className="h-4 w-4 text-slate-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-900">
-                {user?.name || 'Usuário'}
-              </div>
-              <p className="text-xs text-slate-600 mt-1">
-                {user?.email}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">
-                Status da Conta
-              </CardTitle>
-              <Shield className="h-4 w-4 text-slate-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                Ativa
-              </div>
-              <p className="text-xs text-slate-600 mt-1">
-                Conta verificada
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">
-                Banco de Dados
-              </CardTitle>
-              <Database className="h-4 w-4 text-slate-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-900">
-                Conectado
-              </div>
-              <p className="text-xs text-slate-600 mt-1">
-                Neon PostgreSQL
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="mt-8">
-          <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl">
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold text-slate-800">
-                Informações da Sessão
-              </CardTitle>
-              <CardDescription className="text-slate-600">
-                Detalhes da sua sessão atual
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-slate-700">Status da Sessão</label>
-                  <p className="text-sm text-slate-900 mt-1">Ativa</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-slate-700">Email</label>
-                  <p className="text-sm text-slate-900 mt-1">{user?.email}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-slate-700">Nome</label>
-                  <p className="text-sm text-slate-900 mt-1">{user?.name || 'N/A'}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-slate-700">Imagem</label>
-                  <p className="text-sm text-slate-900 mt-1">{user?.image ? 'Disponível' : 'Não disponível'}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-slate-900 dark:text-slate-100">
+                  Dashboard Principal
+                </CardTitle>
+                <CardDescription className="text-slate-600 dark:text-slate-400">
+                  Bem-vindo ao seu dashboard de finanças pessoais
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-700 dark:text-slate-300">
+                  Conteúdo do dashboard será carregado aqui...
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+          
+          <div>
+            <DatabaseStatus />
+          </div>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }
