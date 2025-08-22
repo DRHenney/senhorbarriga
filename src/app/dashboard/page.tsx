@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Label } from "recharts";
+
 import { Plus, TrendingUp, DollarSign, BarChart3, Target, Zap, Coins, Trash2, Calendar, User } from "lucide-react";
 import Link from "next/link";
 import DatabaseStatus from "@/components/DatabaseStatus";
@@ -25,6 +27,42 @@ const formatCurrency = (value: number): string => {
       minimumFractionDigits: 2, 
       maximumFractionDigits: 2 
     })}`;
+  }
+};
+
+// Função para formatar preços
+const formatPrice = (price: number): string => {
+  const numPrice = Number(price);
+  if (isNaN(numPrice) || numPrice === 0) return '$0.00';
+  
+  if (numPrice < 0.0001) {
+    return `$${numPrice.toFixed(8)}`;
+  } else if (numPrice < 0.01) {
+    return `$${numPrice.toFixed(6)}`;
+  } else if (numPrice < 1) {
+    return `$${numPrice.toFixed(4)}`;
+  } else if (numPrice < 1000) {
+    return `$${numPrice.toFixed(2)}`;
+  } else {
+    return `$${numPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+};
+
+// Função para formatar quantidade de tokens
+const formatTokenAmount = (amount: number): string => {
+  const numAmount = Number(amount);
+  if (isNaN(numAmount) || numAmount === 0) return '0.00';
+  
+  if (numAmount < 0.000001) {
+    return numAmount.toFixed(8);
+  } else if (numAmount < 0.01) {
+    return numAmount.toFixed(6);
+  } else if (numAmount < 1) {
+    return numAmount.toFixed(4);
+  } else if (numAmount < 1000) {
+    return numAmount.toFixed(2);
+  } else {
+    return numAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 };
 
@@ -67,10 +105,10 @@ export default function Dashboard() {
             <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-lg">
               <CardHeader>
                 <CardTitle className="text-slate-900 dark:text-slate-100">
-                  Dashboard Principal
+                  Aplicação Completa
                 </CardTitle>
                 <CardDescription className="text-slate-600 dark:text-slate-400">
-                  Bem-vindo ao seu dashboard de finanças pessoais
+                  Bem-vindo à aplicação completa do Senhor Barriga DeFi
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -133,11 +171,11 @@ export default function Dashboard() {
                   {/* Welcome Message */}
                   <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg p-6 border border-blue-200 dark:border-blue-800">
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
-                      🎉 Bem-vindo ao Senhor Barriga DeFi!
+                      🎉 Aplicação Completa Carregada!
                     </h3>
                     <p className="text-slate-700 dark:text-slate-300">
-                      Seu dashboard está pronto para gerenciar suas operações de DeFi. 
-                      Adicione suas primeiras operações de pool de liquidez e grid bot para começar.
+                      Esta é a aplicação completa do Senhor Barriga DeFi com todas as funcionalidades:
+                      gerenciamento de operações, gráficos, histórico, e muito mais.
                     </p>
                   </div>
                 </div>
