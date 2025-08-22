@@ -7,15 +7,18 @@ type Theme = 'light' | 'dark';
 interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
+  mounted: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('light');
+  const [mounted, setMounted] = useState(false);
 
   // Carregar tema do localStorage na inicialização
   useEffect(() => {
+    setMounted(true);
     const savedTheme = localStorage.getItem('theme') as Theme;
     if (savedTheme) {
       setTheme(savedTheme);
@@ -28,6 +31,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // Aplicar tema ao documento
   useEffect(() => {
+    if (!mounted) return;
+    
     const root = window.document.documentElement;
     
     if (theme === 'dark') {
@@ -38,14 +43,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     
     // Salvar no localStorage
     localStorage.setItem('theme', theme);
-  }, [theme]);
+  }, [theme, mounted]);
 
   const toggleTheme = () => {
     setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, mounted }}>
       {children}
     </ThemeContext.Provider>
   );
