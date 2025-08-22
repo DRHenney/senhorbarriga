@@ -33,7 +33,7 @@ export default function SignInForm() {
       if (result?.error) {
         setError('Email ou senha incorretos');
       } else {
-        router.push('/');
+        router.push('/dashboard');
         router.refresh();
       }
     } catch {
@@ -46,7 +46,7 @@ export default function SignInForm() {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      await signIn('google', { callbackUrl: '/' });
+      await signIn('google', { callbackUrl: '/dashboard' });
     } catch {
       setError('Erro ao fazer login com Google');
       setLoading(false);

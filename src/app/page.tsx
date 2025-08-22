@@ -63,7 +63,7 @@ export default function LandingPage() {
                 size="lg"
                 className="bg-white text-black hover:bg-gray-200 border border-white px-8 py-4 text-lg font-semibold rounded-lg transition-all duration-300 hover:scale-105"
               >
-                <Link href="/dashboard">
+                <Link href="/auth/signin">
                   <Zap className="w-5 h-5 mr-2" />
                   Participe
                 </Link>
