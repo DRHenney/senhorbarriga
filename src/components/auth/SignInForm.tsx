@@ -78,7 +78,7 @@ export default function SignInForm() {
                   placeholder="seu@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 border-slate-200 focus:border-slate-500 focus:ring-slate-500"
+                  className="pl-10 border-slate-200 focus:border-slate-500 focus:ring-slate-500 text-slate-900 placeholder:text-slate-500"
                   required
                 />
               </div>
@@ -96,7 +96,7 @@ export default function SignInForm() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10 border-slate-200 focus:border-slate-500 focus:ring-slate-500"
+                  className="pl-10 pr-10 border-slate-200 focus:border-slate-500 focus:ring-slate-500 text-slate-900 placeholder:text-slate-500"
                   required
                 />
                 <button
