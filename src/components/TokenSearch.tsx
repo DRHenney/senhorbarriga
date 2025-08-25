@@ -40,7 +40,7 @@ export function TokenSearch({ onTokenSelect, placeholder = "Buscar token...", cl
 
     setIsLoading(true);
     setShowDropdown(true); // Mostrar dropdown imediatamente ao buscar
-    console.log('🔍 Buscando tokens para:', searchQuery);
+    console.log('🔍 Buscando tokens para:', searchQuery, ' - v2');
     
     try {
       const response = await fetch(`/api/tokens/search?q=${encodeURIComponent(searchQuery)}`);
