@@ -824,9 +824,12 @@ export default function Home() {
   const monthlyData = getMonthlyData(records);
   const totalMonthlyValue = monthlyData.reduce((sum, month) => sum + month.total, 0);
 
-  // Calcular valor total do portfólio de tokens
+  // Calcular valor total do portfólio de tokens (usando preços em tempo real quando disponível)
   const portfolioTotal = tokens.reduce((sum, token) => {
-    const tokenValue = token.value || 0;
+    // Usar preço em tempo real se disponível, senão usar preço de entrada
+    const currentPrice = token.realTimePrice || token.price || 0;
+    const amount = token.amount || 0;
+    const tokenValue = amount * currentPrice;
     return sum + (isNaN(tokenValue) ? 0 : tokenValue);
   }, 0);
 
@@ -2338,7 +2341,12 @@ export default function Home() {
                   <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Valor Total do Portfólio</h3>
                   <p className="text-sm text-slate-600 dark:text-slate-400">
                     {tokens.length} tokens • 
-                    {lastPriceUpdate ? ` Preços atualizados: ${new Date(lastPriceUpdate).toLocaleTimeString('pt-BR')}` : ' Preços não atualizados'}
+                    {lastPriceUpdate ? ` Preços atualizados: ${lastPriceUpdate}` : ' Preços não atualizados'}
+                    {autoUpdateInterval && tokens.length > 0 && (
+                      <span className="text-blue-600 dark:text-blue-400 font-mono ml-2">
+                        • Próxima atualização em {countdownSeconds}s
+                      </span>
+                    )}
                   </p>
                 </div>
                 <div className="text-right">
@@ -2348,11 +2356,6 @@ export default function Home() {
                       `${tokens.filter(t => t.realTimePrice).length}/${tokens.length} tokens com preços em tempo real` : 
                       'Aguardando atualização automática de preços...'
                     }
-                    {autoUpdateInterval && tokens.length > 0 && (
-                      <span className="text-blue-600 dark:text-blue-400 font-mono ml-2">
-                        • {countdownSeconds}s
-                      </span>
-                    )}
                   </p>
                 </div>
               </div>
