@@ -18,7 +18,13 @@ const MOCK_TOKENS = [
   { id: 'litecoin', name: 'Litecoin', symbol: 'LTC', imageUrl: 'https://assets.coingecko.com/coins/images/2/large/litecoin.png', marketCapRank: 22, score: 0.58 },
   { id: 'uniswap', name: 'Uniswap', symbol: 'UNI', imageUrl: 'https://assets.coingecko.com/coins/images/12504/large/uniswap.png', marketCapRank: 25, score: 0.55 },
   { id: 'ripple', name: 'XRP', symbol: 'XRP', imageUrl: 'https://assets.coingecko.com/coins/images/44/large/xrp.png', marketCapRank: 6, score: 0.78 },
-  { id: 'stellar', name: 'Stellar', symbol: 'XLM', imageUrl: 'https://assets.coingecko.com/coins/images/100/large/stellar.png', marketCapRank: 30, score: 0.50 }
+  { id: 'stellar', name: 'Stellar', symbol: 'XLM', imageUrl: 'https://assets.coingecko.com/coins/images/100/large/stellar.png', marketCapRank: 30, score: 0.50 },
+  // Tokens menores populares
+  { id: 'pepe', name: 'Pepe', symbol: 'PEPE', imageUrl: 'https://assets.coingecko.com/coins/images/29850/large/pepe.png', marketCapRank: 35, score: 0.45 },
+  { id: 'bonk', name: 'Bonk', symbol: 'BONK', imageUrl: 'https://assets.coingecko.com/coins/images/28600/large/bonk.jpg', marketCapRank: 40, score: 0.40 },
+  { id: 'floki', name: 'Floki Inu', symbol: 'FLOKI', imageUrl: 'https://assets.coingecko.com/coins/images/16746/large/PNG_image.png', marketCapRank: 45, score: 0.35 },
+  { id: 'baby-doge-coin', name: 'Baby Doge Coin', symbol: 'BABYDOGE', imageUrl: 'https://assets.coingecko.com/coins/images/16125/large/babydoge.jpg', marketCapRank: 50, score: 0.30 },
+  { id: 'safe-moon', name: 'SafeMoon', symbol: 'SAFEMOON', imageUrl: 'https://assets.coingecko.com/coins/images/14362/large/174x174-white.png', marketCapRank: 55, score: 0.25 }
 ];
 
 // GET - Buscar tokens na CoinGecko por nome ou símbolo
@@ -54,17 +60,17 @@ export async function GET(request: Request) {
         const searchData = await searchResponse.json();
         console.log('✅ CoinGecko funcionou:', searchData.coins?.length || 0, 'tokens encontrados');
 
-        const tokens = (searchData.coins || [])
-          .slice(0, 20)
-          .map((coin: any) => ({
-            id: coin.id,
-            name: coin.name,
-            symbol: coin.symbol.toUpperCase(),
-            imageUrl: coin.large || coin.image || null,
-            marketCapRank: coin.market_cap_rank || null,
-            score: coin.score || 0
-          }))
-          .filter((token: any) => token.score > 0.01);
+                 const tokens = (searchData.coins || [])
+           .slice(0, 50) // Aumentar para 50 resultados
+           .map((coin: any) => ({
+             id: coin.id,
+             name: coin.name,
+             symbol: coin.symbol.toUpperCase(),
+             imageUrl: coin.large || coin.image || null,
+             marketCapRank: coin.market_cap_rank || null,
+             score: coin.score || 0
+           }))
+           .filter((token: any) => token.score > 0.001); // Reduzir muito o filtro para incluir tokens menores
 
         if (tokens.length > 0) {
           return NextResponse.json({ success: true, tokens });
@@ -74,12 +80,14 @@ export async function GET(request: Request) {
       console.log('⚠️ CoinGecko falhou, usando dados mockados:', error);
     }
 
-    // Fallback: usar dados mockados
-    console.log('🔄 Usando dados mockados como fallback');
-    const filteredTokens = MOCK_TOKENS.filter(token => 
-      token.name.toLowerCase().includes(query.toLowerCase()) ||
-      token.symbol.toLowerCase().includes(query.toLowerCase())
-    );
+         // Fallback: usar dados mockados
+     console.log('🔄 Usando dados mockados como fallback');
+     const queryLower = query.toLowerCase();
+     const filteredTokens = MOCK_TOKENS.filter(token => 
+       token.name.toLowerCase().includes(queryLower) ||
+       token.symbol.toLowerCase().includes(queryLower) ||
+       token.id.toLowerCase().includes(queryLower)
+     );
 
     console.log('✅ Tokens mockados encontrados:', filteredTokens.length);
 
