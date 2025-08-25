@@ -68,8 +68,8 @@ async function getAllTokensFromCoinGecko() {
          // Buscar lista muito mais completa de tokens (múltiplas páginas)
      let allTokens: any[] = [];
      
-           // Buscar muito mais páginas para incluir tokens de baixa capitalização
-      for (let page = 1; page <= 20; page++) {
+           // Buscar muito mais páginas para incluir tokens de baixa capitalização (até posição #10000)
+      for (let page = 1; page <= 40; page++) {
        const response = await fetch(`${COINGECKO_BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=${page}&sparkline=false&price_change_percentage=24h`, {
       headers: {
         'Accept': 'application/json',
@@ -143,11 +143,12 @@ export async function GET(request: Request) {
             );
             if (blockassetToken) {
               console.log('🔍 Blockasset encontrado na lista completa:', blockassetToken);
-            } else {
-              console.log('❌ Blockasset NÃO encontrado na lista completa');
-              console.log('📊 Total de tokens na lista:', allTokens.length);
-              console.log('🔍 Últimos 10 tokens da lista:', allTokens.slice(-10).map(t => `${t.name} (${t.symbol}) #${t.marketCapRank}`));
-            }
+                         } else {
+               console.log('❌ Blockasset NÃO encontrado na lista completa');
+               console.log('📊 Total de tokens na lista:', allTokens.length);
+               console.log('🔍 Último token da lista:', allTokens[allTokens.length - 1]?.name, `#${allTokens[allTokens.length - 1]?.marketCapRank}`);
+               console.log('🔍 Últimos 10 tokens da lista:', allTokens.slice(-10).map(t => `${t.name} (${t.symbol}) #${t.marketCapRank}`));
+             }
           }
           
           const filteredTokens = allTokens.filter(token => 
