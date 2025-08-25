@@ -968,7 +968,11 @@ export default function Home() {
     try {
       console.log('🔄 Atualizando preços automaticamente para:', tokensList.map(t => t.symbol));
       
-      const tokensToFetch = tokensList.map(token => ({ symbol: token.symbol }));
+      // Usar coinGeckoId se disponível, senão usar symbol
+      const tokensToFetch = tokensList.map(token => ({ 
+        symbol: token.symbol,
+        coinGeckoId: token.coinGeckoId || null
+      }));
       console.log('🌐 Fazendo fetch para /api/prices/coingecko...');
 
       const response = await fetch('/api/prices/coingecko', {

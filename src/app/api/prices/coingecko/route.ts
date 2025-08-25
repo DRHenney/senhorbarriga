@@ -4,10 +4,13 @@ const COINGECKO_API_KEY = 'CG-9W1U48SPhUME6EeyinMWDtJs';
 const COINGECKO_BASE_URL = 'https://api.coingecko.com/api/v3';
 
 // Função auxiliar para buscar dados de um token específico
-async function fetchTokenData(symbol: string) {
+async function fetchTokenData(symbol: string, coinGeckoId?: string) {
   try {
-    // Primeiro, buscar o ID do token usando a API de search
-    const searchUrl = `${COINGECKO_BASE_URL}/search?query=${symbol}`;
+    let tokenId = coinGeckoId;
+    
+    // Se não temos o coinGeckoId, buscar o ID do token usando a API de search
+    if (!tokenId) {
+      const searchUrl = `${COINGECKO_BASE_URL}/search?query=${symbol}`;
     const searchResponse = await fetch(searchUrl, {
       headers: {
         'Accept': 'application/json',
@@ -26,17 +29,21 @@ async function fetchTokenData(symbol: string) {
     const searchData = await searchResponse.json();
     console.log(`🔍 Resultados da busca para ${symbol}:`, JSON.stringify(searchData, null, 2));
 
-    // Encontrar o token mais relevante (geralmente o primeiro resultado)
-    const token = searchData.coins?.[0];
-    if (!token) {
-      console.log(`⚠️ Nenhum token encontrado para ${symbol}`);
-      return null;
+      // Encontrar o token mais relevante (geralmente o primeiro resultado)
+      const token = searchData.coins?.[0];
+      if (!token) {
+        console.log(`⚠️ Nenhum token encontrado para ${symbol}`);
+        return null;
+      }
+
+      tokenId = token.id;
+      console.log(`✅ Token encontrado via search: ${tokenId} (${token.symbol})`);
     }
 
-    console.log(`✅ Token encontrado: ${token.id} (${token.symbol})`);
+    console.log(`🔍 Usando token ID: ${tokenId} para buscar dados detalhados`);
 
     // Buscar dados detalhados do token
-    const detailUrl = `${COINGECKO_BASE_URL}/coins/${token.id}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
+    const detailUrl = `${COINGECKO_BASE_URL}/coins/${tokenId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
     const detailResponse = await fetch(detailUrl, {
       headers: {
         'Accept': 'application/json',
@@ -53,12 +60,12 @@ async function fetchTokenData(symbol: string) {
     }
 
     const detailData = await detailResponse.json();
-    console.log(`📊 Dados detalhados para ${token.id}:`, JSON.stringify(detailData, null, 2));
+    console.log(`📊 Dados detalhados para ${tokenId}:`, JSON.stringify(detailData, null, 2));
 
     return {
-      symbol: token.symbol.toUpperCase(),
-      name: token.name,
-      imageUrl: token.image || token.large || null, // URL da imagem do token
+      symbol: detailData.symbol?.toUpperCase() || symbol.toUpperCase(),
+      name: detailData.name || symbol,
+      imageUrl: detailData.image?.large || detailData.image?.small || null,
       priceUsd: parseFloat(detailData.market_data?.current_price?.usd || '0'),
       priceChange24h: parseFloat(detailData.market_data?.price_change_percentage_24h || '0'),
       volume24h: parseFloat(detailData.market_data?.total_volume?.usd || '0'),
@@ -129,9 +136,10 @@ export async function POST(request: Request) {
     const pricePromises = tokens.map(async (token: any) => {
       try {
         const symbol = token.symbol;
-        console.log(`🔍 Buscando preço para ${symbol}...`);
+        const coinGeckoId = token.coinGeckoId;
+        console.log(`🔍 Buscando preço para ${symbol}${coinGeckoId ? ` (ID: ${coinGeckoId})` : ''}...`);
         
-        const tokenData = await fetchTokenData(symbol);
+        const tokenData = await fetchTokenData(symbol, coinGeckoId);
         
         if (tokenData) {
           return {
