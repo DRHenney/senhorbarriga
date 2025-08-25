@@ -91,7 +91,8 @@ export function TokenSearch({ onTokenSelect, placeholder = "Buscar token...", cl
   // Fechar dropdown ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) &&
+          inputRef.current && !inputRef.current.contains(event.target as Node)) {
         setShowDropdown(false);
       }
     };
@@ -156,7 +157,12 @@ export function TokenSearch({ onTokenSelect, placeholder = "Buscar token...", cl
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          onFocus={() => query.trim().length >= 2 && tokens.length > 0 && setShowDropdown(true)}
+          onFocus={() => {
+            console.log('🎯 Input focado, query:', query, 'tokens:', tokens.length);
+            if (query.trim().length >= 2 && tokens.length > 0) {
+              setShowDropdown(true);
+            }
+          }}
           className="pl-10 pr-10 h-12 text-base border-2 border-slate-300 dark:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100 font-medium"
         />
         {query && (

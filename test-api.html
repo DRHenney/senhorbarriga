@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste API Token Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 16px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste da API de Busca de Tokens</h1>
+    
+    <div class="test-section">
+        <h2>Teste Manual da API</h2>
+        <input type="text" id="searchInput" placeholder="Digite o nome do token (ex: bitcoin)" value="bitcoin">
+        <button onclick="testAPI()">Buscar Tokens</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Teste Automático</h2>
+        <button onclick="runAutoTest()">Executar Teste Automático</button>
+        <div id="autoResult" class="result"></div>
+    </div>
+
+    <script>
+        async function testAPI() {
+            const input = document.getElementById('searchInput');
+            const result = document.getElementById('result');
+            const query = input.value.trim();
+            
+            if (!query) {
+                result.textContent = '❌ Por favor, digite um termo de busca';
+                result.className = 'result error';
+                return;
+            }
+            
+            result.textContent = '🔍 Buscando...';
+            result.className = 'result';
+            
+            try {
+                const response = await fetch(`/api/tokens/search?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    result.textContent = `✅ Sucesso! Encontrados ${data.tokens.length} tokens:\n\n${JSON.stringify(data.tokens, null, 2)}`;
+                    result.className = 'result success';
+                } else {
+                    result.textContent = `❌ Erro: ${data.message}`;
+                    result.className = 'result error';
+                }
+            } catch (error) {
+                result.textContent = `❌ Erro de conexão: ${error.message}`;
+                result.className = 'result error';
+            }
+        }
+
+        async function runAutoTest() {
+            const result = document.getElementById('autoResult');
+            const testQueries = ['bitcoin', 'ethereum', 'cardano', 'solana'];
+            
+            result.textContent = '🧪 Iniciando testes automáticos...\n\n';
+            result.className = 'result';
+            
+            for (const query of testQueries) {
+                try {
+                    result.textContent += `🔍 Testando: "${query}"\n`;
+                    
+                    const response = await fetch(`/api/tokens/search?q=${encodeURIComponent(query)}`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        result.textContent += `✅ Sucesso! ${data.tokens.length} tokens encontrados\n`;
+                    } else {
+                        result.textContent += `❌ Erro: ${data.message}\n`;
+                    }
+                    
+                    result.textContent += '\n';
+                    
+                    // Aguardar um pouco entre as requisições
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                } catch (error) {
+                    result.textContent += `❌ Erro de conexão: ${error.message}\n\n`;
+                }
+            }
+            
+            result.textContent += '🏁 Testes concluídos!';
+        }
+
+        // Permitir busca com Enter
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                testAPI();
+            }
+        });
+    </script>
+</body>
+</html>
