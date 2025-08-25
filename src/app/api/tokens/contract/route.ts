@@ -29,7 +29,17 @@ export async function GET(request: Request) {
       'fantom': 'fantom',
       'cronos': 'cronos',
       'base': 'base',
-      'linea': 'linea'
+      'linea': 'linea',
+      'solana': 'solana',
+      'tron': 'tron',
+      'cardano': 'cardano',
+      'polkadot': 'polkadot',
+      'cosmos': 'cosmos',
+      'binance': 'binancecoin',
+      'bitcoin': 'bitcoin',
+      'litecoin': 'litecoin',
+      'dogecoin': 'dogecoin',
+      'ripple': 'ripple'
     };
 
     const coinGeckoNetwork = networkMap[network.toLowerCase()];
@@ -52,6 +62,9 @@ export async function GET(request: Request) {
       cache: 'no-store'
     });
 
+    console.log('📡 Status da resposta CoinGecko:', response.status);
+    console.log('📡 Headers da resposta:', Object.fromEntries(response.headers.entries()));
+
     if (response.ok) {
       const data = await response.json();
       console.log('✅ Token encontrado:', data.name, data.symbol);
@@ -71,11 +84,55 @@ export async function GET(request: Request) {
         token 
       });
     } else {
-      console.log('❌ Token não encontrado:', response.status, response.statusText);
+      console.log('❌ Token não encontrado por contrato:', response.status, response.statusText);
+      
+      // Para Solana, tentar buscar por nome/símbolo se disponível
+      if (network.toLowerCase() === 'solana') {
+        console.log('🔄 Tentando busca alternativa para Solana...');
+        
+        // Tentar buscar na lista de tokens Solana
+        try {
+          const searchUrl = `${COINGECKO_BASE_URL}/coins/markets?vs_currency=usd&ids=solana&order=market_cap_desc&per_page=250&page=1&sparkline=false&locale=en`;
+          const searchResponse = await fetch(searchUrl, {
+            headers: {
+              'Accept': 'application/json',
+              'User-Agent': 'SenhorBarriga-Portfolio/1.0'
+            },
+            cache: 'no-store'
+          });
+          
+          if (searchResponse.ok) {
+            const searchData = await searchResponse.json();
+            console.log('📊 Tokens Solana encontrados:', searchData.length);
+            
+            // Retornar sugestão para usar busca por nome
+            return NextResponse.json({ 
+              success: false, 
+              message: `Token não encontrado por contrato na rede ${network}. Para tokens Solana, tente usar a aba "Por Nome" e buscar pelo nome do token.`,
+              suggestion: 'use_name_search',
+              status: 404
+            }, { status: 404 });
+          }
+        } catch (searchError) {
+          console.log('❌ Erro na busca alternativa:', searchError);
+        }
+      }
+      
+      let errorMessage = 'Token não encontrado na CoinGecko';
+      
+      if (response.status === 404) {
+        errorMessage = `Token não encontrado na rede ${network}. Verifique se o endereço do contrato está correto e se o token está listado na CoinGecko.`;
+      } else if (response.status === 429) {
+        errorMessage = 'Limite de requisições excedido. Tente novamente em alguns minutos.';
+      } else if (response.status >= 500) {
+        errorMessage = 'Erro no servidor da CoinGecko. Tente novamente mais tarde.';
+      }
+      
       return NextResponse.json({ 
         success: false, 
-        message: 'Token não encontrado na CoinGecko' 
-      }, { status: 404 });
+        message: errorMessage,
+        status: response.status
+      }, { status: response.status });
     }
 
   } catch (error) {

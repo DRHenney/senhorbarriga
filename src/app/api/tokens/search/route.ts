@@ -29,7 +29,18 @@ const MOCK_TOKENS = [
   { id: 'bonk', name: 'Bonk', symbol: 'BONK', imageUrl: 'https://assets.coingecko.com/coins/images/28600/large/bonk.jpg', marketCapRank: 40, score: 0.40 },
   { id: 'floki', name: 'Floki Inu', symbol: 'FLOKI', imageUrl: 'https://assets.coingecko.com/coins/images/16746/large/PNG_image.png', marketCapRank: 45, score: 0.35 },
   { id: 'baby-doge-coin', name: 'Baby Doge Coin', symbol: 'BABYDOGE', imageUrl: 'https://assets.coingecko.com/coins/images/16125/large/babydoge.jpg', marketCapRank: 50, score: 0.30 },
-  { id: 'safe-moon', name: 'SafeMoon', symbol: 'SAFEMOON', imageUrl: 'https://assets.coingecko.com/coins/images/14362/large/174x174-white.png', marketCapRank: 55, score: 0.25 }
+  { id: 'safe-moon', name: 'SafeMoon', symbol: 'SAFEMOON', imageUrl: 'https://assets.coingecko.com/coins/images/14362/large/174x174-white.png', marketCapRank: 55, score: 0.25 },
+  // Tokens Solana populares
+  { id: 'jupiter', name: 'Jupiter', symbol: 'JUP', imageUrl: 'https://assets.coingecko.com/coins/images/34188/large/jupiter.png', marketCapRank: 60, score: 0.42 },
+  { id: 'raydium', name: 'Raydium', symbol: 'RAY', imageUrl: 'https://assets.coingecko.com/coins/images/13970/large/raydium.png', marketCapRank: 65, score: 0.38 },
+  { id: 'serum', name: 'Serum', symbol: 'SRM', imageUrl: 'https://assets.coingecko.com/coins/images/11970/large/serum-logo.png', marketCapRank: 70, score: 0.35 },
+  { id: 'orca', name: 'Orca', symbol: 'ORCA', imageUrl: 'https://assets.coingecko.com/coins/images/17547/large/orca.png', marketCapRank: 75, score: 0.32 },
+  { id: 'marinade', name: 'Marinade', symbol: 'MNDE', imageUrl: 'https://assets.coingecko.com/coins/images/18867/large/mnde.png', marketCapRank: 80, score: 0.28 },
+  { id: 'tensor', name: 'Tensor', symbol: 'TNSR', imageUrl: 'https://assets.coingecko.com/coins/images/33969/large/tensor.png', marketCapRank: 85, score: 0.25 },
+  { id: 'pyth', name: 'Pyth Network', symbol: 'PYTH', imageUrl: 'https://assets.coingecko.com/coins/images/34442/large/pyth.png', marketCapRank: 90, score: 0.22 },
+  { id: 'jito', name: 'Jito', symbol: 'JTO', imageUrl: 'https://assets.coingecko.com/coins/images/33968/large/jito.png', marketCapRank: 95, score: 0.20 },
+  { id: 'meme', name: 'Meme', symbol: 'MEME', imageUrl: 'https://assets.coingecko.com/coins/images/33967/large/meme.png', marketCapRank: 100, score: 0.18 },
+  { id: 'bome', name: 'Book of Meme', symbol: 'BOME', imageUrl: 'https://assets.coingecko.com/coins/images/33966/large/bome.png', marketCapRank: 105, score: 0.15 }
 ];
 
 // Função para buscar todos os tokens da CoinGecko

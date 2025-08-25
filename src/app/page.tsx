@@ -590,11 +590,20 @@ export default function Home() {
           description: `${data.token.name} (${data.token.symbol})`,
         });
       } else {
-        toast({
-          title: "Token não encontrado",
-          description: data.message || "Verifique o endereço do contrato e a rede",
-          variant: "destructive",
-        });
+        // Verificar se é uma sugestão para usar busca por nome
+        if (data.suggestion === 'use_name_search') {
+          toast({
+            title: "Token não encontrado por contrato",
+            description: data.message + " Tente usar a aba 'Por Nome' para buscar pelo nome do token.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Token não encontrado",
+            description: data.message || "Verifique o endereço do contrato e a rede",
+            variant: "destructive",
+          });
+        }
       }
     } catch (error) {
       console.error('❌ Erro ao buscar token por contrato:', error);
