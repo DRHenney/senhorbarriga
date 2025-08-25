@@ -23,8 +23,7 @@ export async function GET(request: Request) {
     const searchResponse = await fetch(searchUrl, {
       headers: {
         'Accept': 'application/json',
-        'User-Agent': 'SenhorBarriga-Portfolio/1.0',
-        'X-CG-API-KEY': COINGECKO_API_KEY
+        'User-Agent': 'SenhorBarriga-Portfolio/1.0'
       },
       cache: 'no-store'
     });
@@ -57,7 +56,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ 
       success: true, 
-      data: tokens
+      tokens: tokens
     });
 
   } catch (error) {

@@ -39,20 +39,31 @@ export function TokenSearch({ onTokenSelect, placeholder = "Buscar token...", cl
     }
 
     setIsLoading(true);
+    console.log('🔍 Buscando tokens para:', searchQuery);
+    
     try {
       const response = await fetch(`/api/tokens/search?q=${encodeURIComponent(searchQuery)}`);
+      console.log('📡 Resposta da API:', response.status, response.statusText);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
       const data = await response.json();
+      console.log('📊 Dados recebidos:', data);
 
       if (data.success) {
-        setTokens(data.data);
-        setShowDropdown(data.data.length > 0);
+        setTokens(data.tokens);
+        setShowDropdown(data.tokens.length > 0);
         setSelectedIndex(-1);
+        console.log('✅ Tokens encontrados:', data.tokens.length);
       } else {
+        console.error('❌ Erro na API:', data.message);
         setTokens([]);
         setShowDropdown(false);
       }
     } catch (error) {
-      console.error('Erro ao buscar tokens:', error);
+      console.error('❌ Erro ao buscar tokens:', error);
       setTokens([]);
       setShowDropdown(false);
     } finally {
