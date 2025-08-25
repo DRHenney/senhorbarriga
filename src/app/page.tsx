@@ -465,7 +465,10 @@ export default function Home() {
     price: "",
     purchaseDate: new Date().toISOString().split('T')[0], // Data atual como padrão
     contractAddress: "",
-    network: ""
+    network: "",
+    coinGeckoId: "",
+    imageUrl: "",
+    marketCapRank: null as number | null
   });
 
   const [manualMode, setManualMode] = useState<'name' | 'contract'>('name');
@@ -1536,7 +1539,7 @@ export default function Home() {
           console.log('📋 Novo array de tokens:', [...tokens, processedToken]);
           
           setTokens([...tokens, processedToken]);
-          setNewToken({ name: "", symbol: "", amount: "", price: "", purchaseDate: new Date().toISOString().split('T')[0], contractAddress: "", network: "" });
+          setNewToken({ name: "", symbol: "", amount: "", price: "", purchaseDate: new Date().toISOString().split('T')[0], contractAddress: "", network: "", coinGeckoId: "", imageUrl: "", marketCapRank: null });
           
           console.log('✅ Estado atualizado, mostrando toast...');
           toast({
