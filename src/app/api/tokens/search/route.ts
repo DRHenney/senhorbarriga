@@ -94,15 +94,19 @@ async function getAllTokensFromCoinGecko() {
      
      console.log('✅ Busca completa funcionou:', allTokens.length, 'tokens encontrados no total');
      
-     // Processar e cachear os tokens
-     ALL_TOKENS_CACHE = allTokens.map((coin: any) => ({
-       id: coin.id,
-       name: coin.name,
-       symbol: coin.symbol.toUpperCase(),
-       imageUrl: coin.image,
-       marketCapRank: coin.market_cap_rank,
-       score: 1.0 // Score alto para todos os tokens listados
-     }));
+            // Processar e cachear os tokens
+       ALL_TOKENS_CACHE = allTokens.map((coin: any) => ({
+         id: coin.id,
+         name: coin.name,
+         symbol: coin.symbol.toUpperCase(),
+         imageUrl: coin.image,
+         marketCapRank: coin.market_cap_rank,
+         currentPrice: coin.current_price,
+         priceChange24h: coin.price_change_percentage_24h,
+         marketCap: coin.market_cap,
+         volume24h: coin.total_volume,
+         score: 1.0 // Score alto para todos os tokens listados
+       }));
      
      CACHE_TIMESTAMP = now;
      return ALL_TOKENS_CACHE;

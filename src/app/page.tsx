@@ -1966,12 +1966,62 @@ export default function Home() {
                   Buscar Token (ou adicionar manualmente)
                 </label>
                 <TokenSearch
-                  onTokenSelect={(token) => {
-                    setNewToken({
-                      ...newToken,
-                      name: token.name,
-                      symbol: token.symbol
-                    });
+                  onTokenSelect={async (token) => {
+                    console.log('🎯 Token selecionado:', token);
+                    
+                    // Buscar dados reais do token na CoinGecko
+                    try {
+                      const response = await fetch(`/api/tokens/search?q=${encodeURIComponent(token.name)}`);
+                      if (response.ok) {
+                        const data = await response.json();
+                        if (data.success && data.tokens.length > 0) {
+                          // Encontrar o token exato
+                          const exactToken = data.tokens.find((t: any) => 
+                            t.name.toLowerCase() === token.name.toLowerCase() && 
+                            t.symbol.toLowerCase() === token.symbol.toLowerCase()
+                          );
+                          
+                          if (exactToken) {
+                            console.log('✅ Dados reais do token encontrados:', exactToken);
+                            setNewToken({
+                              ...newToken,
+                              name: exactToken.name,
+                              symbol: exactToken.symbol,
+                              // Adicionar dados reais se disponíveis
+                              coinGeckoId: exactToken.id,
+                              imageUrl: exactToken.imageUrl,
+                              marketCapRank: exactToken.marketCapRank
+                            });
+                          } else {
+                            console.log('⚠️ Token exato não encontrado, usando dados básicos');
+                            setNewToken({
+                              ...newToken,
+                              name: token.name,
+                              symbol: token.symbol
+                            });
+                          }
+                        } else {
+                          setNewToken({
+                            ...newToken,
+                            name: token.name,
+                            symbol: token.symbol
+                          });
+                        }
+                      } else {
+                        setNewToken({
+                          ...newToken,
+                          name: token.name,
+                          symbol: token.symbol
+                        });
+                      }
+                    } catch (error) {
+                      console.error('❌ Erro ao buscar dados do token:', error);
+                      setNewToken({
+                        ...newToken,
+                        name: token.name,
+                        symbol: token.symbol
+                      });
+                    }
                   }}
                   placeholder="Digite o nome do token..."
                   className="w-full"
