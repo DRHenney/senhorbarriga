@@ -49,8 +49,7 @@ export async function GET(request: Request) {
         'Accept': 'application/json',
         'User-Agent': 'SenhorBarriga-Portfolio/1.0'
       },
-      cache: 'no-store',
-      next: { revalidate: 3600 } // Cache por 1 hora
+      cache: 'no-store'
     });
 
     if (response.ok) {

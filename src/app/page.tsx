@@ -568,7 +568,12 @@ export default function Home() {
       console.log('🔍 Buscando token por contrato:', newToken.contractAddress, 'na rede:', newToken.network);
       
       // Buscar token na CoinGecko por contrato
-      const response = await fetch(`/api/tokens/contract?address=${newToken.contractAddress}&network=${newToken.network}`);
+      const response = await fetch(`/api/tokens/contract?address=${encodeURIComponent(newToken.contractAddress)}&network=${encodeURIComponent(newToken.network)}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
       const data = await response.json();
 
       if (data.success && data.token) {
@@ -587,7 +592,7 @@ export default function Home() {
       } else {
         toast({
           title: "Token não encontrado",
-          description: "Verifique o endereço do contrato e a rede",
+          description: data.message || "Verifique o endereço do contrato e a rede",
           variant: "destructive",
         });
       }
