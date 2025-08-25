@@ -68,8 +68,8 @@ async function getAllTokensFromCoinGecko() {
          // Buscar lista muito mais completa de tokens (múltiplas páginas)
      let allTokens: any[] = [];
      
-     // Buscar várias páginas para ter mais tokens
-     for (let page = 1; page <= 10; page++) {
+           // Buscar muito mais páginas para incluir tokens de baixa capitalização
+      for (let page = 1; page <= 20; page++) {
        const response = await fetch(`${COINGECKO_BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=${page}&sparkline=false&price_change_percentage=24h`, {
       headers: {
         'Accept': 'application/json',
@@ -133,14 +133,30 @@ export async function GET(request: Request) {
        const allTokens = await getAllTokensFromCoinGecko();
        
        if (allTokens.length > 0) {
-         const queryLower = query.toLowerCase();
-         const filteredTokens = allTokens.filter(token => 
-           token.name.toLowerCase().includes(queryLower) ||
-           token.symbol.toLowerCase().includes(queryLower) ||
-           token.id.toLowerCase().includes(queryLower)
-         ).slice(0, 50); // Aumentar para 50 resultados
+                   const queryLower = query.toLowerCase();
+          
+          // Log para debug - verificar se blockasset está na lista
+          if (queryLower.includes('block')) {
+            const blockassetToken = allTokens.find(token => 
+              token.name.toLowerCase().includes('blockasset') || 
+              token.symbol.toLowerCase().includes('blockasset')
+            );
+            if (blockassetToken) {
+              console.log('🔍 Blockasset encontrado na lista completa:', blockassetToken);
+            } else {
+              console.log('❌ Blockasset NÃO encontrado na lista completa');
+              console.log('📊 Total de tokens na lista:', allTokens.length);
+              console.log('🔍 Últimos 10 tokens da lista:', allTokens.slice(-10).map(t => `${t.name} (${t.symbol}) #${t.marketCapRank}`));
+            }
+          }
+          
+          const filteredTokens = allTokens.filter(token => 
+            token.name.toLowerCase().includes(queryLower) ||
+            token.symbol.toLowerCase().includes(queryLower) ||
+            token.id.toLowerCase().includes(queryLower)
+          ).slice(0, 50); // Aumentar para 50 resultados
 
-         console.log('✅ Tokens encontrados na busca completa:', filteredTokens.length);
+          console.log('✅ Tokens encontrados na busca completa:', filteredTokens.length);
          
          if (filteredTokens.length > 0) {
            return NextResponse.json({ success: true, tokens: filteredTokens });
@@ -150,10 +166,17 @@ export async function GET(request: Request) {
        console.log('⚠️ Busca completa falhou, tentando API de search:', error);
      }
 
-    // Fallback: tentar a API de search da CoinGecko
-    try {
-      const searchUrl = `${COINGECKO_BASE_URL}/search?query=${encodeURIComponent(query)}`;
-      console.log('🌐 Tentando API de search:', searchUrl);
+         // Fallback: tentar a API de search da CoinGecko
+     try {
+       // Se a busca for por "block", também tentar buscar por "blockasset" especificamente
+       let searchQueries = [query];
+       if (query.toLowerCase().includes('block')) {
+         searchQueries.push('blockasset');
+       }
+       
+       for (const searchQuery of searchQueries) {
+         const searchUrl = `${COINGECKO_BASE_URL}/search?query=${encodeURIComponent(searchQuery)}`;
+         console.log('🌐 Tentando API de search:', searchUrl);
       
       const searchResponse = await fetch(searchUrl, {
         headers: {
@@ -164,26 +187,27 @@ export async function GET(request: Request) {
         next: { revalidate: 300 }
       });
 
-      if (searchResponse.ok) {
-        const searchData = await searchResponse.json();
-        console.log('✅ API de search funcionou:', searchData.coins?.length || 0, 'tokens encontrados');
+               if (searchResponse.ok) {
+           const searchData = await searchResponse.json();
+           console.log('✅ API de search funcionou:', searchData.coins?.length || 0, 'tokens encontrados');
 
-        const tokens = (searchData.coins || [])
-          .slice(0, 50) // Aumentar para 50 resultados
-          .map((coin: any) => ({
-            id: coin.id,
-            name: coin.name,
-            symbol: coin.symbol.toUpperCase(),
-            imageUrl: coin.large || coin.image || null,
-            marketCapRank: coin.market_cap_rank || null,
-            score: coin.score || 0
-          }))
-          .filter((token: any) => token.score > 0.0001); // Reduzir filtro para incluir mais tokens
+           const tokens = (searchData.coins || [])
+             .slice(0, 50) // Aumentar para 50 resultados
+             .map((coin: any) => ({
+               id: coin.id,
+               name: coin.name,
+               symbol: coin.symbol.toUpperCase(),
+               imageUrl: coin.large || coin.image || null,
+               marketCapRank: coin.market_cap_rank || null,
+               score: coin.score || 0
+             }))
+             .filter((token: any) => token.score > 0.0001); // Reduzir filtro para incluir mais tokens
 
-        if (tokens.length > 0) {
-          return NextResponse.json({ success: true, tokens });
-        }
-      }
+           if (tokens.length > 0) {
+             return NextResponse.json({ success: true, tokens });
+           }
+         }
+       }
     } catch (error) {
       console.log('⚠️ API de search falhou, usando dados mockados:', error);
     }
