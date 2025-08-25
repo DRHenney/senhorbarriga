@@ -1524,7 +1524,7 @@ export default function Home() {
           console.log('📋 Novo array de tokens:', [...tokens, processedToken]);
           
           setTokens([...tokens, processedToken]);
-          setNewToken({ name: "", symbol: "", amount: "", price: "", purchaseDate: new Date().toISOString().split('T')[0] });
+          setNewToken({ name: "", symbol: "", amount: "", price: "", purchaseDate: new Date().toISOString().split('T')[0], contractAddress: "", network: "" });
           
           console.log('✅ Estado atualizado, mostrando toast...');
           toast({
@@ -2043,7 +2043,7 @@ export default function Home() {
                       </div>
                       {newToken.contractAddress && (
                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                          💡 Cole o endereço do contrato e clique em "Buscar" para obter dados automáticos
+                          💡 Cole o endereço do contrato e clique em &quot;Buscar&quot; para obter dados automáticos
                         </p>
                       )}
                     </div>
