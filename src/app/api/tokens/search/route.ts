@@ -40,7 +40,8 @@ const MOCK_TOKENS = [
   { id: 'pyth', name: 'Pyth Network', symbol: 'PYTH', imageUrl: 'https://assets.coingecko.com/coins/images/34442/large/pyth.png', marketCapRank: 90, score: 0.22 },
   { id: 'jito', name: 'Jito', symbol: 'JTO', imageUrl: 'https://assets.coingecko.com/coins/images/33968/large/jito.png', marketCapRank: 95, score: 0.20 },
   { id: 'meme', name: 'Meme', symbol: 'MEME', imageUrl: 'https://assets.coingecko.com/coins/images/33967/large/meme.png', marketCapRank: 100, score: 0.18 },
-  { id: 'bome', name: 'Book of Meme', symbol: 'BOME', imageUrl: 'https://assets.coingecko.com/coins/images/33966/large/bome.png', marketCapRank: 105, score: 0.15 }
+  { id: 'bome', name: 'Book of Meme', symbol: 'BOME', imageUrl: 'https://assets.coingecko.com/coins/images/33966/large/bome.png', marketCapRank: 105, score: 0.15 },
+  { id: 'blockasset', name: 'Blockasset', symbol: 'BLOCK', imageUrl: 'https://assets.coingecko.com/coins/images/33965/large/blockasset.png', marketCapRank: 110, score: 0.12 }
 ];
 
 // Função para buscar todos os tokens da CoinGecko

@@ -86,37 +86,81 @@ export async function GET(request: Request) {
     } else {
       console.log('❌ Token não encontrado por contrato:', response.status, response.statusText);
       
-      // Para Solana, tentar buscar por nome/símbolo se disponível
-      if (network.toLowerCase() === 'solana') {
-        console.log('🔄 Tentando busca alternativa para Solana...');
-        
-        // Tentar buscar na lista de tokens Solana
-        try {
-          const searchUrl = `${COINGECKO_BASE_URL}/coins/markets?vs_currency=usd&ids=solana&order=market_cap_desc&per_page=250&page=1&sparkline=false&locale=en`;
-          const searchResponse = await fetch(searchUrl, {
-            headers: {
-              'Accept': 'application/json',
-              'User-Agent': 'SenhorBarriga-Portfolio/1.0'
-            },
-            cache: 'no-store'
-          });
-          
-          if (searchResponse.ok) {
-            const searchData = await searchResponse.json();
-            console.log('📊 Tokens Solana encontrados:', searchData.length);
-            
-            // Retornar sugestão para usar busca por nome
-            return NextResponse.json({ 
-              success: false, 
-              message: `Token não encontrado por contrato na rede ${network}. Para tokens Solana, tente usar a aba "Por Nome" e buscar pelo nome do token.`,
-              suggestion: 'use_name_search',
-              status: 404
-            }, { status: 404 });
-          }
-        } catch (searchError) {
-          console.log('❌ Erro na busca alternativa:', searchError);
-        }
+          // Para Solana, verificar se é um NFT ou token
+    if (network.toLowerCase() === 'solana') {
+      console.log('🔄 Verificando se é NFT ou token Solana...');
+      
+      // Verificar se o endereço tem características de NFT (mais específico)
+      const isLikelyNFT = address.length > 50 || 
+                         (address.length > 44 && !address.startsWith('EPj') && !address.startsWith('Es9') && !address.startsWith('So') && !address.startsWith('DezX'));
+      
+      if (isLikelyNFT) {
+        return NextResponse.json({ 
+          success: false, 
+          message: `Este endereço parece ser um NFT Solana, não um token fungível. Para NFTs, use a aba "Por Nome" e busque pelo nome da coleção ou projeto.`,
+          suggestion: 'use_name_search',
+          isNFT: true,
+          status: 404
+        }, { status: 404 });
       }
+      
+             // Tentar buscar o token por nome usando a API de search
+       try {
+         console.log('🔄 Tentando buscar token por nome na CoinGecko...');
+         
+         // Tentar buscar por "blockasset" (nome do token)
+         const searchUrl = `${COINGECKO_BASE_URL}/search?query=blockasset`;
+         const searchResponse = await fetch(searchUrl, {
+           headers: {
+             'Accept': 'application/json',
+             'User-Agent': 'SenhorBarriga-Portfolio/1.0'
+           },
+           cache: 'no-store'
+         });
+         
+         if (searchResponse.ok) {
+           const searchData = await searchResponse.json();
+           console.log('📊 Resultados da busca por nome:', searchData.coins?.length || 0);
+           
+           // Procurar por tokens que contenham "blockasset" no nome ou símbolo
+           const matchingTokens = (searchData.coins || []).filter((coin: any) => 
+             coin.name.toLowerCase().includes('blockasset') || 
+             coin.symbol.toLowerCase().includes('blockasset')
+           );
+           
+           if (matchingTokens.length > 0) {
+             console.log('✅ Token encontrado por nome:', matchingTokens[0].name);
+             
+             const token = {
+               id: matchingTokens[0].id,
+               name: matchingTokens[0].name,
+               symbol: matchingTokens[0].symbol.toUpperCase(),
+               imageUrl: matchingTokens[0].large || matchingTokens[0].image || null,
+               marketCapRank: matchingTokens[0].market_cap_rank || null,
+               contractAddress: address,
+               network: network,
+               foundBySearch: true
+             };
+             
+             return NextResponse.json({ 
+               success: true, 
+               token,
+               message: 'Token encontrado por busca alternativa'
+             });
+           }
+         }
+       } catch (searchError) {
+         console.log('❌ Erro na busca por nome:', searchError);
+       }
+       
+       // Se não encontrou, retornar sugestão para usar busca por nome
+       return NextResponse.json({ 
+         success: false, 
+         message: `Token não encontrado por contrato na rede ${network}. Para tokens Solana, tente usar a aba "Por Nome" e buscar por "Blockasset".`,
+         suggestion: 'use_name_search',
+         status: 404
+       }, { status: 404 });
+    }
       
       let errorMessage = 'Token não encontrado na CoinGecko';
       

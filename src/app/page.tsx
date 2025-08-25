@@ -592,9 +592,12 @@ export default function Home() {
       } else {
         // Verificar se é uma sugestão para usar busca por nome
         if (data.suggestion === 'use_name_search') {
+          const title = data.isNFT ? "NFT detectado" : "Token não encontrado por contrato";
+          const description = data.message + " Tente usar a aba 'Por Nome' para buscar pelo nome.";
+          
           toast({
-            title: "Token não encontrado por contrato",
-            description: data.message + " Tente usar a aba 'Por Nome' para buscar pelo nome do token.",
+            title: title,
+            description: description,
             variant: "destructive",
           });
         } else {
