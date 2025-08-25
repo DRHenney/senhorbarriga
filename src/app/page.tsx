@@ -1890,11 +1890,11 @@ export default function Home() {
           </CardHeader>
           <CardContent className="pt-6">
             {/* Formulário para adicionar token */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+              <div className="space-y-3 md:col-span-2">
                 <label className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center">
                   <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                  Buscar Token
+                  Buscar Token (ou adicionar manualmente)
                 </label>
                 <TokenSearch
                   onTokenSelect={(token) => {
@@ -1912,6 +1912,27 @@ export default function Home() {
                     ✅ Token selecionado: {newToken.name} ({newToken.symbol})
                   </div>
                 )}
+                
+                {/* Campos para adicionar token manualmente */}
+                <div className="mt-4 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-200 dark:border-slate-600">
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+                    💡 Não encontrou o token? Adicione manualmente:
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input
+                      placeholder="Nome do token"
+                      value={newToken.name}
+                      onChange={(e) => setNewToken({ ...newToken, name: e.target.value })}
+                      className="h-9 text-sm border border-slate-300 dark:border-slate-600"
+                    />
+                    <Input
+                      placeholder="Símbolo (ex: BTC)"
+                      value={newToken.symbol}
+                      onChange={(e) => setNewToken({ ...newToken, symbol: e.target.value.toUpperCase() })}
+                      className="h-9 text-sm border border-slate-300 dark:border-slate-600"
+                    />
+                  </div>
+                </div>
               </div>
               <div className="space-y-3">
                 <label className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center">
