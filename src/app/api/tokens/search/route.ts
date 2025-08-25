@@ -2,6 +2,11 @@ import { NextResponse } from 'next/server';
 
 const COINGECKO_BASE_URL = 'https://api.coingecko.com/api/v3';
 
+// Cache global para tokens da CoinGecko
+let ALL_TOKENS_CACHE: any[] = [];
+let CACHE_TIMESTAMP = 0;
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 horas
+
 // Dados mockados para fallback
 const MOCK_TOKENS = [
   { id: 'bitcoin', name: 'Bitcoin', symbol: 'BTC', imageUrl: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png', marketCapRank: 1, score: 0.95 },
@@ -27,6 +32,53 @@ const MOCK_TOKENS = [
   { id: 'safe-moon', name: 'SafeMoon', symbol: 'SAFEMOON', imageUrl: 'https://assets.coingecko.com/coins/images/14362/large/174x174-white.png', marketCapRank: 55, score: 0.25 }
 ];
 
+// Função para buscar todos os tokens da CoinGecko
+async function getAllTokensFromCoinGecko() {
+  const now = Date.now();
+  
+  // Verificar se o cache ainda é válido
+  if (ALL_TOKENS_CACHE.length > 0 && (now - CACHE_TIMESTAMP) < CACHE_DURATION) {
+    console.log('📦 Usando cache de tokens:', ALL_TOKENS_CACHE.length, 'tokens');
+    return ALL_TOKENS_CACHE;
+  }
+
+  try {
+    console.log('🔄 Buscando todos os tokens da CoinGecko...');
+    
+    // Buscar lista completa de tokens
+    const response = await fetch(`${COINGECKO_BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1&sparkline=false&price_change_percentage=24h`, {
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'SenhorBarriga-Portfolio/1.0'
+      },
+      cache: 'no-store',
+      next: { revalidate: 3600 } // Cache por 1 hora
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('✅ Busca completa funcionou:', data.length, 'tokens encontrados');
+      
+      // Processar e cachear os tokens
+      ALL_TOKENS_CACHE = data.map((coin: any) => ({
+        id: coin.id,
+        name: coin.name,
+        symbol: coin.symbol.toUpperCase(),
+        imageUrl: coin.image,
+        marketCapRank: coin.market_cap_rank,
+        score: 1.0 // Score alto para todos os tokens listados
+      }));
+      
+      CACHE_TIMESTAMP = now;
+      return ALL_TOKENS_CACHE;
+    }
+  } catch (error) {
+    console.error('❌ Erro ao buscar todos os tokens:', error);
+  }
+
+  return [];
+}
+
 // GET - Buscar tokens na CoinGecko por nome ou símbolo
 export async function GET(request: Request) {
   try {
@@ -42,10 +94,32 @@ export async function GET(request: Request) {
 
     console.log('🔍 Buscando tokens para:', query);
 
-    // Primeiro, tentar a API da CoinGecko
+    // Primeiro, tentar buscar na lista completa de tokens
+    try {
+      const allTokens = await getAllTokensFromCoinGecko();
+      
+      if (allTokens.length > 0) {
+        const queryLower = query.toLowerCase();
+        const filteredTokens = allTokens.filter(token => 
+          token.name.toLowerCase().includes(queryLower) ||
+          token.symbol.toLowerCase().includes(queryLower) ||
+          token.id.toLowerCase().includes(queryLower)
+        ).slice(0, 20); // Limitar a 20 resultados para performance
+
+        console.log('✅ Tokens encontrados na busca completa:', filteredTokens.length);
+        
+        if (filteredTokens.length > 0) {
+          return NextResponse.json({ success: true, tokens: filteredTokens });
+        }
+      }
+    } catch (error) {
+      console.log('⚠️ Busca completa falhou, tentando API de search:', error);
+    }
+
+    // Fallback: tentar a API de search da CoinGecko
     try {
       const searchUrl = `${COINGECKO_BASE_URL}/search?query=${encodeURIComponent(query)}`;
-      console.log('🌐 Tentando CoinGecko:', searchUrl);
+      console.log('🌐 Tentando API de search:', searchUrl);
       
       const searchResponse = await fetch(searchUrl, {
         headers: {
@@ -58,36 +132,36 @@ export async function GET(request: Request) {
 
       if (searchResponse.ok) {
         const searchData = await searchResponse.json();
-        console.log('✅ CoinGecko funcionou:', searchData.coins?.length || 0, 'tokens encontrados');
+        console.log('✅ API de search funcionou:', searchData.coins?.length || 0, 'tokens encontrados');
 
-                 const tokens = (searchData.coins || [])
-           .slice(0, 50) // Aumentar para 50 resultados
-           .map((coin: any) => ({
-             id: coin.id,
-             name: coin.name,
-             symbol: coin.symbol.toUpperCase(),
-             imageUrl: coin.large || coin.image || null,
-             marketCapRank: coin.market_cap_rank || null,
-             score: coin.score || 0
-           }))
-           .filter((token: any) => token.score > 0.001); // Reduzir muito o filtro para incluir tokens menores
+        const tokens = (searchData.coins || [])
+          .slice(0, 20)
+          .map((coin: any) => ({
+            id: coin.id,
+            name: coin.name,
+            symbol: coin.symbol.toUpperCase(),
+            imageUrl: coin.large || coin.image || null,
+            marketCapRank: coin.market_cap_rank || null,
+            score: coin.score || 0
+          }))
+          .filter((token: any) => token.score > 0.001);
 
         if (tokens.length > 0) {
           return NextResponse.json({ success: true, tokens });
         }
       }
     } catch (error) {
-      console.log('⚠️ CoinGecko falhou, usando dados mockados:', error);
+      console.log('⚠️ API de search falhou, usando dados mockados:', error);
     }
 
-         // Fallback: usar dados mockados
-     console.log('🔄 Usando dados mockados como fallback');
-     const queryLower = query.toLowerCase();
-     const filteredTokens = MOCK_TOKENS.filter(token => 
-       token.name.toLowerCase().includes(queryLower) ||
-       token.symbol.toLowerCase().includes(queryLower) ||
-       token.id.toLowerCase().includes(queryLower)
-     );
+    // Fallback final: usar dados mockados
+    console.log('🔄 Usando dados mockados como fallback');
+    const queryLower = query.toLowerCase();
+    const filteredTokens = MOCK_TOKENS.filter(token => 
+      token.name.toLowerCase().includes(queryLower) ||
+      token.symbol.toLowerCase().includes(queryLower) ||
+      token.id.toLowerCase().includes(queryLower)
+    );
 
     console.log('✅ Tokens mockados encontrados:', filteredTokens.length);
 
