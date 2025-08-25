@@ -1197,7 +1197,7 @@ export default function Home() {
       console.log('⏱️ Limpando countdown interval');
       clearInterval(countdownInterval);
     };
-  }, [nextUpdateTime, tokens.length]);
+  }, [nextUpdateTime, tokens.length, countdownSeconds]);
 
   // Carregar registros do banco
   const loadRecords = async () => {

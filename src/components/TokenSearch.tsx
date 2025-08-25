@@ -232,7 +232,7 @@ export function TokenSearch({ onTokenSelect, placeholder = "Buscar token...", cl
             </div>
           ) : query.trim().length >= 2 ? (
             <div className="p-4 text-center text-slate-500 dark:text-slate-400">
-              Nenhum token encontrado para "{query}"
+              Nenhum token encontrado para &quot;{query}&quot;
             </div>
           ) : null}
         </div>
