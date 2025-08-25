@@ -43,7 +43,7 @@ export function TokenSearch({ onTokenSelect, placeholder = "Buscar token...", cl
     console.log('🔍 Buscando tokens para:', searchQuery, ' - v2');
     
     try {
-      const response = await fetch(`/api/tokens/search-test?q=${encodeURIComponent(searchQuery)}`);
+      const response = await fetch(`/api/tokens/search?q=${encodeURIComponent(searchQuery)}`);
       console.log('📡 Resposta da API:', response.status, response.statusText);
       
       if (!response.ok) {

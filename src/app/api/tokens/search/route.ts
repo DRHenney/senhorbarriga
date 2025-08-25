@@ -26,7 +26,8 @@ export async function GET(request: Request) {
         'Accept': 'application/json',
         'User-Agent': 'SenhorBarriga-Portfolio/1.0'
       },
-      cache: 'no-store'
+      cache: 'no-store',
+      next: { revalidate: 300 } // Cache por 5 minutos para evitar rate limiting
     });
 
     console.log('📡 Status da resposta:', searchResponse.status, searchResponse.statusText);
@@ -46,9 +47,9 @@ export async function GET(request: Request) {
 
     // Processar e filtrar resultados
     const tokens = (searchData.coins || [])
-      .slice(0, 10) // Limitar a 10 resultados
+      .slice(0, 20) // Aumentar para 20 resultados
       .map((coin: any) => {
-        console.log('🪙 Processando coin:', coin.name, coin.symbol);
+        console.log('🪙 Processando coin:', coin.name, coin.symbol, 'Score:', coin.score);
         return {
           id: coin.id,
           name: coin.name,
@@ -59,7 +60,8 @@ export async function GET(request: Request) {
         };
       })
       .filter((token: any) => {
-        const isValid = token.score > 0.1;
+        // Reduzir o filtro para incluir mais tokens
+        const isValid = token.score > 0.01; // Reduzir de 0.1 para 0.01
         console.log(`🔍 Token ${token.name} (${token.symbol}) - Score: ${token.score} - Válido: ${isValid}`);
         return isValid;
       });
