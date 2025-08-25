@@ -46,7 +46,10 @@ const MOCK_TOKENS = [
   { id: 'blockchain-bets', name: 'Blockchain Bets', symbol: 'BCB', imageUrl: 'https://assets.coingecko.com/coins/images/33964/large/bcb.png', marketCapRank: 115, score: 0.10 },
   { id: 'blockchain-games', name: 'Blockchain Games', symbol: 'BCG', imageUrl: 'https://assets.coingecko.com/coins/images/33963/large/bcg.png', marketCapRank: 120, score: 0.08 },
   { id: 'blockchain-token', name: 'Blockchain Token', symbol: 'BCT', imageUrl: 'https://assets.coingecko.com/coins/images/33962/large/bct.png', marketCapRank: 125, score: 0.06 },
-  { id: 'blockchain-ai', name: 'Blockchain AI', symbol: 'BAI', imageUrl: 'https://assets.coingecko.com/coins/images/33961/large/bai.png', marketCapRank: 130, score: 0.04 }
+  { id: 'blockchain-ai', name: 'Blockchain AI', symbol: 'BAI', imageUrl: 'https://assets.coingecko.com/coins/images/33961/large/bai.png', marketCapRank: 130, score: 0.04 },
+  // Tokens específicos mencionados pelo usuário
+  { id: 'gizmo', name: 'Gizmo', symbol: 'GIZMO', imageUrl: 'https://assets.coingecko.com/coins/images/33960/large/gizmo.png', marketCapRank: 135, score: 0.03 },
+  { id: 'tetsuo', name: 'Tetsuo', symbol: 'TETSUO', imageUrl: 'https://assets.coingecko.com/coins/images/33959/large/tetsuo.png', marketCapRank: 140, score: 0.02 }
 ];
 
 // Função para buscar todos os tokens da CoinGecko
@@ -62,8 +65,12 @@ async function getAllTokensFromCoinGecko() {
   try {
     console.log('🔄 Buscando todos os tokens da CoinGecko...');
     
-    // Buscar lista completa de tokens
-    const response = await fetch(`${COINGECKO_BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1&sparkline=false&price_change_percentage=24h`, {
+         // Buscar lista muito mais completa de tokens (múltiplas páginas)
+     let allTokens: any[] = [];
+     
+     // Buscar várias páginas para ter mais tokens
+     for (let page = 1; page <= 10; page++) {
+       const response = await fetch(`${COINGECKO_BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=${page}&sparkline=false&price_change_percentage=24h`, {
       headers: {
         'Accept': 'application/json',
         'User-Agent': 'SenhorBarriga-Portfolio/1.0'
@@ -72,23 +79,33 @@ async function getAllTokensFromCoinGecko() {
       next: { revalidate: 3600 } // Cache por 1 hora
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      console.log('✅ Busca completa funcionou:', data.length, 'tokens encontrados');
-      
-      // Processar e cachear os tokens
-      ALL_TOKENS_CACHE = data.map((coin: any) => ({
-        id: coin.id,
-        name: coin.name,
-        symbol: coin.symbol.toUpperCase(),
-        imageUrl: coin.image,
-        marketCapRank: coin.market_cap_rank,
-        score: 1.0 // Score alto para todos os tokens listados
-      }));
-      
-      CACHE_TIMESTAMP = now;
-      return ALL_TOKENS_CACHE;
-    }
+           if (response.ok) {
+         const data = await response.json();
+         allTokens = allTokens.concat(data);
+         console.log(`📄 Página ${page}: ${data.length} tokens encontrados`);
+         
+         // Se não há mais dados, parar
+         if (data.length === 0) break;
+       } else {
+         console.log(`⚠️ Erro na página ${page}:`, response.status);
+         break;
+       }
+     }
+     
+     console.log('✅ Busca completa funcionou:', allTokens.length, 'tokens encontrados no total');
+     
+     // Processar e cachear os tokens
+     ALL_TOKENS_CACHE = allTokens.map((coin: any) => ({
+       id: coin.id,
+       name: coin.name,
+       symbol: coin.symbol.toUpperCase(),
+       imageUrl: coin.image,
+       marketCapRank: coin.market_cap_rank,
+       score: 1.0 // Score alto para todos os tokens listados
+     }));
+     
+     CACHE_TIMESTAMP = now;
+     return ALL_TOKENS_CACHE;
   } catch (error) {
     console.error('❌ Erro ao buscar todos os tokens:', error);
   }
@@ -111,27 +128,27 @@ export async function GET(request: Request) {
 
     console.log('🔍 Buscando tokens para:', query);
 
-    // Primeiro, tentar buscar na lista completa de tokens
-    try {
-      const allTokens = await getAllTokensFromCoinGecko();
-      
-      if (allTokens.length > 0) {
-        const queryLower = query.toLowerCase();
-        const filteredTokens = allTokens.filter(token => 
-          token.name.toLowerCase().includes(queryLower) ||
-          token.symbol.toLowerCase().includes(queryLower) ||
-          token.id.toLowerCase().includes(queryLower)
-        ).slice(0, 20); // Limitar a 20 resultados para performance
+         // Primeiro, tentar buscar na lista completa de tokens
+     try {
+       const allTokens = await getAllTokensFromCoinGecko();
+       
+       if (allTokens.length > 0) {
+         const queryLower = query.toLowerCase();
+         const filteredTokens = allTokens.filter(token => 
+           token.name.toLowerCase().includes(queryLower) ||
+           token.symbol.toLowerCase().includes(queryLower) ||
+           token.id.toLowerCase().includes(queryLower)
+         ).slice(0, 50); // Aumentar para 50 resultados
 
-        console.log('✅ Tokens encontrados na busca completa:', filteredTokens.length);
-        
-        if (filteredTokens.length > 0) {
-          return NextResponse.json({ success: true, tokens: filteredTokens });
-        }
-      }
-    } catch (error) {
-      console.log('⚠️ Busca completa falhou, tentando API de search:', error);
-    }
+         console.log('✅ Tokens encontrados na busca completa:', filteredTokens.length);
+         
+         if (filteredTokens.length > 0) {
+           return NextResponse.json({ success: true, tokens: filteredTokens });
+         }
+       }
+     } catch (error) {
+       console.log('⚠️ Busca completa falhou, tentando API de search:', error);
+     }
 
     // Fallback: tentar a API de search da CoinGecko
     try {
