@@ -12,6 +12,7 @@ import DatabaseStatus from "@/components/DatabaseStatus";
 import UserNav from "@/components/auth/UserNav";
 import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { TokenSearch } from "@/components/TokenSearch";
 
 
 
@@ -1874,34 +1875,32 @@ export default function Home() {
           </CardHeader>
           <CardContent className="pt-6">
             {/* Formulário para adicionar token */}
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               <div className="space-y-3">
                 <label className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center">
                   <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                  Nome do Token
+                  Buscar Token
                 </label>
-                <Input
-                  placeholder="Ex: Bitcoin"
-                  value={newToken.name}
-                  onChange={(e) => setNewToken({ ...newToken, name: e.target.value })}
-                  className="h-12 text-base border-2 border-slate-300 dark:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100 font-medium"
+                <TokenSearch
+                  onTokenSelect={(token) => {
+                    setNewToken({
+                      ...newToken,
+                      name: token.name,
+                      symbol: token.symbol
+                    });
+                  }}
+                  placeholder="Digite o nome do token..."
+                  className="w-full"
                 />
+                {newToken.name && newToken.symbol && (
+                  <div className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 p-2 rounded">
+                    ✅ Token selecionado: {newToken.name} ({newToken.symbol})
+                  </div>
+                )}
               </div>
               <div className="space-y-3">
                 <label className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center">
                   <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                  Símbolo
-                </label>
-                <Input
-                  placeholder="Ex: BTC"
-                  value={newToken.symbol}
-                  onChange={(e) => setNewToken({ ...newToken, symbol: e.target.value })}
-                  className="h-12 text-base border-2 border-slate-300 dark:border-slate-600 focus:border-green-500 focus:ring-4 focus:ring-green-100 dark:focus:ring-green-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100 font-medium uppercase"
-                />
-              </div>
-              <div className="space-y-3">
-                <label className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center">
-                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
                   Quantidade
                 </label>
                 <Input
@@ -1909,12 +1908,12 @@ export default function Home() {
                   placeholder="0.00"
                   value={newToken.amount}
                   onChange={(e) => setNewToken({ ...newToken, amount: e.target.value })}
-                  className="h-12 text-base border-2 border-slate-300 dark:border-slate-600 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 dark:focus:ring-purple-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100 font-medium"
+                  className="h-12 text-base border-2 border-slate-300 dark:border-slate-600 focus:border-green-500 focus:ring-4 focus:ring-green-100 dark:focus:ring-green-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100 font-medium"
                 />
               </div>
               <div className="space-y-3">
                 <label className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center">
-                  <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
+                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
                   {priceInputType === 'perToken' ? 'Preço por Token ($)' : 'Valor Total ($)'}
                 </label>
                 <div className="space-y-2">
@@ -1923,7 +1922,7 @@ export default function Home() {
                     placeholder={priceInputType === 'perToken' ? "0.00" : "0.00"}
                     value={newToken.price}
                     onChange={(e) => setNewToken({ ...newToken, price: e.target.value })}
-                    className="h-12 text-base border-2 border-slate-300 dark:border-slate-600 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 dark:focus:ring-orange-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100 font-medium"
+                    className="h-12 text-base border-2 border-slate-300 dark:border-slate-600 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 dark:focus:ring-purple-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100 font-medium"
                   />
                   <div className="flex space-x-2">
                     <Button
@@ -1932,8 +1931,8 @@ export default function Home() {
                       onClick={() => setPriceInputType('perToken')}
                       className={`text-xs px-3 py-1 ${
                         priceInputType === 'perToken' 
-                          ? 'bg-orange-600 hover:bg-orange-700 text-white' 
-                          : 'border-orange-300 text-orange-600 hover:bg-orange-50'
+                          ? 'bg-purple-600 hover:bg-purple-700 text-white' 
+                          : 'border-purple-300 text-purple-600 hover:bg-purple-50'
                       }`}
                     >
                       Por Token
@@ -1944,15 +1943,15 @@ export default function Home() {
                       onClick={() => setPriceInputType('totalValue')}
                       className={`text-xs px-3 py-1 ${
                         priceInputType === 'totalValue' 
-                          ? 'bg-orange-600 hover:bg-orange-700 text-white' 
-                          : 'border-orange-300 text-orange-600 hover:bg-orange-50'
+                          ? 'bg-purple-600 hover:bg-purple-700 text-white' 
+                          : 'border-purple-300 text-purple-600 hover:bg-purple-50'
                       }`}
                     >
                       Valor Total
                     </Button>
                   </div>
                   {priceInputType === 'totalValue' && newToken.price && newToken.amount && (
-                    <div className="text-xs text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 p-2 rounded">
+                    <div className="text-xs text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 p-2 rounded">
                       💡 Preço por token será calculado automaticamente: ${newToken.price} ÷ {newToken.amount} = {formatPrice(parseFloat(newToken.price) / parseFloat(newToken.amount))}
                     </div>
                   )}
@@ -1960,14 +1959,14 @@ export default function Home() {
               </div>
               <div className="space-y-3">
                 <label className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center">
-                  <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                  <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
                   Data da Compra
                 </label>
                 <Input
                   type="date"
                   value={newToken.purchaseDate}
                   onChange={(e) => setNewToken({ ...newToken, purchaseDate: e.target.value })}
-                  className="h-12 text-base border-2 border-slate-300 dark:border-slate-600 focus:border-red-500 focus:ring-4 focus:ring-red-100 dark:focus:ring-red-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100 font-medium"
+                  className="h-12 text-base border-2 border-slate-300 dark:border-slate-600 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 dark:focus:ring-orange-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100 font-medium"
                 />
               </div>
             </div>
