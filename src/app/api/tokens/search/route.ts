@@ -41,7 +41,12 @@ const MOCK_TOKENS = [
   { id: 'jito', name: 'Jito', symbol: 'JTO', imageUrl: 'https://assets.coingecko.com/coins/images/33968/large/jito.png', marketCapRank: 95, score: 0.20 },
   { id: 'meme', name: 'Meme', symbol: 'MEME', imageUrl: 'https://assets.coingecko.com/coins/images/33967/large/meme.png', marketCapRank: 100, score: 0.18 },
   { id: 'bome', name: 'Book of Meme', symbol: 'BOME', imageUrl: 'https://assets.coingecko.com/coins/images/33966/large/bome.png', marketCapRank: 105, score: 0.15 },
-  { id: 'blockasset', name: 'Blockasset', symbol: 'BLOCK', imageUrl: 'https://assets.coingecko.com/coins/images/33965/large/blockasset.png', marketCapRank: 110, score: 0.12 }
+  { id: 'blockasset', name: 'Blockasset', symbol: 'BLOCK', imageUrl: 'https://assets.coingecko.com/coins/images/33965/large/blockasset.png', marketCapRank: 110, score: 0.12 },
+  // Tokens de baixa capitalização que começam com "block"
+  { id: 'blockchain-bets', name: 'Blockchain Bets', symbol: 'BCB', imageUrl: 'https://assets.coingecko.com/coins/images/33964/large/bcb.png', marketCapRank: 115, score: 0.10 },
+  { id: 'blockchain-games', name: 'Blockchain Games', symbol: 'BCG', imageUrl: 'https://assets.coingecko.com/coins/images/33963/large/bcg.png', marketCapRank: 120, score: 0.08 },
+  { id: 'blockchain-token', name: 'Blockchain Token', symbol: 'BCT', imageUrl: 'https://assets.coingecko.com/coins/images/33962/large/bct.png', marketCapRank: 125, score: 0.06 },
+  { id: 'blockchain-ai', name: 'Blockchain AI', symbol: 'BAI', imageUrl: 'https://assets.coingecko.com/coins/images/33961/large/bai.png', marketCapRank: 130, score: 0.04 }
 ];
 
 // Função para buscar todos os tokens da CoinGecko
@@ -147,7 +152,7 @@ export async function GET(request: Request) {
         console.log('✅ API de search funcionou:', searchData.coins?.length || 0, 'tokens encontrados');
 
         const tokens = (searchData.coins || [])
-          .slice(0, 20)
+          .slice(0, 50) // Aumentar para 50 resultados
           .map((coin: any) => ({
             id: coin.id,
             name: coin.name,
@@ -156,7 +161,7 @@ export async function GET(request: Request) {
             marketCapRank: coin.market_cap_rank || null,
             score: coin.score || 0
           }))
-          .filter((token: any) => token.score > 0.001);
+          .filter((token: any) => token.score > 0.0001); // Reduzir filtro para incluir mais tokens
 
         if (tokens.length > 0) {
           return NextResponse.json({ success: true, tokens });
@@ -173,7 +178,17 @@ export async function GET(request: Request) {
       token.name.toLowerCase().includes(queryLower) ||
       token.symbol.toLowerCase().includes(queryLower) ||
       token.id.toLowerCase().includes(queryLower)
-    );
+    ).sort((a, b) => {
+      // Priorizar matches exatos
+      const aExact = a.name.toLowerCase() === queryLower || a.symbol.toLowerCase() === queryLower;
+      const bExact = b.name.toLowerCase() === queryLower || b.symbol.toLowerCase() === queryLower;
+      
+      if (aExact && !bExact) return -1;
+      if (!aExact && bExact) return 1;
+      
+      // Depois priorizar por score (maior score primeiro)
+      return b.score - a.score;
+    });
 
     console.log('✅ Tokens mockados encontrados:', filteredTokens.length);
 

@@ -108,8 +108,8 @@ export async function GET(request: Request) {
        try {
          console.log('🔄 Tentando buscar token por nome na CoinGecko...');
          
-         // Tentar buscar por "blockasset" (nome do token)
-         const searchUrl = `${COINGECKO_BASE_URL}/search?query=blockasset`;
+                   // Tentar buscar por "blockasset" (nome específico do token)
+          const searchUrl = `${COINGECKO_BASE_URL}/search?query=blockasset`;
          const searchResponse = await fetch(searchUrl, {
            headers: {
              'Accept': 'application/json',
@@ -122,11 +122,28 @@ export async function GET(request: Request) {
            const searchData = await searchResponse.json();
            console.log('📊 Resultados da busca por nome:', searchData.coins?.length || 0);
            
-           // Procurar por tokens que contenham "blockasset" no nome ou símbolo
-           const matchingTokens = (searchData.coins || []).filter((coin: any) => 
-             coin.name.toLowerCase().includes('blockasset') || 
-             coin.symbol.toLowerCase().includes('blockasset')
-           );
+                       // Procurar por tokens que sejam exatamente "blockasset" ou muito similares
+            const matchingTokens = (searchData.coins || []).filter((coin: any) => {
+              const nameLower = coin.name.toLowerCase();
+              const symbolLower = coin.symbol.toLowerCase();
+              
+              // Priorizar matches exatos
+              if (nameLower === 'blockasset' || symbolLower === 'blockasset') {
+                return true;
+              }
+              
+              // Aceitar variações muito próximas
+              if (nameLower.includes('blockasset') || symbolLower.includes('blockasset')) {
+                return true;
+              }
+              
+              // Rejeitar tokens que contenham "blockchain" ou outros termos similares
+              if (nameLower.includes('blockchain') || symbolLower.includes('blockchain')) {
+                return false;
+              }
+              
+              return false;
+            });
            
            if (matchingTokens.length > 0) {
              console.log('✅ Token encontrado por nome:', matchingTokens[0].name);
