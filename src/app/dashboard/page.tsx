@@ -2,7 +2,6 @@
 
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-
 import { User, Shield, Database } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -92,10 +91,10 @@ export default function DashboardPage() {
           <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl">
             <CardHeader>
               <CardTitle className="text-xl font-semibold text-slate-800">
-                Informações da Sessão
+                Dashboard Completo
               </CardTitle>
               <CardDescription className="text-slate-600">
-                Detalhes da sua sessão atual
+                O dashboard completo com todas as funcionalidades (tokens, operações de grid e pools) está disponível na página principal quando você está logado.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
