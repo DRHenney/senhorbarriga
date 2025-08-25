@@ -540,8 +540,23 @@ export default function Home() {
     notes?: string;
   } | null>(null);
 
-  // Verificar se os campos obrigatórios estão preenchidos (nome e símbolo)
-  const isFormComplete = newToken.name && newToken.symbol;
+  // Verificar se os campos obrigatórios estão preenchidos
+  const isFormComplete = newToken.name && 
+                        newToken.symbol && 
+                        newToken.amount && 
+                        parseFloat(newToken.amount) > 0 &&
+                        newToken.price && 
+                        parseFloat(newToken.price) > 0 &&
+                        newToken.purchaseDate;
+
+  // Função para gerar mensagem de validação
+  const getValidationMessage = () => {
+    if (!newToken.name || !newToken.symbol) return 'Selecione um token';
+    if (!newToken.amount || parseFloat(newToken.amount) <= 0) return 'Digite a quantidade';
+    if (!newToken.price || parseFloat(newToken.price) <= 0) return 'Digite o preço';
+    if (!newToken.purchaseDate) return 'Selecione a data';
+    return 'Adicionar Token';
+  };
 
   // Função para iniciar edição de token
   const editToken = (token: any) => {
@@ -1981,7 +1996,7 @@ export default function Home() {
                 }`}
               >
                 <Plus className="h-5 w-5 mr-3" />
-                {isFormComplete ? 'Adicionar Token' : 'Preencha nome e símbolo'}
+                {getValidationMessage()}
               </Button>
             </div>
 

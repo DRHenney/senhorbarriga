@@ -39,6 +39,7 @@ export function TokenSearch({ onTokenSelect, placeholder = "Buscar token...", cl
     }
 
     setIsLoading(true);
+    setShowDropdown(true); // Mostrar dropdown imediatamente ao buscar
     console.log('🔍 Buscando tokens para:', searchQuery);
     
     try {
@@ -54,18 +55,18 @@ export function TokenSearch({ onTokenSelect, placeholder = "Buscar token...", cl
 
       if (data.success) {
         setTokens(data.tokens);
-        setShowDropdown(data.tokens.length > 0);
+        setShowDropdown(true); // Sempre mostrar dropdown se há resposta
         setSelectedIndex(-1);
         console.log('✅ Tokens encontrados:', data.tokens.length);
       } else {
         console.error('❌ Erro na API:', data.message);
         setTokens([]);
-        setShowDropdown(false);
+        setShowDropdown(true); // Mostrar mensagem de erro no dropdown
       }
     } catch (error) {
       console.error('❌ Erro ao buscar tokens:', error);
       setTokens([]);
-      setShowDropdown(false);
+      setShowDropdown(true); // Mostrar mensagem de erro no dropdown
     } finally {
       setIsLoading(false);
     }
@@ -77,9 +78,14 @@ export function TokenSearch({ onTokenSelect, placeholder = "Buscar token...", cl
       clearTimeout(searchTimeoutRef.current);
     }
 
-    searchTimeoutRef.current = setTimeout(() => {
-      searchTokens(query);
-    }, 300);
+    if (query.trim().length >= 2) {
+      searchTimeoutRef.current = setTimeout(() => {
+        searchTokens(query);
+      }, 300);
+    } else {
+      setTokens([]);
+      setShowDropdown(false);
+    }
 
     return () => {
       if (searchTimeoutRef.current) {
@@ -159,7 +165,7 @@ export function TokenSearch({ onTokenSelect, placeholder = "Buscar token...", cl
           onKeyDown={handleKeyDown}
           onFocus={() => {
             console.log('🎯 Input focado, query:', query, 'tokens:', tokens.length);
-            if (query.trim().length >= 2 && tokens.length > 0) {
+            if (query.trim().length >= 2) {
               setShowDropdown(true);
             }
           }}
