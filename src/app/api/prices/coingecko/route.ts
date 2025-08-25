@@ -11,23 +11,23 @@ async function fetchTokenData(symbol: string, coinGeckoId?: string) {
     // Se não temos o coinGeckoId, buscar o ID do token usando a API de search
     if (!tokenId) {
       const searchUrl = `${COINGECKO_BASE_URL}/search?query=${symbol}`;
-    const searchResponse = await fetch(searchUrl, {
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'SenhorBarriga-Portfolio/1.0',
-        'X-CG-API-KEY': COINGECKO_API_KEY
-      },
-      // Remover cache para garantir dados sempre atualizados
-      cache: 'no-store'
-    });
+      const searchResponse = await fetch(searchUrl, {
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'SenhorBarriga-Portfolio/1.0',
+          'X-CG-API-KEY': COINGECKO_API_KEY
+        },
+        // Remover cache para garantir dados sempre atualizados
+        cache: 'no-store'
+      });
 
-    if (!searchResponse.ok) {
-      console.error(`❌ Erro na busca do token ${symbol}:`, searchResponse.status, searchResponse.statusText);
-      return null;
-    }
+      if (!searchResponse.ok) {
+        console.error(`❌ Erro na busca do token ${symbol}:`, searchResponse.status, searchResponse.statusText);
+        return null;
+      }
 
-    const searchData = await searchResponse.json();
-    console.log(`🔍 Resultados da busca para ${symbol}:`, JSON.stringify(searchData, null, 2));
+      const searchData = await searchResponse.json();
+      console.log(`🔍 Resultados da busca para ${symbol}:`, JSON.stringify(searchData, null, 2));
 
       // Encontrar o token mais relevante (geralmente o primeiro resultado)
       const token = searchData.coins?.[0];
@@ -55,7 +55,7 @@ async function fetchTokenData(symbol: string, coinGeckoId?: string) {
     });
 
     if (!detailResponse.ok) {
-      console.error(`❌ Erro ao buscar detalhes do token ${token.id}:`, detailResponse.status, detailResponse.statusText);
+      console.error(`❌ Erro ao buscar detalhes do token ${tokenId}:`, detailResponse.status, detailResponse.statusText);
       return null;
     }
 
