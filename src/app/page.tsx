@@ -453,6 +453,7 @@ export default function Home() {
     realTimePrice?: number;
     priceChange24h?: number;
     lastUpdated?: string;
+    imageUrl?: string;
   }>>(initialTokens);
   const [activeTab, setActiveTab] = useState("current"); // "current" ou "monthly"
   const [evolutionTab, setEvolutionTab] = useState("weekly"); // "weekly" ou "records"
