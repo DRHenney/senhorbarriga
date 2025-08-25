@@ -9,7 +9,7 @@ export async function middleware(request: NextRequest) {
   const publicRoutes = ['/', '/auth/signin', '/auth/signup', '/api/auth']
   
   // Rotas protegidas que precisam de autenticação
-  const protectedRoutes = ['/dashboard', '/historico', '/api/records', '/api/tokens', '/api/users', '/api/operations']
+  const protectedRoutes = ['/dashboard', '/historico', '/api/records', '/api/tokens', '/api/users']
   
   // Verificar se é uma rota protegida
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
@@ -59,7 +59,6 @@ export const config = {
     '/api/records/:path*',
     '/api/tokens/:path*',
     '/api/users/:path*',
-    '/api/operations/:path*',
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

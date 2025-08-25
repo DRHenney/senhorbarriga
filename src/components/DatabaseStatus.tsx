@@ -14,12 +14,11 @@ interface DatabaseStatus {
 export default function DatabaseStatus() {
   const [status, setStatus] = useState<DatabaseStatus | null>(null);
   const [loading, setLoading] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
   const testConnection = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/test-connection');
+      const response = await fetch('/api/test-db');
       const data = await response.json();
       setStatus(data);
     } catch (error) {
@@ -34,30 +33,8 @@ export default function DatabaseStatus() {
   };
 
   useEffect(() => {
-    setMounted(true);
+    testConnection();
   }, []);
-
-  useEffect(() => {
-    if (mounted) {
-      testConnection();
-    }
-  }, [mounted]);
-
-  if (!mounted) {
-    return (
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Status do Banco de Dados</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span>Carregando...</span>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <Card className="w-full max-w-md">

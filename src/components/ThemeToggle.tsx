@@ -5,21 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 
 export function ThemeToggle() {
-  const { theme, toggleTheme, mounted } = useTheme();
-
-  if (!mounted) {
-    return (
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-9 w-9 px-0 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-        disabled
-      >
-        <Sun className="h-4 w-4 text-slate-600 dark:text-slate-300" />
-        <span className="sr-only">Carregando tema</span>
-      </Button>
-    );
-  }
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <Button

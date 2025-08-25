@@ -1,0 +1,20 @@
+[33m4343cef[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Forçar novo deploy - dashboard completo
+[33mbec289b[m Implementar dashboard completo com todas as funcionalidades da aplicação
+[33m2dfd9d2[m Implementar fluxo de autenticação: landing page  login  dashboard
+[33m79be5b5[m Criar dashboard funcional com estrutura básica da aplicação
+[33m51ff378[m Corrigir erro de UTF-8 e criar dashboard funcional
+[33mac0f61d[m Integrar aplicação completa no dashboard - mover conteúdo original
+[33mf8115fd[m Criar landing page moderna com design futurista e separar dashboard
+[33m65d0d86[m Corrigir formatação para dólar americano (USD) em vez de real brasileiro
+[33m353e76a[m Corrigir formatação de valores monetários para formato brasileiro
+[33m71c28d6[m Corrigir problemas de hidratação e build - Investigação completa do projeto
+[33md16984f[m Corrigir erros de TypeScript e aplicar migrações do banco de dados
+[33m2d6aca1[m Corrigir rotas de teste para evitar erros de deployment
+[33me1df67f[m Adicionar rotas de teste para debug da API de operações
+[33m0196ff4[m Corrigir problema de salvamento de operações de pool de liquidez - Adicionar logs detalhados e rotas de teste para debug
+[33m3663c3e[m Remover dados fictícios e adicionar mensagens informativas para usuários novos
+[33m97e5609[m Corrigir visibilidade do texto nos campos de cadastro e login
+[33m3f8c732[m Corrigir erro TypeScript - Adicionar ID do usuário na sessão NextAuth
+[33mdce880f[m Implementar salvamento de operações no banco de dados - Criar API e tabela active_operations
+[33m311c1db[m Corrigir erro TypeScript - Adicionar imageUrl ao tipo Token
+[33m3c9d2ab[m Melhorar formatação de números na seção de edição - Remover zeros desnecessários

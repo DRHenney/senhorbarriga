@@ -61,19 +61,12 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
-      console.log('🔄 Callback JWT:', { token, user });
       if (user) {
         token.id = user.id;
-        console.log('✅ ID do usuário definido no token:', user.id);
       }
       return token;
     },
-    async session({ session, token }) {
-      console.log('🔄 Callback de sessão:', { token, session });
-      if (token) {
-        session.user.id = token.id as string;
-        console.log('✅ ID do usuário definido na sessão:', session.user.id);
-      }
+    async session({ session }) {
       return session;
     },
   },
