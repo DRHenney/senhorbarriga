@@ -280,7 +280,7 @@ export async function POST(request: Request) {
 
     const results = await Promise.all(pricePromises);
     
-    console.log('📊 Resultados finais:', results);
+    console.log('📊 Resultados finais:', results.map(r => ({ symbol: r.symbol, success: r.success, error: r.error })));
 
     return NextResponse.json({
       success: true,

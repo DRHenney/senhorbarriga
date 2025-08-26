@@ -1006,8 +1006,13 @@ export default function Home() {
       console.log('📥 Parse JSON concluído, verificando dados...');
 
       if (data.success && data.results) {
+        console.log('🔍 Processando resultados da API:', data.results.map((r: any) => ({ symbol: r.symbol, success: r.success })));
+        
         const updatedTokens = tokensList.map(token => {
+          console.log(`🔍 Procurando dados para ${token.symbol}...`);
           const priceData = data.results.find((p: any) => p.symbol === token.symbol);
+          console.log(`🔍 Resultado para ${token.symbol}:`, priceData ? { success: priceData.success, symbol: priceData.symbol } : 'não encontrado');
+          
           if (priceData && priceData.success) {
             console.log(`✅ ${token.symbol}: $${priceData.data.priceUsd} (${priceData.data.priceChange24h > 0 ? '+' : ''}${priceData.data.priceChange24h.toFixed(2)}%)`);
             return {
@@ -1017,6 +1022,8 @@ export default function Home() {
               imageUrl: priceData.data.imageUrl || token.imageUrl, // Salvar URL da imagem
               lastUpdated: new Date().toLocaleString('pt-BR')
             };
+          } else {
+            console.log(`❌ ${token.symbol}: Dados não encontrados ou erro na API`);
           }
           return token;
         });
