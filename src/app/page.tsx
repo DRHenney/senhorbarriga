@@ -1233,29 +1233,13 @@ export default function Home() {
       return () => clearTimeout(timeout);
     }
 
-    // Só iniciar atualização automática se houver tokens
+    // Só configurar nextUpdateTime se houver tokens
     if (tokens.length > 0) {
-      console.log('🚀 Iniciando atualização automática para', tokens.length, 'tokens');
+      console.log('🚀 Configurando atualização automática para', tokens.length, 'tokens');
       
-      // Iniciar atualização automática
-      const interval = setInterval(() => {
-        console.log('⏰ Executando atualização automática...');
-        fetchRealTimePrices(tokens, false);
-      }, 30000); // 30 segundos
-
-      console.log('✅ Intervalo criado:', interval);
-      setAutoUpdateInterval(interval);
+      // Configurar próxima atualização em 30 segundos
       setNextUpdateTime(new Date(Date.now() + 30000));
-      console.log('✅ Estados atualizados - autoUpdateInterval e nextUpdateTime definidos');
-      console.log('✅ Intervalo configurado - próximas atualizações a cada 30 segundos');
-
-      // Cleanup ao desmontar componente
-      return () => {
-        console.log('🧹 Limpando intervalo de atualização automática');
-        if (interval) {
-          clearInterval(interval);
-        }
-      };
+      console.log('✅ nextUpdateTime configurado - primeira atualização em 30 segundos');
     } else {
       console.log('📭 Nenhum token para atualização automática');
     }
@@ -1283,8 +1267,10 @@ export default function Home() {
       console.log('⏱️ Countdown:', timeLeft, 'segundos restantes');
       
       if (timeLeft === 0) {
+        // Executar atualização automática
+        console.log('⏱️ Countdown zerado, executando atualização automática...');
+        startAutoUpdate();
         // Reset para próxima atualização
-        console.log('⏱️ Countdown zerado, resetando...');
         setNextUpdateTime(new Date(Date.now() + 30000));
         setCountdownSeconds(30);
       } else {
@@ -1296,7 +1282,7 @@ export default function Home() {
       console.log('⏱️ Limpando countdown interval');
       clearInterval(countdownInterval);
     };
-  }, [nextUpdateTime, tokens.length, countdownSeconds]);
+  }, [nextUpdateTime, tokens.length]);
 
   // Carregar registros do banco
   const loadRecords = async () => {
