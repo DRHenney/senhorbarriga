@@ -229,10 +229,15 @@ export async function GET(request: Request) {
 // POST - Buscar múltiplos tokens de uma vez
 export async function POST(request: Request) {
   try {
+    console.log('📥 POST /api/prices/coingecko recebido');
+    
     const body = await request.json();
     const { tokens } = body; // Array de { symbol }
 
+    console.log('📥 Body recebido:', JSON.stringify(body, null, 2));
+
     if (!tokens || !Array.isArray(tokens)) {
+      console.log('❌ Tokens inválidos:', tokens);
       return NextResponse.json({ 
         success: false, 
         message: 'Lista de tokens é obrigatória' 

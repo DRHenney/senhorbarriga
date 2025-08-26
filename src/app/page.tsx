@@ -982,6 +982,7 @@ export default function Home() {
         coinGeckoId: t.coinGeckoId 
       })));
       console.log('🌐 Fazendo fetch para /api/prices/coingecko...');
+      console.log('📤 Dados enviados:', JSON.stringify({ tokens: tokensToFetch }, null, 2));
 
       const response = await fetch('/api/prices/coingecko', {
         method: 'POST',
@@ -993,6 +994,7 @@ export default function Home() {
       });
 
       console.log('📥 Resposta recebida da API:', response.status, response.statusText);
+      console.log('📥 Headers da resposta:', Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
         console.error('❌ Erro na API:', response.status, response.statusText);
