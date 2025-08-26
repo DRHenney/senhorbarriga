@@ -81,8 +81,8 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { name, symbol, amount, price, purchaseDate } = body;
-    console.log('📥 Dados recebidos:', { name, symbol, amount, price, purchaseDate });
+    const { name, symbol, amount, price, purchaseDate, coinGeckoId, imageUrl, marketCapRank } = body;
+    console.log('📥 Dados recebidos:', { name, symbol, amount, price, purchaseDate, coinGeckoId, imageUrl, marketCapRank });
 
     if (!name || !symbol) {
       console.log('❌ Dados obrigatórios faltando');
@@ -115,7 +115,7 @@ export async function POST(request: Request) {
 
     console.log('💰 Valores calculados:', { tokenAmount, tokenPrice, tokenValue });
 
-    // Criar token no banco (sem purchase_date por enquanto)
+    // Criar token no banco
     const newToken = await db.insert(userTokens).values({
       userId: user.id,
       name,
@@ -123,7 +123,10 @@ export async function POST(request: Request) {
       amount: tokenAmount.toString(),
       price: tokenPrice.toString(),
       value: tokenValue.toString(),
-      // purchaseDate será adicionado depois que a migração for aplicada
+      purchaseDate: purchaseDate ? new Date(purchaseDate) : new Date(),
+      coinGeckoId: coinGeckoId || null,
+      imageUrl: imageUrl || null,
+      marketCapRank: marketCapRank || null
     }).returning();
 
     console.log('✅ Token criado:', newToken);

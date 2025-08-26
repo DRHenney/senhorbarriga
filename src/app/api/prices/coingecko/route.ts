@@ -29,8 +29,23 @@ async function fetchTokenData(symbol: string, coinGeckoId?: string) {
       const searchData = await searchResponse.json();
       console.log(`🔍 Resultados da busca para ${symbol}:`, JSON.stringify(searchData, null, 2));
 
-      // Encontrar o token mais relevante (geralmente o primeiro resultado)
-      const token = searchData.coins?.[0];
+      // Buscar o token mais específico que corresponda exatamente ao símbolo
+      let token = null;
+      if (searchData.coins && Array.isArray(searchData.coins)) {
+        // Primeiro, tentar encontrar um token com símbolo exato (case insensitive)
+        token = searchData.coins.find((coin: any) => 
+          coin.symbol?.toUpperCase() === symbol.toUpperCase()
+        );
+        
+        // Se não encontrar, usar o primeiro resultado mas com aviso
+        if (!token) {
+          console.warn(`⚠️ Símbolo exato não encontrado para ${symbol}, usando primeiro resultado`);
+          token = searchData.coins[0];
+        } else {
+          console.log(`✅ Token encontrado com símbolo exato: ${token.id} (${token.symbol})`);
+        }
+      }
+      
       if (!token) {
         console.log(`⚠️ Nenhum token encontrado para ${symbol}`);
         return null;

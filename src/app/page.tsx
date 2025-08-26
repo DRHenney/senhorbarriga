@@ -973,6 +973,11 @@ export default function Home() {
         symbol: token.symbol,
         coinGeckoId: token.coinGeckoId || null
       }));
+      
+      console.log('🔍 Tokens para busca:', tokensToFetch.map(t => ({ 
+        symbol: t.symbol, 
+        coinGeckoId: t.coinGeckoId 
+      })));
       console.log('🌐 Fazendo fetch para /api/prices/coingecko...');
 
       const response = await fetch('/api/prices/coingecko', {
@@ -1106,6 +1111,9 @@ export default function Home() {
             price: parseFloat(token.price || '0'),
             value: parseFloat(token.value || '0'),
             purchaseDate: token.purchaseDate || token.createdAt || new Date().toISOString(),
+            coinGeckoId: token.coinGeckoId || null,
+            imageUrl: token.imageUrl || null,
+            marketCapRank: token.marketCapRank || null,
           };
 
           const amount = safeToken.amount;
@@ -1506,6 +1514,9 @@ export default function Home() {
           price: formatValue(price),
           value: formatValue(amount * price),
           purchaseDate: newToken.purchaseDate,
+          coinGeckoId: newToken.coinGeckoId || null,
+          imageUrl: newToken.imageUrl || null,
+          marketCapRank: newToken.marketCapRank || null,
         };
 
         console.log('📤 Enviando dados do token:', tokenData);

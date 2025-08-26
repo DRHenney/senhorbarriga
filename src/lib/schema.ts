@@ -94,6 +94,9 @@ export const userTokens = pgTable('user_tokens', {
   price: decimal('price', { precision: 18, scale: 8 }).notNull(),
   value: decimal('value', { precision: 18, scale: 8 }).notNull(),
   purchaseDate: timestamp('purchase_date').notNull().defaultNow(), // Data da compra
+  coinGeckoId: text('coin_gecko_id'), // ID do CoinGecko para identificação única
+  imageUrl: text('image_url'), // URL da imagem do token
+  marketCapRank: integer('market_cap_rank'), // Rank de capitalização de mercado
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
