@@ -1925,7 +1925,7 @@ export default function Home() {
               <div className="space-y-3 md:col-span-2">
                 <label className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center">
                   <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                  Buscar Token (ou adicionar manualmente)
+                  Buscar Token
                 </label>
                 <TokenSearch
                   onTokenSelect={async (token) => {
