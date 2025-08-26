@@ -464,14 +464,12 @@ export default function Home() {
     amount: "",
     price: "",
     purchaseDate: new Date().toISOString().split('T')[0], // Data atual como padrão
-    contractAddress: "",
-    network: "",
     coinGeckoId: "",
     imageUrl: "",
     marketCapRank: null as number | null
   });
 
-  const [manualMode, setManualMode] = useState<'name' | 'contract'>('name');
+
   
   const [priceInputType, setPriceInputType] = useState<'perToken' | 'totalValue'>('perToken');
 
@@ -556,70 +554,7 @@ export default function Home() {
                         parseFloat(newToken.price) > 0 &&
                         newToken.purchaseDate;
 
-  // Função para buscar token por contrato
-  const fetchTokenByContract = async () => {
-    if (!newToken.contractAddress || !newToken.network) {
-      toast({
-        title: "Erro",
-        description: "Preencha o endereço do contrato e a rede",
-        variant: "destructive",
-      });
-      return;
-    }
 
-    try {
-      console.log('🔍 Buscando token por contrato:', newToken.contractAddress, 'na rede:', newToken.network);
-      
-      // Buscar token na CoinGecko por contrato
-      const response = await fetch(`/api/tokens/contract?address=${encodeURIComponent(newToken.contractAddress)}&network=${encodeURIComponent(newToken.network)}`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-
-      if (data.success && data.token) {
-        setNewToken({
-          ...newToken,
-          name: data.token.name,
-          symbol: data.token.symbol.toUpperCase(),
-          contractAddress: newToken.contractAddress,
-          network: newToken.network
-        });
-        
-        toast({
-          title: "Token encontrado!",
-          description: `${data.token.name} (${data.token.symbol})`,
-        });
-      } else {
-        // Verificar se é uma sugestão para usar busca por nome
-        if (data.suggestion === 'use_name_search') {
-          const title = data.isNFT ? "NFT detectado" : "Token não encontrado por contrato";
-          const description = data.message + " Tente usar a aba 'Por Nome' para buscar pelo nome.";
-          
-          toast({
-            title: title,
-            description: description,
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "Token não encontrado",
-            description: data.message || "Verifique o endereço do contrato e a rede",
-            variant: "destructive",
-          });
-        }
-      }
-    } catch (error) {
-      console.error('❌ Erro ao buscar token por contrato:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao buscar token. Tente novamente.",
-        variant: "destructive",
-      });
-    }
-  };
 
   // Função para gerar mensagem de validação
   const getValidationMessage = () => {
@@ -1563,7 +1498,7 @@ export default function Home() {
           console.log('📋 Novo array de tokens:', [...tokens, processedToken]);
           
           setTokens([...tokens, processedToken]);
-          setNewToken({ name: "", symbol: "", amount: "", price: "", purchaseDate: new Date().toISOString().split('T')[0], contractAddress: "", network: "", coinGeckoId: "", imageUrl: "", marketCapRank: null });
+          setNewToken({ name: "", symbol: "", amount: "", price: "", purchaseDate: new Date().toISOString().split('T')[0], coinGeckoId: "", imageUrl: "", marketCapRank: null });
           
           console.log('✅ Estado atualizado, mostrando toast...');
           toast({
@@ -2059,85 +1994,7 @@ export default function Home() {
                   </div>
                 )}
                 
-                {/* Campos para adicionar token manualmente */}
-                <div className="mt-4 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-200 dark:border-slate-600">
-                  <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
-                    💡 Não encontrou o token? Adicione manualmente:
-                  </p>
-                  
-                  {/* Tabs para diferentes métodos */}
-                  <div className="flex space-x-1 mb-3">
-                    <button
-                      type="button"
-                      onClick={() => setManualMode('name')}
-                      className={`px-3 py-1 text-xs rounded ${
-                        manualMode === 'name' 
-                          ? 'bg-blue-500 text-white' 
-                          : 'bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-400'
-                      }`}
-                    >
-                      Por Nome
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setManualMode('contract')}
-                      className={`px-3 py-1 text-xs rounded ${
-                        manualMode === 'contract' 
-                          ? 'bg-green-500 text-white' 
-                          : 'bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-400'
-                      }`}
-                    >
-                      Por Contrato
-                    </button>
-                  </div>
 
-                  {manualMode === 'name' ? (
-                    <div className="grid grid-cols-2 gap-2">
-                      <Input
-                        placeholder="Nome do token"
-                        value={newToken.name}
-                        onChange={(e) => setNewToken({ ...newToken, name: e.target.value })}
-                        className="h-9 text-sm border border-slate-300 dark:border-slate-600"
-                      />
-                      <Input
-                        placeholder="Símbolo (ex: BTC)"
-                        value={newToken.symbol}
-                        onChange={(e) => setNewToken({ ...newToken, symbol: e.target.value.toUpperCase() })}
-                        className="h-9 text-sm border border-slate-300 dark:border-slate-600"
-                      />
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <Input
-                        placeholder="Endereço do contrato (0x...)"
-                        value={newToken.contractAddress}
-                        onChange={(e) => setNewToken({ ...newToken, contractAddress: e.target.value })}
-                        className="h-9 text-sm border border-slate-300 dark:border-slate-600 font-mono"
-                      />
-                      <div className="flex space-x-2">
-                        <Input
-                          placeholder="Rede (ex: ethereum, bsc)"
-                          value={newToken.network}
-                          onChange={(e) => setNewToken({ ...newToken, network: e.target.value.toLowerCase() })}
-                          className="h-9 text-sm border border-slate-300 dark:border-slate-600 flex-1"
-                        />
-                        <Button
-                          type="button"
-                          onClick={fetchTokenByContract}
-                          disabled={!newToken.contractAddress || !newToken.network}
-                          className="h-9 px-3 text-xs bg-green-500 hover:bg-green-600 text-white"
-                        >
-                          Buscar
-                        </Button>
-                      </div>
-                      {newToken.contractAddress && (
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                          💡 Cole o endereço do contrato e clique em &quot;Buscar&quot; para obter dados automáticos
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
               </div>
               <div className="space-y-3">
                 <label className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center">
