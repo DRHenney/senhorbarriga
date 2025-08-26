@@ -1070,6 +1070,10 @@ export default function Home() {
     
     if (tokens.length > 0 && !isLoadingTokens && !isFetchingPrices) {
       console.log('✅ Condições atendidas, iniciando fetchRealTimePrices...');
+      
+      // Definir que a atualização automática está ativa
+      setAutoUpdateInterval(setInterval(() => {}, 1000)); // Intervalo dummy para indicar que está ativo
+      
       fetchRealTimePrices(tokens, false);
     } else {
       console.log('❌ Condições não atendidas para atualização automática:', {
