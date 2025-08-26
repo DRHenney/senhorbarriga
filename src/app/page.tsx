@@ -21,17 +21,8 @@ import { TokenSearch } from "@/components/TokenSearch";
 // Dados para o gráfico de barras (serão calculados dinamicamente)
 const getBarChartData = (records: any[]) => {
   if (records.length === 0) {
-    // Dados padrão quando não há registros - apenas 4 semanas do mês atual
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
-    const currentYear = currentDate.getFullYear();
-    
-    return [
-      { week: new Date(currentYear, currentMonth, 1).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }), poolLiquidity: 5000, gridBot: 1200, total: 6200 },
-      { week: new Date(currentYear, currentMonth, 8).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }), poolLiquidity: 5200, gridBot: 1350, total: 6550 },
-      { week: new Date(currentYear, currentMonth, 15).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }), poolLiquidity: 5400, gridBot: 1400, total: 6800 },
-      { week: new Date(currentYear, currentMonth, 22).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }), poolLiquidity: 5600, gridBot: 1500, total: 7100 },
-    ];
+    // Retornar array vazio quando não há registros
+    return [];
   }
 
   // Obter o mês e ano atual
@@ -89,15 +80,8 @@ const getPieData = (poolLiquidity: number, gridBot: number) => [
 // Função para calcular dados mensais baseados nos registros
 const getMonthlyData = (records: any[]) => {
   if (records.length === 0) {
-    // Dados padrão quando não há registros
-    return [
-      { name: "Janeiro", poolLiquidity: 4800, gridBot: 1100, total: 5900 },
-      { name: "Fevereiro", poolLiquidity: 5200, gridBot: 1250, total: 6450 },
-      { name: "Março", poolLiquidity: 5400, gridBot: 1350, total: 6750 },
-      { name: "Abril", poolLiquidity: 5600, gridBot: 1450, total: 7050 },
-      { name: "Maio", poolLiquidity: 5800, gridBot: 1550, total: 7350 },
-      { name: "Junho", poolLiquidity: 6000, gridBot: 1650, total: 7650 },
-    ];
+    // Retornar array vazio quando não há registros
+    return [];
   }
 
   // Agrupar registros por mês
@@ -1857,7 +1841,7 @@ export default function Home() {
                       const growth = ((totalValue - previousMonthValue) / previousMonthValue * 100).toFixed(1);
                       return `${parseFloat(growth) > 0 ? '+' : ''}${growth}% este mês`;
                     }
-                    return 'Primeiro mês de registro';
+                    return records.length > 0 ? 'Primeiro mês de registro' : 'Nenhum registro ainda';
                   })()}
                 </p>
               </div>
@@ -1875,7 +1859,9 @@ export default function Home() {
               <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(poolLiquidity)}</div>
               <div className="flex items-center space-x-1 mt-2">
                 <TrendingUp className="h-4 w-4 text-slate-500 dark:text-slate-400" />
-                <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">+8.2% esta semana</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
+                  {records.length > 0 ? 'Dados atualizados' : 'Nenhum registro ainda'}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -1891,7 +1877,9 @@ export default function Home() {
               <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(gridBot)}</div>
               <div className="flex items-center space-x-1 mt-2">
                 <TrendingUp className="h-4 w-4 text-slate-500 dark:text-slate-400" />
-                <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">+15.3% esta semana</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
+                  {records.length > 0 ? 'Dados atualizados' : 'Nenhum registro ainda'}
+                </p>
               </div>
             </CardContent>
           </Card>
