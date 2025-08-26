@@ -1548,6 +1548,9 @@ export default function Home() {
             price: parseFloat(newTokenData.price || '0'),
             value: parseFloat(newTokenData.value || '0'),
             purchaseDate: newTokenData.purchaseDate || new Date().toISOString(),
+            imageUrl: newTokenData.imageUrl || newToken.imageUrl || null,
+            coinGeckoId: newTokenData.coinGeckoId || newToken.coinGeckoId || null,
+            marketCapRank: newTokenData.marketCapRank || newToken.marketCapRank || null,
           };
           
           console.log('📋 Token processado:', processedToken);

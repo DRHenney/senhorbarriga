@@ -37,7 +37,7 @@ export async function GET() {
     console.log('✅ Usuário encontrado:', user.id);
     console.log('🔍 Buscando tokens do usuário...');
 
-    // Buscar tokens do usuário (sem purchase_date por enquanto)
+    // Buscar tokens do usuário com todos os campos
     const tokens = await db.select({
       id: userTokens.id,
       userId: userTokens.userId,
@@ -46,6 +46,10 @@ export async function GET() {
       amount: userTokens.amount,
       price: userTokens.price,
       value: userTokens.value,
+      purchaseDate: userTokens.purchaseDate,
+      coinGeckoId: userTokens.coinGeckoId,
+      imageUrl: userTokens.imageUrl,
+      marketCapRank: userTokens.marketCapRank,
       createdAt: userTokens.createdAt,
       updatedAt: userTokens.updatedAt,
     }).from(userTokens).where(eq(userTokens.userId, user.id));
