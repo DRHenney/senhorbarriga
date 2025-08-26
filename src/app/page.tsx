@@ -951,14 +951,17 @@ export default function Home() {
     console.log('🔄 fetchRealTimePrices chamada:', {
       tokensListLength: tokensList.length,
       isFetchingPrices,
-      showLoading
+      showLoading,
+      tokens: tokensList.map(t => ({ symbol: t.symbol, coinGeckoId: t.coinGeckoId }))
     });
     
-    if (tokensList.length === 0 || isFetchingPrices) {
-      console.log('❌ fetchRealTimePrices cancelada:', {
-        tokensListLength: tokensList.length,
-        isFetchingPrices
-      });
+    if (tokensList.length === 0) {
+      console.log('❌ fetchRealTimePrices cancelada: lista vazia');
+      return;
+    }
+    
+    if (isFetchingPrices) {
+      console.log('❌ fetchRealTimePrices cancelada: já está executando');
       return;
     }
 
@@ -1237,9 +1240,13 @@ export default function Home() {
     if (tokens.length > 0) {
       console.log('🚀 Configurando atualização automática para', tokens.length, 'tokens');
       
+      // Executar primeira atualização imediatamente
+      console.log('🚀 Executando primeira atualização imediatamente...');
+      startAutoUpdate();
+      
       // Configurar próxima atualização em 30 segundos
       setNextUpdateTime(new Date(Date.now() + 30000));
-      console.log('✅ nextUpdateTime configurado - primeira atualização em 30 segundos');
+      console.log('✅ nextUpdateTime configurado - próxima atualização em 30 segundos');
     } else {
       console.log('📭 Nenhum token para atualização automática');
     }
