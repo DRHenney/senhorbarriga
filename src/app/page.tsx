@@ -1627,22 +1627,38 @@ export default function Home() {
         if (response.ok) {
           const newOperationData = await response.json();
           setActiveOperations([...activeOperations, newOperationData]);
-      setNewOperation({
-        type: "pool",
-        pair: "",
-        capital: "",
-        startDate: new Date().toISOString().split('T')[0],
-        rangeMin: "",
-        rangeMax: "",
-        numGrids: "",
-        notes: "",
-      });
-      toast({
-        title: "✅ Sucesso!",
-        description: "Operação adicionada com sucesso!",
-        variant: "default",
-        className: "bg-green-50 border-green-200 text-green-800",
-      });
+          setNewOperation({
+            type: "pool",
+            pair: "",
+            capital: "",
+            startDate: new Date().toISOString().split('T')[0],
+            rangeMin: "",
+            rangeMax: "",
+            numGrids: "",
+            notes: "",
+          });
+          toast({
+            title: "✅ Sucesso!",
+            description: "Operação adicionada com sucesso!",
+            variant: "default",
+            className: "bg-green-50 border-green-200 text-green-800",
+          });
+        } else {
+          const errorData = await response.json();
+          toast({
+            title: "❌ Erro",
+            description: errorData.error || "Erro ao adicionar operação",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error('Erro ao adicionar operação:', error);
+        toast({
+          title: "❌ Erro",
+          description: "Erro ao adicionar operação",
+          variant: "destructive",
+        });
+      }
     } else {
       toast({
         title: "⚠️ Aviso",

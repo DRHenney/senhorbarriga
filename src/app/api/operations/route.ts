@@ -15,7 +15,7 @@ export async function GET() {
     }
 
     const user = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.email, session.user.email),
+      where: (users, { eq }) => eq(users.email, session.user.email!),
     });
 
     if (!user) {
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.email, session.user.email),
+      where: (users, { eq }) => eq(users.email, session.user.email!),
     });
 
     if (!user) {
@@ -119,7 +119,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const user = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.email, session.user.email),
+      where: (users, { eq }) => eq(users.email, session.user.email!),
     });
 
     if (!user) {
@@ -211,7 +211,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const user = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.email, session.user.email),
+      where: (users, { eq }) => eq(users.email, session.user.email!),
     });
 
     if (!user) {
