@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { type, pair, capital, startDate, rangeMin, rangeMax, numGrids, notes } = body;
+    const { type, pair, network, capital, startDate, rangeMin, rangeMax, numGrids, notes } = body;
 
     // Validações
     if (!type || !pair || !capital || !startDate) {
@@ -95,6 +95,7 @@ export async function POST(request: NextRequest) {
       userId: user.id,
       type,
       pair: pair.toUpperCase(),
+      network: network || null,
       capital: capitalValue,
       startDate: new Date(startDate),
       notes: notes || null,
@@ -134,7 +135,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { id, type, pair, capital, startDate, rangeMin, rangeMax, numGrids, notes } = body;
+    const { id, type, pair, network, capital, startDate, rangeMin, rangeMax, numGrids, notes } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'ID da operação não fornecido' }, { status: 400 });
@@ -190,6 +191,7 @@ export async function PUT(request: NextRequest) {
     const updateData: any = {
       type,
       pair: pair.toUpperCase(),
+      network: network || null,
       capital: capitalValue,
       startDate: new Date(startDate),
       notes: notes || null,

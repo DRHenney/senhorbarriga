@@ -131,6 +131,7 @@ export const activeOperations = pgTable('active_operations', {
   userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   type: text('type').notNull(), // 'pool' ou 'grid'
   pair: text('pair').notNull(),
+  network: text('network'), // Rede blockchain (Ethereum, BSC, Polygon, etc.)
   capital: decimal('capital', { precision: 18, scale: 2 }).notNull(),
   startDate: timestamp('start_date').notNull(),
   rangeMin: decimal('range_min', { precision: 18, scale: 8 }), // Para grid bots

@@ -516,6 +516,7 @@ export default function Home() {
   const [newOperation, setNewOperation] = useState({
     type: "pool" as "pool" | "grid",
     pair: "",
+    network: "",
     capital: "",
     startDate: new Date().toISOString().split('T')[0],
     rangeMin: "",
@@ -528,6 +529,7 @@ export default function Home() {
     id: number;
     type: "pool" | "grid";
     pair: string;
+    network?: string;
     capital: number;
     startDate: string;
     rangeMin?: number;
@@ -1616,6 +1618,7 @@ export default function Home() {
           body: JSON.stringify({
             type: newOperation.type,
             pair: newOperation.pair.toUpperCase(),
+            network: newOperation.network || undefined,
             capital: Number(capital.toFixed(4)),
             startDate: newOperation.startDate,
             rangeMin: newOperation.type === "grid" ? parseFloat(newOperation.rangeMin) : undefined,
@@ -1631,6 +1634,7 @@ export default function Home() {
           setNewOperation({
             type: "pool",
             pair: "",
+            network: "",
             capital: "",
             startDate: new Date().toISOString().split('T')[0],
             rangeMin: "",
@@ -1674,6 +1678,7 @@ export default function Home() {
       id: operation.id,
       type: operation.type,
       pair: operation.pair,
+      network: operation.network,
       capital: operation.capital,
       startDate: operation.startDate,
       rangeMin: operation.rangeMin,
@@ -2850,7 +2855,7 @@ export default function Home() {
                   {/* Formulário para adicionar operação */}
                   <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg border border-slate-200 dark:border-slate-600">
                     <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">Adicionar Nova Operação</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                                               <div className="space-y-2">
                           <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Tipo</label>
                           <select
@@ -2870,6 +2875,28 @@ export default function Home() {
                            onChange={(e) => setNewOperation({ ...newOperation, pair: e.target.value })}
                            className="h-10 border-2 border-slate-300 dark:border-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/20 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 font-medium placeholder:text-slate-500 dark:placeholder:text-slate-400"
                          />
+                       </div>
+                                             <div className="space-y-2">
+                         <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Rede</label>
+                         <select
+                           value={newOperation.network}
+                           onChange={(e) => setNewOperation({ ...newOperation, network: e.target.value })}
+                           className="w-full h-10 px-3 border-2 border-slate-300 dark:border-slate-600 rounded-md focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/20 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 font-medium"
+                         >
+                           <option value="">Selecione a rede</option>
+                           <option value="Ethereum">🔵 Ethereum</option>
+                           <option value="BSC">🟡 BSC (Binance Smart Chain)</option>
+                           <option value="Polygon">🟣 Polygon</option>
+                           <option value="Arbitrum">🔵 Arbitrum</option>
+                           <option value="Optimism">🔴 Optimism</option>
+                           <option value="Avalanche">🔴 Avalanche</option>
+                           <option value="Solana">🟣 Solana</option>
+                           <option value="Base">🔵 Base</option>
+                           <option value="Linea">🔵 Linea</option>
+                           <option value="Mantle">🟢 Mantle</option>
+                           <option value="Scroll">🔵 Scroll</option>
+                           <option value="Outra">⚪ Outra</option>
+                         </select>
                        </div>
                                              <div className="space-y-2">
                          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Capital ($)</label>
@@ -2968,7 +2995,7 @@ export default function Home() {
                             {editingOperation?.id === operation.id ? (
                               // Modo de edição
                               <div className="space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                                   <div className="space-y-2">
                                     <label className="text-sm font-medium text-slate-700">Tipo</label>
                                     <select
@@ -2988,6 +3015,28 @@ export default function Home() {
                                       onChange={(e) => setEditingOperation({ ...editingOperation, pair: e.target.value })}
                                       className="h-10 border-2 border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white text-slate-900 font-medium placeholder:text-slate-500"
                                     />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <label className="text-sm font-medium text-slate-700">Rede</label>
+                                    <select
+                                      value={editingOperation.network || ""}
+                                      onChange={(e) => setEditingOperation({ ...editingOperation, network: e.target.value })}
+                                      className="w-full h-10 px-3 border-2 border-slate-300 rounded-md focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 bg-white text-slate-900 font-medium"
+                                    >
+                                      <option value="">Selecione a rede</option>
+                                      <option value="Ethereum">🔵 Ethereum</option>
+                                      <option value="BSC">🟡 BSC (Binance Smart Chain)</option>
+                                      <option value="Polygon">🟣 Polygon</option>
+                                      <option value="Arbitrum">🔵 Arbitrum</option>
+                                      <option value="Optimism">🔴 Optimism</option>
+                                      <option value="Avalanche">🔴 Avalanche</option>
+                                      <option value="Solana">🟣 Solana</option>
+                                      <option value="Base">🔵 Base</option>
+                                      <option value="Linea">🔵 Linea</option>
+                                      <option value="Mantle">🟢 Mantle</option>
+                                      <option value="Scroll">🔵 Scroll</option>
+                                      <option value="Outra">⚪ Outra</option>
+                                    </select>
                                   </div>
                                   <div className="space-y-2">
                                     <label className="text-sm font-medium text-slate-700">Capital ($)</label>
@@ -3090,6 +3139,7 @@ export default function Home() {
                                      <h3 className="font-semibold text-slate-900 dark:text-slate-100">{operation.pair}</h3>
                                      <p className="text-sm text-slate-600 dark:text-slate-400">
                                        {operation.type === "pool" ? "Pool de Liquidez" : "Grid Bot"}
+                                       {operation.network && ` • ${operation.network}`}
                                        {operation.notes && ` • ${operation.notes}`}
                                      </p>
                                      {operation.type === "grid" && operation.rangeMin && operation.rangeMax && operation.numGrids && (
