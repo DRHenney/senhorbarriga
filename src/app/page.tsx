@@ -811,16 +811,12 @@ export default function Home() {
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
   
-  const totalValue = records
-    .filter(record => {
-      const recordDate = new Date(record.recordDate);
-      return recordDate.getMonth() === currentMonth && recordDate.getFullYear() === currentYear;
-    })
-    .reduce((sum, record) => {
-      const poolValue = record.poolLiquidity || 0;
-      const gridValue = record.gridBot || 0;
-      return sum + poolValue + gridValue;
-    }, 0);
+  // Calcular valor total de todos os registros (soma acumulada de todos os meses)
+  const totalValue = records.reduce((sum, record) => {
+    const poolValue = record.poolLiquidity || 0;
+    const gridValue = record.gridBot || 0;
+    return sum + poolValue + gridValue;
+  }, 0);
   const poolLiquidity = lastBarData?.poolLiquidity || 0;
   const gridBot = lastBarData?.gridBot || 0;
   
@@ -1790,7 +1786,7 @@ export default function Home() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-slate-600 dark:text-slate-400">DeFi Total:</span>
+                <span className="text-slate-600 dark:text-slate-400">DeFi Total (Acumulado):</span>
                 <span className="font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(totalValue)}</span>
               </div>
               <div className="flex justify-between items-center">
