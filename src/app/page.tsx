@@ -505,6 +505,7 @@ export default function Home() {
     id: number;
     type: "pool" | "grid";
     pair: string;
+    network?: string;
     capital: number;
     startDate: string;
     rangeMin?: number;
