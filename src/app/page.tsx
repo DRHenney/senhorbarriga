@@ -1127,7 +1127,8 @@ export default function Home() {
       try {
         await Promise.allSettled([
           loadTokens(),
-          loadRecords()
+          loadRecords(),
+          loadActiveOperations()
         ]);
       } catch (error) {
         console.error('Erro ao carregar dados:', error);
@@ -1552,7 +1553,21 @@ export default function Home() {
   };
 
   // Funções para operações ativas
-  const addOperation = () => {
+  const loadActiveOperations = async () => {
+    try {
+      const response = await fetch('/api/operations');
+      if (response.ok) {
+        const operations = await response.json();
+        setActiveOperations(operations);
+      } else {
+        console.error('Erro ao carregar operações ativas:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar operações ativas:', error);
+    }
+  };
+
+  const addOperation = async () => {
     if (newOperation.pair && newOperation.capital && newOperation.startDate) {
       const capital = parseFloat(newOperation.capital);
       
@@ -1591,19 +1606,27 @@ export default function Home() {
         }
       }
 
-      const operation = {
-        id: Date.now(),
-        type: newOperation.type,
-        pair: newOperation.pair.toUpperCase(),
-        capital: Number(capital.toFixed(4)),
-        startDate: newOperation.startDate,
-        rangeMin: newOperation.type === "grid" ? parseFloat(newOperation.rangeMin) : undefined,
-        rangeMax: newOperation.type === "grid" ? parseFloat(newOperation.rangeMax) : undefined,
-        numGrids: newOperation.type === "grid" ? parseInt(newOperation.numGrids) : undefined,
-        notes: newOperation.notes || undefined,
-      };
+      try {
+        const response = await fetch('/api/operations', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: newOperation.type,
+            pair: newOperation.pair.toUpperCase(),
+            capital: Number(capital.toFixed(4)),
+            startDate: newOperation.startDate,
+            rangeMin: newOperation.type === "grid" ? parseFloat(newOperation.rangeMin) : undefined,
+            rangeMax: newOperation.type === "grid" ? parseFloat(newOperation.rangeMax) : undefined,
+            numGrids: newOperation.type === "grid" ? parseInt(newOperation.numGrids) : undefined,
+            notes: newOperation.notes || undefined,
+          }),
+        });
 
-      setActiveOperations([...activeOperations, operation]);
+        if (response.ok) {
+          const newOperationData = await response.json();
+          setActiveOperations([...activeOperations, newOperationData]);
       setNewOperation({
         type: "pool",
         pair: "",
@@ -1643,7 +1666,7 @@ export default function Home() {
     });
   };
 
-  const applyOperationEdit = () => {
+  const applyOperationEdit = async () => {
     if (!editingOperation) return;
 
     const capital = editingOperation.capital;
@@ -1683,27 +1706,76 @@ export default function Home() {
       }
     }
 
-    setActiveOperations(activeOperations.map(op => 
-      op.id === editingOperation.id ? editingOperation : op
-    ));
-    setEditingOperation(null);
-    toast({
-      title: "✅ Sucesso!",
-      description: "Operação atualizada com sucesso!",
-      variant: "default",
-      className: "bg-green-50 border-green-200 text-green-800",
-    });
+    try {
+      const response = await fetch('/api/operations', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editingOperation),
+      });
+
+      if (response.ok) {
+        const updatedOperationData = await response.json();
+        setActiveOperations(activeOperations.map(op => 
+          op.id === editingOperation.id ? updatedOperationData : op
+        ));
+        setEditingOperation(null);
+        toast({
+          title: "✅ Sucesso!",
+          description: "Operação atualizada com sucesso!",
+          variant: "default",
+          className: "bg-green-50 border-green-200 text-green-800",
+        });
+      } else {
+        const errorData = await response.json();
+        toast({
+          title: "❌ Erro",
+          description: errorData.error || "Erro ao atualizar operação",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar operação:', error);
+      toast({
+        title: "❌ Erro",
+        description: "Erro ao atualizar operação",
+        variant: "destructive",
+      });
+    }
   };
 
-  const removeOperation = (id: number) => {
+  const removeOperation = async (id: number) => {
     if (confirm('Tem certeza que deseja remover esta operação?')) {
-      setActiveOperations(activeOperations.filter(op => op.id !== id));
-      toast({
-        title: "✅ Sucesso!",
-        description: "Operação removida com sucesso!",
-        variant: "default",
-        className: "bg-green-50 border-green-200 text-green-800",
-      });
+      try {
+        const response = await fetch(`/api/operations?id=${id}`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          setActiveOperations(activeOperations.filter(op => op.id !== id));
+          toast({
+            title: "✅ Sucesso!",
+            description: "Operação removida com sucesso!",
+            variant: "default",
+            className: "bg-green-50 border-green-200 text-green-800",
+          });
+        } else {
+          const errorData = await response.json();
+          toast({
+            title: "❌ Erro",
+            description: errorData.error || "Erro ao remover operação",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error('Erro ao remover operação:', error);
+        toast({
+          title: "❌ Erro",
+          description: "Erro ao remover operação",
+          variant: "destructive",
+        });
+      }
     }
   };
 

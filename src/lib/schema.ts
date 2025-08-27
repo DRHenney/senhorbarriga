@@ -125,6 +125,23 @@ export const priceHistory = pgTable('price_history', {
   source: text('source').notNull(), // 'coingecko', 'binance', etc.
 });
 
+// Tabela de operações ativas
+export const activeOperations = pgTable('active_operations', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  type: text('type').notNull(), // 'pool' ou 'grid'
+  pair: text('pair').notNull(),
+  capital: decimal('capital', { precision: 18, scale: 2 }).notNull(),
+  startDate: timestamp('start_date').notNull(),
+  rangeMin: decimal('range_min', { precision: 18, scale: 8 }), // Para grid bots
+  rangeMax: decimal('range_max', { precision: 18, scale: 8 }), // Para grid bots
+  numGrids: integer('num_grids'), // Para grid bots
+  notes: text('notes'),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
 // Relações entre as tabelas
 export const usersRelations = relations(users, ({ many }) => ({
   wallets: many(wallets),
@@ -132,6 +149,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   tokens: many(userTokens),
   weeklyRecords: many(weeklyRecords),
+  activeOperations: many(activeOperations),
 }));
 
 export const walletsRelations = relations(wallets, ({ one, many }) => ({
@@ -181,6 +199,13 @@ export const userTokensRelations = relations(userTokens, ({ one }) => ({
 export const weeklyRecordsRelations = relations(weeklyRecords, ({ one }) => ({
   user: one(users, {
     fields: [weeklyRecords.userId],
+    references: [users.id],
+  }),
+}));
+
+export const activeOperationsRelations = relations(activeOperations, ({ one }) => ({
+  user: one(users, {
+    fields: [activeOperations.userId],
     references: [users.id],
   }),
 }));
