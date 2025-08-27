@@ -8,7 +8,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 import { Plus, TrendingUp, DollarSign, BarChart3, Target, Zap, Coins, Trash2, Calendar, User } from "lucide-react";
 import Link from "next/link";
-import DatabaseStatus from "@/components/DatabaseStatus";
+
 import UserNav from "@/components/auth/UserNav";
 import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
@@ -3162,10 +3162,7 @@ export default function Home() {
            </CardContent>
                    </Card>
 
-         {/* Status do Banco de Dados */}
-        <div className="flex justify-center">
-          <DatabaseStatus />
-        </div>
+
 
                  {/* Links de Navegação */}
          <div className="flex justify-center space-x-4">
