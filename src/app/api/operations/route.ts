@@ -90,17 +90,24 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const newOperation = await db.insert(activeOperations).values({
+    // Criar objeto de dados para inserção
+    const operationData: any = {
       userId: user.id,
       type,
       pair: pair.toUpperCase(),
       capital: capitalValue,
       startDate: new Date(startDate),
-      rangeMin: rangeMin ? parseFloat(rangeMin) : null,
-      rangeMax: rangeMax ? parseFloat(rangeMax) : null,
-      numGrids: numGrids ? parseInt(numGrids) : null,
       notes: notes || null,
-    }).returning();
+    };
+
+    // Adicionar campos específicos para grid bots
+    if (type === 'grid') {
+      operationData.rangeMin = parseFloat(rangeMin);
+      operationData.rangeMax = parseFloat(rangeMax);
+      operationData.numGrids = parseInt(numGrids);
+    }
+
+    const newOperation = await db.insert(activeOperations).values(operationData).returning();
 
     return NextResponse.json(newOperation[0]);
   } catch (error) {
@@ -179,18 +186,25 @@ export async function PUT(request: NextRequest) {
       }
     }
 
+    // Criar objeto de dados para atualização
+    const updateData: any = {
+      type,
+      pair: pair.toUpperCase(),
+      capital: capitalValue,
+      startDate: new Date(startDate),
+      notes: notes || null,
+      updatedAt: new Date(),
+    };
+
+    // Adicionar campos específicos para grid bots
+    if (type === 'grid') {
+      updateData.rangeMin = parseFloat(rangeMin);
+      updateData.rangeMax = parseFloat(rangeMax);
+      updateData.numGrids = parseInt(numGrids);
+    }
+
     const updatedOperation = await db.update(activeOperations)
-      .set({
-        type,
-        pair: pair.toUpperCase(),
-        capital: capitalValue,
-        startDate: new Date(startDate),
-        rangeMin: rangeMin ? parseFloat(rangeMin) : null,
-        rangeMax: rangeMax ? parseFloat(rangeMax) : null,
-        numGrids: numGrids ? parseInt(numGrids) : null,
-        notes: notes || null,
-        updatedAt: new Date(),
-      })
+      .set(updateData)
       .where(eq(activeOperations.id, id))
       .returning();
 
