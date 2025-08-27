@@ -13,6 +13,7 @@ import UserNav from "@/components/auth/UserNav";
 import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { TokenSearch } from "@/components/TokenSearch";
+import PoolAvatar from "@/components/PoolAvatar";
 
 
 
@@ -1804,6 +1805,15 @@ export default function Home() {
     };
   };
 
+  // Função para extrair símbolos dos tokens do par
+  const getTokenSymbols = (pair: string) => {
+    const symbols = pair.split('/');
+    return {
+      token1: symbols[0]?.trim() || 'UNK',
+      token2: symbols[1]?.trim() || 'UNK'
+    };
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       {/* Header com gradiente Slate */}
@@ -3065,13 +3075,17 @@ export default function Home() {
                               // Modo de visualização
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-4">
-                                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold ${
-                                    operation.type === "pool" 
-                                      ? "bg-gradient-to-r from-blue-500 to-blue-600" 
-                                      : "bg-gradient-to-r from-green-500 to-green-600"
-                                  }`}>
-                                    {operation.type === "pool" ? "🏊‍♂️" : "🤖"}
-                                  </div>
+                                  {operation.type === "pool" ? (
+                                    <PoolAvatar
+                                      token1Symbol={getTokenSymbols(operation.pair).token1}
+                                      token2Symbol={getTokenSymbols(operation.pair).token2}
+                                      size={48}
+                                    />
+                                  ) : (
+                                    <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold bg-gradient-to-r from-green-500 to-green-600">
+                                      🤖
+                                    </div>
+                                  )}
                                                                      <div>
                                      <h3 className="font-semibold text-slate-900 dark:text-slate-100">{operation.pair}</h3>
                                      <p className="text-sm text-slate-600 dark:text-slate-400">
