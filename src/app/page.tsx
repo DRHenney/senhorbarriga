@@ -442,6 +442,12 @@ export default function Home() {
   }>>(initialTokens);
   const [activeTab, setActiveTab] = useState("current"); // "current" ou "monthly"
   const [evolutionTab, setEvolutionTab] = useState("weekly"); // "weekly" ou "records"
+  
+  // Estados para modais dos cards
+  const [showTotalValueModal, setShowTotalValueModal] = useState(false);
+  const [showPoolLiquidityModal, setShowPoolLiquidityModal] = useState(false);
+  const [showGridBotModal, setShowGridBotModal] = useState(false);
+  const [showTokensModal, setShowTokensModal] = useState(false);
   const [newToken, setNewToken] = useState({
     name: "",
     symbol: "",
@@ -1805,7 +1811,10 @@ export default function Home() {
 
         {/* Cards de Resumo com design melhorado */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200 dark:border-slate-700">
+          <Card 
+            className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200 dark:border-slate-700 cursor-pointer"
+            onClick={() => setShowTotalValueModal(true)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Valor Total</CardTitle>
               <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
@@ -1844,7 +1853,10 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200 dark:border-slate-700">
+          <Card 
+            className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200 dark:border-slate-700 cursor-pointer"
+            onClick={() => setShowPoolLiquidityModal(true)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Pool de Liquidez</CardTitle>
               <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
@@ -1862,7 +1874,10 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200 dark:border-slate-700">
+          <Card 
+            className="bg-white/80 dark:bg-slate-800/80 backdrop-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200 dark:border-slate-700 cursor-pointer"
+            onClick={() => setShowGridBotModal(true)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Grid Bot</CardTitle>
               <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
@@ -1880,7 +1895,10 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200 dark:border-slate-700">
+          <Card 
+            className="bg-white/80 dark:bg-slate-800/80 backdrop-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-slate-200 dark:border-slate-700 cursor-pointer"
+            onClick={() => setShowTokensModal(true)}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Portfólio Tokens</CardTitle>
               <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
@@ -3175,6 +3193,226 @@ export default function Home() {
              </Button>
            </Link>
          </div>
+
+        {/* Modais dos Cards */}
+        
+        {/* Modal Valor Total */}
+        {showTotalValueModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Valor Total - Detalhes</h2>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setShowTotalValueModal(false)}
+                  className="text-slate-500 hover:text-slate-700"
+                >
+                  ✕
+                </Button>
+              </div>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                    <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Resumo</h3>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(totalValue)}</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Total acumulado de DeFi</p>
+                  </div>
+                  <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                    <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Registros</h3>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{records.length}</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Entradas registradas</p>
+                  </div>
+                </div>
+                <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">Últimos Registros</h3>
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {records.slice(0, 5).map((record, index) => (
+                      <div key={index} className="flex justify-between items-center p-2 bg-white dark:bg-slate-600 rounded">
+                        <span className="text-sm text-slate-600 dark:text-slate-400">{record.recordDate}</span>
+                        <span className="font-medium text-slate-900 dark:text-slate-100">
+                          {formatCurrency((record.poolLiquidity || 0) + (record.gridBot || 0))}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal Pool de Liquidez */}
+        {showPoolLiquidityModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Pool de Liquidez - Detalhes</h2>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setShowPoolLiquidityModal(false)}
+                  className="text-slate-500 hover:text-slate-700"
+                >
+                  ✕
+                </Button>
+              </div>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                    <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Valor Atual</h3>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(poolLiquidity)}</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Último registro</p>
+                  </div>
+                  <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                    <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Total Acumulado</h3>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                      {formatCurrency(records.reduce((sum, record) => sum + (record.poolLiquidity || 0), 0))}
+                    </p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Soma de todos os registros</p>
+                  </div>
+                </div>
+                <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">Histórico de Pool de Liquidez</h3>
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {records
+                      .filter(record => record.poolLiquidity > 0)
+                      .slice(0, 5)
+                      .map((record, index) => (
+                        <div key={index} className="flex justify-between items-center p-2 bg-white dark:bg-slate-600 rounded">
+                          <span className="text-sm text-slate-600 dark:text-slate-400">{record.recordDate}</span>
+                          <span className="font-medium text-slate-900 dark:text-slate-100">
+                            {formatCurrency(record.poolLiquidity || 0)}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal Grid Bot */}
+        {showGridBotModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Grid Bot - Detalhes</h2>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setShowGridBotModal(false)}
+                  className="text-slate-500 hover:text-slate-700"
+                >
+                  ✕
+                </Button>
+              </div>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                    <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Valor Atual</h3>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(gridBot)}</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Último registro</p>
+                  </div>
+                  <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                    <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Total Acumulado</h3>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                      {formatCurrency(records.reduce((sum, record) => sum + (record.gridBot || 0), 0))}
+                    </p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Soma de todos os registros</p>
+                  </div>
+                </div>
+                <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">Histórico de Grid Bot</h3>
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {records
+                      .filter(record => record.gridBot > 0)
+                      .slice(0, 5)
+                      .map((record, index) => (
+                        <div key={index} className="flex justify-between items-center p-2 bg-white dark:bg-slate-600 rounded">
+                          <span className="text-sm text-slate-600 dark:text-slate-400">{record.recordDate}</span>
+                          <span className="font-medium text-slate-900 dark:text-slate-100">
+                            {formatCurrency(record.gridBot || 0)}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal Portfólio Tokens */}
+        {showTokensModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Portfólio de Tokens - Detalhes</h2>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setShowTokensModal(false)}
+                  className="text-slate-500 hover:text-slate-700"
+                >
+                  ✕
+                </Button>
+              </div>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                    <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Valor Total</h3>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(portfolioTotal)}</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Portfólio atual</p>
+                  </div>
+                  <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                    <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Quantidade</h3>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{tokens.length}</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Tokens diferentes</p>
+                  </div>
+                  <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                    <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Última Atualização</h3>
+                    <p className="text-lg font-bold text-slate-900 dark:text-slate-100">{lastPriceUpdate || 'N/A'}</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Preços em tempo real</p>
+                  </div>
+                </div>
+                <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">Tokens no Portfólio</h3>
+                  <div className="space-y-2 max-h-60 overflow-y-auto">
+                    {tokens.map((token, index) => (
+                      <div key={index} className="flex justify-between items-center p-3 bg-white dark:bg-slate-600 rounded">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-slate-300 dark:bg-slate-500 rounded-full flex items-center justify-center">
+                            {token.imageUrl ? (
+                              <img src={token.imageUrl} alt={token.name} className="w-6 h-6 rounded-full" />
+                            ) : (
+                              <span className="text-xs font-bold text-slate-600 dark:text-slate-400">
+                                {token.symbol.charAt(0)}
+                              </span>
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-medium text-slate-900 dark:text-slate-100">{token.name}</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">{token.symbol}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-medium text-slate-900 dark:text-slate-100">
+                            {formatCurrency(token.amount * (token.realTimePrice || token.price || 0))}
+                          </p>
+                          <p className="text-sm text-slate-600 dark:text-slate-400">
+                            {token.amount.toFixed(2)} {token.symbol}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       <Toaster />
     </div>
