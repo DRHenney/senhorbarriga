@@ -2856,7 +2856,7 @@ export default function Home() {
                   {/* Formulário para adicionar operação */}
                   <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg border border-slate-200 dark:border-slate-600">
                     <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">Adicionar Nova Operação</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                               <div className="space-y-2">
                           <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Tipo</label>
                           <select
@@ -2909,6 +2909,9 @@ export default function Home() {
                            className="h-10 border-2 border-slate-300 dark:border-slate-600 focus:border-green-500 focus:ring-2 focus:ring-green-100 dark:focus:ring-green-900/20 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 font-medium placeholder:text-slate-500 dark:placeholder:text-slate-400"
                          />
                        </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-4">
                                              <div className="space-y-2">
                          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Data de Início</label>
                          <Input
@@ -2996,7 +2999,7 @@ export default function Home() {
                             {editingOperation?.id === operation.id ? (
                               // Modo de edição
                               <div className="space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                   <div className="space-y-2">
                                     <label className="text-sm font-medium text-slate-700">Tipo</label>
                                     <select
@@ -3049,6 +3052,9 @@ export default function Home() {
                                       className="h-10 border-2 border-slate-300 focus:border-green-500 focus:ring-2 focus:ring-green-100 bg-white text-slate-900 font-medium placeholder:text-slate-500"
                                     />
                                   </div>
+                                </div>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-4">
                                   <div className="space-y-2">
                                     <label className="text-sm font-medium text-slate-700">Data de Início</label>
                                     <Input
