@@ -383,38 +383,16 @@ const formatValue = (value: number) => {
 const formatPrice = (price: number): string => {
   if (price === 0) return '$0.00';
   
-  if (price < 0.0001) {
-    // Para valores muito pequenos, mostrar mais casas decimais
-    return `$${price.toFixed(8)}`;
-  } else if (price < 0.01) {
-    // Para valores pequenos, mostrar 6 casas decimais
-    return `$${price.toFixed(6)}`;
-  } else if (price < 1) {
-    // Para valores menores que 1, mostrar 4 casas decimais
-    return `$${price.toFixed(4)}`;
-  } else if (price < 1000) {
-    // Para valores normais, mostrar 2 casas decimais
-    return `$${price.toFixed(2)}`;
-  } else {
-    // Para valores grandes, usar separadores de milhares
-    return `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  }
+  // Para todos os preços, usar separadores de milhares e sempre 2 casas decimais
+  return `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
 // Função para formatar valores monetários com separadores de milhares
 const formatCurrency = (value: number): string => {
   if (value === 0) return '$0.00';
   
-  if (value < 0.01) {
-    // Para valores muito pequenos, mostrar mais precisão
-    return `$${value.toFixed(6)}`;
-  } else if (value < 1) {
-    // Para valores pequenos, mostrar 4 casas decimais
-    return `$${value.toFixed(4)}`;
-  } else {
-    // Para valores normais e grandes, usar separadores de milhares
-    return `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  }
+  // Para todos os valores, usar separadores de milhares e sempre 2 casas decimais
+  return `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
 // Função para formatar quantidade de tokens
@@ -2344,7 +2322,7 @@ export default function Home() {
                             Quantidade atual: {token.amount > 0 ? `${token.amount.toFixed(8)} ${token.symbol || 'N/A'}` : `0.00 ${token.symbol || 'N/A'} (acompanhamento)`}
                           </p>
                           <p className="text-sm text-slate-500 dark:text-slate-500">
-                            {token.price > 0 ? `Preço médio: $${token.price.toFixed(8)}` : 'Preço não definido'}
+                            {token.price > 0 ? `Preço médio: ${formatCurrency(token.price)}` : 'Preço não definido'}
                           </p>
                         </div>
                       </div>
@@ -2391,7 +2369,7 @@ export default function Home() {
                              </label>
                                                            <Input
                                 type="number"
-                                placeholder={`${token.price.toFixed(8)} (preço atual)`}
+                                placeholder={`${formatCurrency(token.price)} (preço atual)`}
                                 value={editForm.price}
                                 onChange={(e) => setEditForm({ ...editForm, price: e.target.value })}
                                 className="h-10 text-base border-2 border-slate-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 bg-white shadow-sm hover:border-slate-400 transition-all duration-200 placeholder:text-slate-500 text-slate-900 font-medium"
@@ -3500,7 +3478,7 @@ export default function Home() {
                                      </p>
                                      {operation.type === "grid" && operation.rangeMin && operation.rangeMax && operation.numGrids && (
                                        <p className="text-xs text-slate-500 dark:text-slate-500">
-                                         Range: ${operation.rangeMin.toLocaleString()} - ${operation.rangeMax.toLocaleString()} | {operation.numGrids} grids
+                                         Range: {formatCurrency(operation.rangeMin)} - {formatCurrency(operation.rangeMax)} | {operation.numGrids} grids
                                        </p>
                                      )}
                                    </div>
