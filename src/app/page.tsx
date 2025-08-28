@@ -170,7 +170,7 @@ const getMonthlyDefiData = (records: any[]) => {
     .sort((a: any, b: any) => {
       const dateA = new Date(a.records[0]?.recordDate || 0);
       const dateB = new Date(b.records[0]?.recordDate || 0);
-      return dateB - dateA; // Ordem decrescente (mais recente primeiro)
+      return dateB.getTime() - dateA.getTime(); // Ordem decrescente (mais recente primeiro)
     })
     .slice(0, 6) // Pegar apenas os últimos 6 meses
     .map((item: any) => ({
