@@ -508,16 +508,6 @@ const CustomTooltip = ({ active, payload, label }: any) => {
               </span>
             </div>
           ))}
-          <div className="pt-2 border-t border-slate-200 dark:border-slate-600">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                Total
-              </span>
-              <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                {formatCurrency(payload.reduce((sum: number, entry: any) => sum + entry.value, 0))}
-              </span>
-            </div>
-          </div>
         </div>
       </div>
     );
