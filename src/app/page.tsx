@@ -135,6 +135,55 @@ const initialTokens: Array<{
   purchaseDate: string;
 }> = [];
 
+// Função para calcular dados mensais do DeFi
+const getMonthlyDefiData = (records: any[]) => {
+  if (records.length === 0) {
+    return [];
+  }
+
+  // Agrupar registros por mês
+  const monthlyData = records.reduce((acc: any, record) => {
+    const date = new Date(record.recordDate);
+    const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+    const monthName = date.toLocaleDateString('pt-BR', { month: 'long', year: '2-digit' });
+    
+    if (!acc[monthKey]) {
+      acc[monthKey] = {
+        month: monthName,
+        poolLiquidity: 0,
+        gridBot: 0,
+        total: 0,
+        records: []
+      };
+    }
+    
+    acc[monthKey].poolLiquidity += record.poolLiquidity || 0;
+    acc[monthKey].gridBot += record.gridBot || 0;
+    acc[monthKey].total += (record.poolLiquidity || 0) + (record.gridBot || 0);
+    acc[monthKey].records.push(record);
+    
+    return acc;
+  }, {});
+
+  // Converter para array e ordenar por data
+  const sortedData = Object.values(monthlyData)
+    .sort((a: any, b: any) => {
+      const dateA = new Date(a.records[0]?.recordDate || 0);
+      const dateB = new Date(b.records[0]?.recordDate || 0);
+      return dateB - dateA; // Ordem decrescente (mais recente primeiro)
+    })
+    .slice(0, 6) // Pegar apenas os últimos 6 meses
+    .map((item: any) => ({
+      month: item.month,
+      poolLiquidity: item.poolLiquidity,
+      gridBot: item.gridBot,
+      total: item.total,
+      recordCount: item.records.length
+    }));
+
+  return sortedData;
+};
+
 // Função para calcular dados anuais do DeFi
 const getYearlyDefiData = (records: any[]) => {
   if (records.length === 0) {
@@ -907,6 +956,9 @@ export default function Home() {
   
   // Calcular dados anuais do DeFi
   const yearlyDefiData = getYearlyDefiData(records);
+  
+  // Calcular dados mensais do DeFi
+  const monthlyDefiData = getMonthlyDefiData(records);
   
   // Calcular valor total de todos os registros (soma acumulada)
   const totalRecordsValue = records.reduce((sum, record) => {
@@ -2875,11 +2927,11 @@ export default function Home() {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-xl font-semibold text-slate-800 dark:text-slate-100">
-                    {defiTab === "current" ? "DeFi Atual" : "Evolução Anual DeFi"}
+                    {defiTab === "current" ? "DeFi Mensal" : "Evolução Anual DeFi"}
                   </CardTitle>
                   <CardDescription className="text-slate-600 dark:text-slate-400">
                     {defiTab === "current" 
-                      ? "Valores atuais de Pool de Liquidez e Grid Bot" 
+                      ? "Valores mensais de Pool de Liquidez e Grid Bot" 
                       : "Evolução do DeFi por ano"
                     }
                   </CardDescription>
@@ -2893,8 +2945,8 @@ export default function Home() {
                         : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
                     }`}
                   >
-                    <Target className="h-4 w-4 inline mr-1" />
-                    Atual
+                    <Calendar className="h-4 w-4 inline mr-1" />
+                    Mensal
                   </button>
                   <button
                     onClick={() => setDefiTab("yearly")}
@@ -2910,56 +2962,85 @@ export default function Home() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="pt-6">
+            <CardContent className="pt-4">
               {defiTab === "current" ? (
-                <div className="space-y-6">
-                  {/* Gráfico de pizza atual */}
-                  <ResponsiveContainer width="100%" height={350}>
-                    <PieChart>
-                      <Pie
-                        data={pieData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={60}
-                        outerRadius={120}
-                        paddingAngle={5}
-                        dataKey="value"
-                      >
-                        {pieData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
+                <div className="space-y-4">
+                  {/* Gráfico de barras mensal */}
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart 
+                      data={monthlyDefiData}
+                      style={{
+                        background: 'linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%)',
+                        borderRadius: '8px',
+                        padding: '12px',
+                        border: '1px solid hsl(var(--border))',
+                        boxShadow: '0 2px 4px -1px rgba(0, 0, 0, 0.1)'
+                      }}
+                    >
+                      <CartesianGrid 
+                        vertical={false} 
+                        stroke="hsl(var(--border))" 
+                        strokeDasharray="3 3"
+                        opacity={0.3}
+                      />
+                      <XAxis
+                        dataKey="month"
+                        tickLine={false}
+                        tickMargin={8}
+                        axisLine={false}
+                        stroke="#6b7280"
+                        tick={{ fill: '#6b7280', fontSize: 11 }}
+                      />
+                      <YAxis
+                        tickLine={false}
+                        tickMargin={8}
+                        axisLine={false}
+                        stroke="#6b7280"
+                        tick={{ fill: '#6b7280', fontSize: 11 }}
+                        tickFormatter={(value) => `$${value.toLocaleString()}`}
+                      />
                       <Tooltip 
                         formatter={(value: any) => [`$${value.toLocaleString()}`, 'Valor']}
                         labelFormatter={(label) => `${label}`}
                       />
-                    </PieChart>
+                      <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={3} name="Pool de Liquidez" />
+                      <Bar dataKey="gridBot" fill="#6b7280" radius={3} name="Grid Bot" />
+                    </BarChart>
                   </ResponsiveContainer>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                      <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Pool de Liquidez</h3>
-                      <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(poolLiquidity)}</p>
-                      <p className="text-sm text-slate-600 dark:text-slate-400">Valor atual</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                      <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1 text-sm">Mês Atual</h3>
+                      <p className="text-lg font-bold text-slate-900 dark:text-slate-100">{formatCurrency(currentYearDefiValue)}</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-400">DeFi 2024</p>
                     </div>
-                    <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                      <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Grid Bot</h3>
-                      <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(gridBot)}</p>
-                      <p className="text-sm text-slate-600 dark:text-slate-400">Valor atual</p>
+                    <div className="p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                      <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1 text-sm">Último Mês</h3>
+                      <p className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                        {monthlyDefiData.length > 1 ? formatCurrency(monthlyDefiData[1]?.total || 0) : formatCurrency(0)}
+                      </p>
+                      <p className="text-xs text-slate-600 dark:text-slate-400">Valor mensal</p>
+                    </div>
+                    <div className="p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                      <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1 text-sm">Média Mensal</h3>
+                      <p className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                        {monthlyDefiData.length > 0 ? formatCurrency(monthlyDefiData.reduce((sum, month) => sum + month.total, 0) / monthlyDefiData.length) : formatCurrency(0)}
+                      </p>
+                      <p className="text-xs text-slate-600 dark:text-slate-400">6 meses</p>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {/* Gráfico de barras anual */}
-                  <ResponsiveContainer width="100%" height={350}>
+                  <ResponsiveContainer width="100%" height={250}>
                     <BarChart 
                       data={yearlyDefiData}
                       style={{
                         background: 'linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%)',
-                        borderRadius: '12px',
-                        padding: '20px',
+                        borderRadius: '8px',
+                        padding: '12px',
                         border: '1px solid hsl(var(--border))',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                        boxShadow: '0 2px 4px -1px rgba(0, 0, 0, 0.1)'
                       }}
                     >
                       <CartesianGrid 
@@ -2971,42 +3052,42 @@ export default function Home() {
                       <XAxis
                         dataKey="year"
                         tickLine={false}
-                        tickMargin={10}
+                        tickMargin={8}
                         axisLine={false}
                         stroke="#6b7280"
-                        tick={{ fill: '#6b7280', fontSize: 12 }}
+                        tick={{ fill: '#6b7280', fontSize: 11 }}
                       />
                       <YAxis
                         tickLine={false}
-                        tickMargin={10}
+                        tickMargin={8}
                         axisLine={false}
                         stroke="#6b7280"
-                        tick={{ fill: '#6b7280', fontSize: 12 }}
+                        tick={{ fill: '#6b7280', fontSize: 11 }}
                         tickFormatter={(value) => `$${value.toLocaleString()}`}
                       />
                       <Tooltip 
                         formatter={(value: any) => [`$${value.toLocaleString()}`, 'Valor']}
                         labelFormatter={(label) => `Ano ${label}`}
                       />
-                      <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={4} name="Pool de Liquidez" />
-                      <Bar dataKey="gridBot" fill="#6b7280" radius={4} name="Grid Bot" />
+                      <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={3} name="Pool de Liquidez" />
+                      <Bar dataKey="gridBot" fill="#6b7280" radius={3} name="Grid Bot" />
                     </BarChart>
                   </ResponsiveContainer>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                      <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Total Acumulado</h3>
-                      <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(totalValue)}</p>
-                      <p className="text-sm text-slate-600 dark:text-slate-400">Todos os anos</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                      <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1 text-sm">Total Acumulado</h3>
+                      <p className="text-lg font-bold text-slate-900 dark:text-slate-100">{formatCurrency(totalValue)}</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-400">Todos os anos</p>
                     </div>
-                    <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                      <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">DeFi 2024</h3>
-                      <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{formatCurrency(currentYearDefiValue)}</p>
-                      <p className="text-sm text-slate-600 dark:text-slate-400">Ano atual</p>
+                    <div className="p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                      <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1 text-sm">DeFi 2024</h3>
+                      <p className="text-lg font-bold text-amber-600 dark:text-amber-400">{formatCurrency(currentYearDefiValue)}</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-400">Ano atual</p>
                     </div>
-                    <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                      <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Anos Registrados</h3>
-                      <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{yearlyDefiData.length}</p>
-                      <p className="text-sm text-slate-600 dark:text-slate-400">Período de dados</p>
+                    <div className="p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                      <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1 text-sm">Anos Registrados</h3>
+                      <p className="text-lg font-bold text-slate-900 dark:text-slate-100">{yearlyDefiData.length}</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-400">Período de dados</p>
                     </div>
                   </div>
                 </div>
@@ -3016,10 +3097,21 @@ export default function Home() {
               {defiTab === "current" ? (
                 <>
                   <div className="flex gap-2 leading-none font-medium text-slate-700 dark:text-slate-300">
-                    Pool de Liquidez: {formatCurrency(pieData[0].value)} ({((pieData[0].value / totalPortfolioValue) * 100).toFixed(0)}%)
+                    {monthlyDefiData.length > 0 ? (
+                      <>
+                        Últimos 6 meses: {monthlyDefiData.length} períodos registrados <TrendingUp className="h-4 w-4" />
+                      </>
+                    ) : (
+                      <>
+                        {records.length > 0 ? 'Dados baseados nos seus registros' : 'Nenhum dado mensal'} <TrendingUp className="h-4 w-4" />
+                      </>
+                    )}
                   </div>
-                  <div className="flex gap-2 leading-none font-medium text-slate-700 dark:text-slate-300">
-                    Grid Bot: {formatCurrency(pieData[1].value)} ({((pieData[1].value / totalPortfolioValue) * 100).toFixed(0)}%)
+                  <div className="text-slate-600 dark:text-slate-400 leading-none">
+                    {monthlyDefiData.length > 0 
+                      ? `Mostrando evolução mensal baseada em ${records.length} registros`
+                      : 'Adicione registros para ver a evolução mensal'
+                    }
                   </div>
                 </>
               ) : (
