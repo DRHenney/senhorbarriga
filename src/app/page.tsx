@@ -2017,24 +2017,26 @@ export default function Home() {
                          tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
                        />
                        <Tooltip content={<CustomTooltip />} />
-                       <Line 
-                         type="monotone" 
-                         dataKey="value" 
-                         stroke="#64748b" 
-                         strokeWidth={3}
-                         dot={{ fill: '#64748b', strokeWidth: 2, r: 4 }}
-                         activeDot={{ r: 6, stroke: '#64748b', strokeWidth: 2 }}
-                         name="Portfólio Total"
-                       />
-                       <Line 
-                         type="monotone" 
-                         dataKey="defiTotal" 
-                         stroke="#f59e0b" 
-                         strokeWidth={3}
-                         dot={{ fill: '#f59e0b', strokeWidth: 2, r: 4 }}
-                         activeDot={{ r: 6, stroke: '#f59e0b', strokeWidth: 2, fill: '#fff' }}
-                         name="DeFi Total"
-                       />
+                                            <Line 
+                       type="monotone" 
+                       dataKey="value" 
+                       stroke="#64748b" 
+                       strokeWidth={3}
+                       dot={{ fill: '#64748b', strokeWidth: 2, r: 4 }}
+                       activeDot={{ r: 6, stroke: '#64748b', strokeWidth: 2 }}
+                       name="Portfólio Total"
+                       isAnimationActive={false}
+                     />
+                     <Line 
+                       type="monotone" 
+                       dataKey="defiTotal" 
+                       stroke="#f59e0b" 
+                       strokeWidth={3}
+                       dot={{ fill: '#f59e0b', strokeWidth: 2, r: 4 }}
+                       activeDot={{ r: 6, stroke: '#f59e0b', strokeWidth: 2, fill: '#fff' }}
+                       name="DeFi Total"
+                       isAnimationActive={false}
+                     />
                      </ComposedChart>
                    </ResponsiveContainer>
                  </div>
@@ -2701,8 +2703,8 @@ export default function Home() {
                        tickFormatter={(value) => `$${value.toLocaleString()}`}
                      />
                      <Tooltip content={<CustomTooltip />} />
-                     <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={4} name="Pool de Liquidez" />
-                     <Bar dataKey="gridBot" fill="#6b7280" radius={4} name="Grid Bot" />
+                     <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={4} name="Pool de Liquidez" isAnimationActive={false} />
+                     <Bar dataKey="gridBot" fill="#6b7280" radius={4} name="Grid Bot" isAnimationActive={false} />
                    </BarChart>
                  </ResponsiveContainer>
               ) : (
@@ -3548,8 +3550,8 @@ export default function Home() {
                        tickFormatter={(value) => `$${value.toLocaleString()}`}
                      />
                      <Tooltip content={<CustomTooltip />} />
-                     <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={4} name="Pool de Liquidez" />
-                     <Bar dataKey="gridBot" fill="#6b7280" radius={4} name="Grid Bot" />
+                     <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={4} name="Pool de Liquidez" isAnimationActive={false} />
+                     <Bar dataKey="gridBot" fill="#6b7280" radius={4} name="Grid Bot" isAnimationActive={false} />
                    </BarChart>
                  </ResponsiveContainer>
               )}
