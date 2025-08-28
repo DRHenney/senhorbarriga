@@ -827,6 +827,18 @@ export default function Home() {
     const gridValue = record.gridBot || 0;
     return sum + poolValue + gridValue;
   }, 0);
+
+  // Calcular valor DeFi apenas do ano atual (2024)
+  const currentYearDefiValue = records
+    .filter(record => {
+      const recordDate = new Date(record.recordDate);
+      return recordDate.getFullYear() === currentYear;
+    })
+    .reduce((sum, record) => {
+      const poolValue = record.poolLiquidity || 0;
+      const gridValue = record.gridBot || 0;
+      return sum + poolValue + gridValue;
+    }, 0);
   const poolLiquidity = lastBarData?.poolLiquidity || 0;
   const gridBot = lastBarData?.gridBot || 0;
   
@@ -856,8 +868,8 @@ export default function Home() {
     return sum + poolValue + gridValue;
   }, 0);
   
-  // Calcular valor total geral: registros acumulados + tokens
-  const totalPortfolioValue = totalRecordsValue + portfolioTotal;
+  // Calcular valor total geral: registros acumulados (exceto ano atual) + tokens
+  const totalPortfolioValue = (totalRecordsValue - currentYearDefiValue) + portfolioTotal;
   
   // Calcular crescimento percentual
   let portfolioGrowth = "0.0";
@@ -1896,8 +1908,8 @@ export default function Home() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-slate-600 dark:text-slate-400">DeFi Total (Acumulado):</span>
-                <span className="font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(totalValue)}</span>
+                <span className="text-slate-600 dark:text-slate-400">DeFi Total (2024):</span>
+                <span className="font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(currentYearDefiValue)}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-slate-600 dark:text-slate-400">Tokens:</span>
@@ -1920,7 +1932,7 @@ export default function Home() {
             onClick={() => setShowTotalValueModal(true)}
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Valor Total</CardTitle>
+              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">DeFi Total (Acumulado)</CardTitle>
               <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
                 <DollarSign className="h-5 w-5 text-slate-600 dark:text-slate-400" />
               </div>
@@ -3360,7 +3372,7 @@ export default function Home() {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Valor Total - Detalhes</h2>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">DeFi Total (Acumulado) - Detalhes</h2>
                 <Button 
                   variant="ghost" 
                   size="sm" 
@@ -3373,9 +3385,14 @@ export default function Home() {
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                    <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Resumo</h3>
+                    <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Total Acumulado</h3>
                     <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(totalValue)}</p>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">Total acumulado de DeFi</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Soma de todos os anos</p>
+                  </div>
+                  <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                    <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">DeFi 2024</h3>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{formatCurrency(currentYearDefiValue)}</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Valor do ano atual</p>
                   </div>
                   <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
                     <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-2">Registros</h3>
