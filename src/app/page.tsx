@@ -484,6 +484,14 @@ const calculateTokenMetrics = (token: any) => {
 // Componente de Tooltip Customizado
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
+    // Debug: verificar os valores que estão chegando
+    console.log('🔍 CustomTooltip - payload:', payload.map((entry: any) => ({
+      name: entry.name,
+      value: entry.value,
+      type: typeof entry.value,
+      formatted: formatCurrency(entry.value)
+    })));
+    
     return (
       <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg shadow-lg p-4 min-w-[200px]">
         <div className="mb-2">
@@ -3514,7 +3522,7 @@ export default function Home() {
                                      </p>
                                      {operation.type === "grid" && operation.rangeMin && operation.rangeMax && operation.numGrids && (
                                        <p className="text-xs text-slate-500 dark:text-slate-500">
-                                         Range: {formatCurrency(operation.rangeMin)} - {formatCurrency(operation.rangeMax)} | {operation.numGrids} grids
+                                         Range: ${Number(operation.rangeMin).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} - ${Number(operation.rangeMax).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} | {operation.numGrids} grids
                                        </p>
                                      )}
                                    </div>
