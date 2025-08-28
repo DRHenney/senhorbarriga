@@ -229,6 +229,30 @@ const getYearlyDefiData = (records: any[]) => {
   return sortedData;
 };
 
+// Função para calcular evolução do DeFi total ao longo do tempo
+const getDefiEvolutionData = (records: any[]) => {
+  if (records.length === 0) {
+    return [];
+  }
+
+  // Ordenar registros por data
+  const sortedRecords = records.sort((a, b) => new Date(a.recordDate).getTime() - new Date(b.recordDate).getTime());
+  
+  // Calcular valores acumulados
+  let accumulatedDefi = 0;
+  const evolutionData = sortedRecords.map((record, index) => {
+    accumulatedDefi += (record.poolLiquidity || 0) + (record.gridBot || 0);
+    
+    return {
+      date: new Date(record.recordDate).toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }),
+      defiTotal: accumulatedDefi,
+      recordDate: record.recordDate
+    };
+  });
+
+  return evolutionData;
+};
+
 // Função para calcular dados de evolução do portfólio baseados nos registros reais
 const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
   // Calcular valor total dos tokens
@@ -244,12 +268,14 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
       acc[monthKey] = {
         month: monthName,
         value: 0,
+        defiTotal: 0,
         date: date,
         records: []
       };
     }
     
     acc[monthKey].value += record.total;
+    acc[monthKey].defiTotal += (record.poolLiquidity || 0) + (record.gridBot || 0);
     acc[monthKey].records.push(record);
     
     return acc;
@@ -261,6 +287,7 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
     .map((item: any) => ({
       month: item.month,
       value: item.value,
+      defiTotal: item.defiTotal,
       date: item.date
     }));
 
@@ -284,6 +311,7 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
       allMonths.push({
         month: monthName,
         value: realData.value,
+        defiTotal: realData.defiTotal,
         date: new Date(d)
       });
     } else {
@@ -306,6 +334,7 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
       allMonths.push({
         month: monthName,
         value: historicalData[monthName as keyof typeof historicalData] || 0,
+        defiTotal: 0, // Dados históricos não têm DeFi
         date: new Date(d)
       });
     }
@@ -329,6 +358,7 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
       allMonths[lastIndex] = {
         month: lastItem.month,
         value: lastItem.value + tokensTotal,
+        defiTotal: lastItem.defiTotal,
         date: lastItem.date
       };
     }
@@ -961,6 +991,9 @@ export default function Home() {
   
   // Calcular dados mensais do DeFi
   const monthlyDefiData = getMonthlyDefiData(records);
+  
+  // Calcular evolução do DeFi total
+  const defiEvolutionData = getDefiEvolutionData(records);
   
   // Calcular valor total de todos os registros (soma acumulada)
   const totalRecordsValue = records.reduce((sum, record) => {
@@ -1968,7 +2001,7 @@ export default function Home() {
                                  {/* Gráfico de Linha */}
                  <div className="flex-1">
                    <ResponsiveContainer width="100%" height={200}>
-                     <LineChart data={portfolioEvolutionData}>
+                     <ComposedChart data={portfolioEvolutionData}>
                        <CartesianGrid vertical={false} stroke="#334155" strokeDasharray="3 3" />
                        <XAxis
                          dataKey="month"
@@ -1994,8 +2027,18 @@ export default function Home() {
                          strokeWidth={3}
                          dot={{ fill: '#64748b', strokeWidth: 2, r: 4 }}
                          activeDot={{ r: 6, stroke: '#64748b', strokeWidth: 2 }}
+                         name="Portfólio Total"
                        />
-                     </LineChart>
+                       <Line 
+                         type="monotone" 
+                         dataKey="defiTotal" 
+                         stroke="#f59e0b" 
+                         strokeWidth={3}
+                         dot={{ fill: '#f59e0b', strokeWidth: 2, r: 4 }}
+                         activeDot={{ r: 6, stroke: '#f59e0b', strokeWidth: 2, fill: '#fff' }}
+                         name="DeFi Total"
+                       />
+                     </ComposedChart>
                    </ResponsiveContainer>
                  </div>
               </div>
@@ -2009,8 +2052,8 @@ export default function Home() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-slate-600 dark:text-slate-400">DeFi Total (2024):</span>
-                <span className="font-semibold text-amber-600 dark:text-amber-400">{formatCurrency(currentYearDefiValue)}</span>
+                <span className="text-slate-600 dark:text-slate-400">DeFi Total:</span>
+                <span className="font-semibold text-amber-600 dark:text-amber-400">{formatCurrency(totalValue)}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-slate-600 dark:text-slate-400">Tokens:</span>
