@@ -26,17 +26,19 @@ const getBarChartData = (records: any[]) => {
     return [];
   }
 
-  // Obter o mês e ano atual
+  // Obter a data atual
   const currentDate = new Date();
-  const currentMonth = currentDate.getMonth();
-  const currentYear = currentDate.getFullYear();
+  
+  // Calcular a data de 3 meses atrás
+  const threeMonthsAgo = new Date(currentDate);
+  threeMonthsAgo.setMonth(currentDate.getMonth() - 3);
 
-  // Agrupar registros por data, mas apenas do mês atual
+  // Agrupar registros por data dos últimos 3 meses
   const weeklyData = records.reduce((acc: any, record) => {
     const date = new Date(record.recordDate);
     
-    // Filtrar apenas registros do mês atual
-    if (date.getMonth() === currentMonth && date.getFullYear() === currentYear) {
+    // Filtrar apenas registros dos últimos 3 meses
+    if (date >= threeMonthsAgo) {
       const dateKey = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
       
       if (!acc[dateKey]) {
@@ -2688,7 +2690,7 @@ export default function Home() {
                    </CardTitle>
                    <CardDescription className="text-slate-600 dark:text-slate-400">
                     {evolutionTab === "weekly" 
-                      ? "Valores de Pool de Liquidez e Grid Bot por semana" 
+                      ? "Valores de Pool de Liquidez e Grid Bot por semana (últimos 3 meses)" 
                       : "Histórico dos seus registros semanais"
                     }
                   </CardDescription>
@@ -2903,8 +2905,8 @@ export default function Home() {
                     </div>
                                       <div className="text-slate-600 dark:text-slate-400 leading-none">
                       {records.length > 0 
-                        ? `Mostrando evolução baseada em ${records.length} registros (datas do mês atual)`
-                        : 'Mostrando evolução dos investimentos (datas do mês atual - dados de exemplo)'
+                        ? `Mostrando evolução baseada em ${records.length} registros (últimos 3 meses)`
+                        : 'Mostrando evolução dos investimentos (últimos 3 meses - dados de exemplo)'
                       }
                     </div>
                 </>
