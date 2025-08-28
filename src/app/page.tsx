@@ -484,14 +484,6 @@ const calculateTokenMetrics = (token: any) => {
 // Componente de Tooltip Customizado
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
-    // Debug: verificar os valores que estão chegando
-    console.log('🔍 CustomTooltip - payload:', payload.map((entry: any) => ({
-      name: entry.name,
-      value: entry.value,
-      type: typeof entry.value,
-      formatted: formatCurrency(entry.value)
-    })));
-    
     return (
       <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg shadow-lg p-4 min-w-[200px]">
         <div className="mb-2">
@@ -3530,14 +3522,7 @@ export default function Home() {
                                 <div className="flex items-center space-x-4">
                                                                      <div className="text-right">
                                      <p className="font-semibold text-slate-900 dark:text-slate-100">
-                                       {(() => {
-                                         console.log('🔍 operation.capital:', {
-                                           value: operation.capital,
-                                           type: typeof operation.capital,
-                                           formatted: formatCurrency(Number(operation.capital))
-                                         });
-                                         return formatCurrency(Number(operation.capital));
-                                       })()}
+                                       {formatCurrency(Number(operation.capital))}
                                      </p>
                                      <p className="text-sm text-slate-500 dark:text-slate-500">
                                        Início: {new Date(operation.startDate).toLocaleDateString('pt-BR')}
