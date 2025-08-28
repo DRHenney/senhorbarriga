@@ -984,9 +984,7 @@ export default function Home() {
     .filter(operation => operation.type === 'pool')
     .reduce((sum, operation) => {
       // Garantir que o valor seja um número válido
-      const capital = typeof operation.capital === 'string' 
-        ? parseFloat(operation.capital.replace(/[^\d.-]/g, '')) || 0
-        : Number(operation.capital) || 0;
+      const capital = Number(operation.capital) || 0;
       return sum + capital;
     }, 0);
   
@@ -994,9 +992,7 @@ export default function Home() {
     .filter(operation => operation.type === 'grid')
     .reduce((sum, operation) => {
       // Garantir que o valor seja um número válido
-      const capital = typeof operation.capital === 'string' 
-        ? parseFloat(operation.capital.replace(/[^\d.-]/g, '')) || 0
-        : Number(operation.capital) || 0;
+      const capital = Number(operation.capital) || 0;
       return sum + capital;
     }, 0);
 
