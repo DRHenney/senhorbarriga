@@ -391,7 +391,12 @@ const formatValue = (value: number) => {
 const formatPrice = (price: number): string => {
   if (price === 0) return '$0.00';
   
-  // Para todos os preços, usar separadores de milhares e sempre 2 casas decimais
+  // Para tokens com preços baixos (que começam com 0), usar 4 casas decimais
+  if (price < 1) {
+    return `$${price.toFixed(4)}`;
+  }
+  
+  // Para todos os outros valores, usar separadores de milhares e 2 casas decimais
   return `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
@@ -405,7 +410,7 @@ const formatCurrency = (value: number): string => {
   }
   
   // Para todos os outros valores, usar separadores de milhares e 2 casas decimais
-  return `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
 // Função específica para formatar valores do eixo Y de forma mais limpa
@@ -2042,26 +2047,26 @@ export default function Home() {
                          iconType="line"
                          wrapperStyle={{ paddingBottom: '10px' }}
                        />
-                                            <Line 
-                       type="monotone" 
-                       dataKey="value" 
-                       stroke="#64748b" 
-                       strokeWidth={3}
-                       dot={{ fill: '#64748b', strokeWidth: 2, r: 4 }}
-                       activeDot={{ r: 6, stroke: '#64748b', strokeWidth: 2 }}
-                       name="Portfólio Total"
+                       <Line 
+                         type="monotone" 
+                         dataKey="value" 
+                         stroke="#64748b" 
+                         strokeWidth={3}
+                         dot={{ fill: '#64748b', strokeWidth: 2, r: 4 }}
+                         activeDot={{ r: 6, stroke: '#64748b', strokeWidth: 2 }}
+                         name="Portfólio Total"
                        isAnimationActive={false}
-                     />
-                     <Line 
-                       type="monotone" 
-                       dataKey="defiTotal" 
-                       stroke="#f59e0b" 
-                       strokeWidth={3}
-                       dot={{ fill: '#f59e0b', strokeWidth: 2, r: 4 }}
-                       activeDot={{ r: 6, stroke: '#f59e0b', strokeWidth: 2, fill: '#fff' }}
-                       name="DeFi Total"
+                       />
+                       <Line 
+                         type="monotone" 
+                         dataKey="defiTotal" 
+                         stroke="#f59e0b" 
+                         strokeWidth={3}
+                         dot={{ fill: '#f59e0b', strokeWidth: 2, r: 4 }}
+                         activeDot={{ r: 6, stroke: '#f59e0b', strokeWidth: 2, fill: '#fff' }}
+                         name="DeFi Total"
                        isAnimationActive={false}
-                     />
+                       />
                      </ComposedChart>
                    </ResponsiveContainer>
                  </div>
@@ -2472,7 +2477,7 @@ export default function Home() {
                         {token.realTimePrice ? (
                           <div className="text-right">
                             <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-                              {formatPrice(token.realTimePrice)}
+                              {formatCurrency(token.realTimePrice)}
                             </p>
                             {token.priceChange24h !== undefined && (
                               <p className={`text-sm font-medium ${
