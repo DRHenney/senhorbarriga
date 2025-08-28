@@ -1005,16 +1005,20 @@ export default function Home() {
   const activePoolsTotal = activeOperations
     .filter(operation => operation.type === 'pool')
     .reduce((sum, operation) => {
-      const capital = Number(operation.capital) || 0;
-      console.log('Pool operation:', operation.name, 'capital:', capital, 'type:', typeof capital);
+      // Garantir que o valor seja um número válido
+      const capital = typeof operation.capital === 'string' 
+        ? parseFloat(operation.capital.replace(/[^\d.-]/g, '')) || 0
+        : Number(operation.capital) || 0;
       return sum + capital;
     }, 0);
   
   const activeGridsTotal = activeOperations
     .filter(operation => operation.type === 'grid')
     .reduce((sum, operation) => {
-      const capital = Number(operation.capital) || 0;
-      console.log('Grid operation:', operation.name, 'capital:', capital, 'type:', typeof capital);
+      // Garantir que o valor seja um número válido
+      const capital = typeof operation.capital === 'string' 
+        ? parseFloat(operation.capital.replace(/[^\d.-]/g, '')) || 0
+        : Number(operation.capital) || 0;
       return sum + capital;
     }, 0);
 
