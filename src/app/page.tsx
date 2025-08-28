@@ -283,8 +283,14 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[], activeOperatio
       return sum + poolValue + gridValue;
     }, 0);
 
-  // Calcular valor total geral: registros acumulados (exceto ano atual) + tokens
-  const totalPortfolioValue = (totalRecordsValue - currentYearDefiValue) + tokensTotal;
+  // Calcular valor total das operações ativas
+  const activeOperationsTotal = activeOperations.reduce((sum, operation) => {
+    const capital = Number(operation.capital) || 0;
+    return sum + capital;
+  }, 0);
+
+  // Calcular valor total geral: registros acumulados (exceto ano atual) + tokens + operações ativas
+  const totalPortfolioValue = (totalRecordsValue - currentYearDefiValue) + tokensTotal + activeOperationsTotal;
 
   // Agrupar registros por mês para criar pontos no gráfico
   const monthlyData = records.reduce((acc: any, record) => {
@@ -351,10 +357,11 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[], activeOperatio
         return sum + poolValue + gridValue;
       }, 0);
 
-    // Para pontos históricos, não incluir tokens (eles só existem no presente)
+    // Para pontos históricos, não incluir tokens nem operações ativas (eles só existem no presente)
     const tokensValue = index === sortedDataWithAccumulated.length - 1 ? tokensTotal : 0;
+    const activeOperationsValue = index === sortedDataWithAccumulated.length - 1 ? activeOperationsTotal : 0;
     
-    const portfolioValue = (recordsValueUpToThisMonth - currentYearDefiUpToThisMonth) + tokensValue;
+    const portfolioValue = (recordsValueUpToThisMonth - currentYearDefiUpToThisMonth) + tokensValue + activeOperationsValue;
 
     return {
       month: item.month,
