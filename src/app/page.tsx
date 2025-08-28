@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Label, AreaChart, Area, ComposedChart } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Label, AreaChart, Area, ComposedChart, Legend } from "recharts";
 
 import { Plus, TrendingUp, DollarSign, BarChart3, Target, Zap, Coins, Trash2, Calendar, User } from "lucide-react";
 import Link from "next/link";
@@ -2018,6 +2018,12 @@ export default function Home() {
                          tickFormatter={(value) => formatCurrency(value)}
                        />
                        <Tooltip content={<CustomTooltip />} />
+                       <Legend 
+                         verticalAlign="top" 
+                         height={36}
+                         iconType="line"
+                         wrapperStyle={{ paddingBottom: '10px' }}
+                       />
                                             <Line 
                        type="monotone" 
                        dataKey="value" 
@@ -2704,6 +2710,12 @@ export default function Home() {
                        tickFormatter={(value) => formatCurrency(value)}
                      />
                      <Tooltip content={<CustomTooltip />} />
+                     <Legend 
+                       verticalAlign="top" 
+                       height={36}
+                       iconType="rect"
+                       wrapperStyle={{ paddingBottom: '10px' }}
+                     />
                      <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={4} name="Pool de Liquidez" isAnimationActive={false} />
                      <Bar dataKey="gridBot" fill="#6b7280" radius={4} name="Grid Bot" isAnimationActive={false} />
                    </BarChart>
@@ -2959,6 +2971,12 @@ export default function Home() {
                         tickFormatter={(value) => formatCurrency(value)}
                       />
                       <Tooltip content={<CustomTooltip />} />
+                      <Legend 
+                        verticalAlign="top" 
+                        height={36}
+                        iconType="rect"
+                        wrapperStyle={{ paddingBottom: '10px' }}
+                      />
                       <Area 
                         type="monotone" 
                         dataKey="poolLiquidity" 
@@ -3046,6 +3064,12 @@ export default function Home() {
                         tickFormatter={(value) => formatCurrency(value)}
                       />
                       <Tooltip content={<CustomTooltip />} />
+                      <Legend 
+                        verticalAlign="top" 
+                        height={36}
+                        iconType="rect"
+                        wrapperStyle={{ paddingBottom: '10px' }}
+                      />
                       <Bar 
                         dataKey="poolLiquidity" 
                         fill="#3b82f6" 
@@ -3551,6 +3575,12 @@ export default function Home() {
                        tickFormatter={(value) => formatCurrency(value)}
                      />
                      <Tooltip content={<CustomTooltip />} />
+                     <Legend 
+                       verticalAlign="top" 
+                       height={36}
+                       iconType="rect"
+                       wrapperStyle={{ paddingBottom: '10px' }}
+                     />
                      <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={4} name="Pool de Liquidez" isAnimationActive={false} />
                      <Bar dataKey="gridBot" fill="#6b7280" radius={4} name="Grid Bot" isAnimationActive={false} />
                    </BarChart>
