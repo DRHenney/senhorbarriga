@@ -3529,7 +3529,16 @@ export default function Home() {
                                 </div>
                                 <div className="flex items-center space-x-4">
                                                                      <div className="text-right">
-                                     <p className="font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(operation.capital)}</p>
+                                     <p className="font-semibold text-slate-900 dark:text-slate-100">
+                                       {(() => {
+                                         console.log('🔍 operation.capital:', {
+                                           value: operation.capital,
+                                           type: typeof operation.capital,
+                                           formatted: formatCurrency(Number(operation.capital))
+                                         });
+                                         return formatCurrency(Number(operation.capital));
+                                       })()}
+                                     </p>
                                      <p className="text-sm text-slate-500 dark:text-slate-500">
                                        Início: {new Date(operation.startDate).toLocaleDateString('pt-BR')}
                                      </p>
