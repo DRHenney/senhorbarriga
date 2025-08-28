@@ -1004,11 +1004,11 @@ export default function Home() {
     // Calcular valores das operações ativas separadamente
   const activePoolsTotal = activeOperations
     .filter(operation => operation.type === 'pool')
-    .reduce((sum, operation) => sum + (parseFloat(operation.capital) || 0), 0);
+    .reduce((sum, operation) => sum + (operation.capital || 0), 0);
   
   const activeGridsTotal = activeOperations
     .filter(operation => operation.type === 'grid')
-    .reduce((sum, operation) => sum + (parseFloat(operation.capital) || 0), 0);
+    .reduce((sum, operation) => sum + (operation.capital || 0), 0);
 
   // Total das operações ativas
   const activeOperationsTotal = activePoolsTotal + activeGridsTotal;
