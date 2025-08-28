@@ -399,7 +399,12 @@ const formatPrice = (price: number): string => {
 const formatCurrency = (value: number): string => {
   if (value === 0) return '$0.00';
   
-  // Para todos os valores, usar separadores de milhares e sempre 2 casas decimais
+  // Para tokens com preços baixos (que começam com 0), usar 4 casas decimais
+  if (value < 1) {
+    return `$${value.toFixed(4)}`;
+  }
+  
+  // Para todos os outros valores, usar separadores de milhares e 2 casas decimais
   return `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
