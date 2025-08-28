@@ -254,7 +254,7 @@ const getDefiEvolutionData = (records: any[]) => {
 };
 
 // Função para calcular dados de evolução do portfólio baseados nos registros reais
-const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
+const getPortfolioEvolutionData = (records: any[], tokens: any[], activeOperations: any[] = []) => {
   // Calcular valor total dos tokens
   const tokensTotal = tokens.reduce((sum, token) => {
     const currentPrice = token.realTimePrice || token.price || 0;
@@ -983,7 +983,7 @@ export default function Home() {
   }, 0);
 
   // Calcular dados de evolução do portfólio
-  const portfolioEvolutionData = getPortfolioEvolutionData(records, tokens);
+  const portfolioEvolutionData = getPortfolioEvolutionData(records, tokens, activeOperations);
   
   // Calcular dados anuais do DeFi
   const yearlyDefiData = getYearlyDefiData(records);
@@ -1000,9 +1000,21 @@ export default function Home() {
     const gridValue = record.gridBot || 0;
     return sum + poolValue + gridValue;
   }, 0);
+
+    // Calcular valores das operações ativas separadamente
+  const activePoolsTotal = activeOperations
+    .filter(operation => operation.type === 'pool')
+    .reduce((sum, operation) => sum + (operation.capital || 0), 0);
   
-  // Calcular valor total geral: registros acumulados (exceto ano atual) + tokens
-  const totalPortfolioValue = (totalRecordsValue - currentYearDefiValue) + portfolioTotal;
+  const activeGridsTotal = activeOperations
+    .filter(operation => operation.type === 'grid')
+    .reduce((sum, operation) => sum + (operation.capital || 0), 0);
+
+  // Total das operações ativas
+  const activeOperationsTotal = activePoolsTotal + activeGridsTotal;
+  
+  // Calcular valor total geral: registros acumulados (exceto ano atual) + tokens + operações ativas
+  const totalPortfolioValue = (totalRecordsValue - currentYearDefiValue) + portfolioTotal + activeOperationsTotal;
   
   // Calcular crescimento percentual
   let portfolioGrowth = "0.0";
@@ -2057,6 +2069,14 @@ export default function Home() {
               <div className="flex justify-between items-center">
                 <span className="text-slate-600 dark:text-slate-400">Tokens:</span>
                 <span className="font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(portfolioTotal)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-600 dark:text-slate-400">Pool Ativo:</span>
+                <span className="font-semibold text-blue-600 dark:text-blue-400">{formatCurrency(activePoolsTotal)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-600 dark:text-slate-400">Grid Ativo:</span>
+                <span className="font-semibold text-green-600 dark:text-green-400">{formatCurrency(activeGridsTotal)}</span>
               </div>
               <div className="border-t border-slate-200 dark:border-slate-600 pt-4">
                 <div className="flex justify-between items-center">
