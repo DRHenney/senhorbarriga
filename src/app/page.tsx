@@ -403,6 +403,22 @@ const formatCurrency = (value: number): string => {
   return `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
+// Função específica para formatar valores do eixo Y de forma mais limpa
+const formatYAxisValue = (value: number): string => {
+  if (value === 0) return '$0';
+  
+  if (value >= 1000000) {
+    // Para valores >= 1M, usar formato "1.2M"
+    return `$${(value / 1000000).toFixed(1)}M`;
+  } else if (value >= 1000) {
+    // Para valores >= 1K, usar formato "390K"
+    return `$${(value / 1000).toFixed(0)}K`;
+  } else {
+    // Para valores menores, usar formato normal
+    return `$${value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+  }
+};
+
 // Função para formatar quantidade de tokens
 const formatTokenAmount = (amount: number): string => {
   if (amount === 0) return '0.00';
@@ -2022,7 +2038,7 @@ export default function Home() {
                          axisLine={false}
                          stroke="#64748b"
                          fontSize={12}
-                         tickFormatter={(value) => formatCurrency(value)}
+                         tickFormatter={(value) => formatYAxisValue(value)}
                        />
                        <Tooltip content={<CustomTooltip />} />
                        <Legend 
@@ -2714,7 +2730,7 @@ export default function Home() {
                        axisLine={false}
                        stroke="#6b7280"
                        tick={{ fill: '#6b7280', fontSize: 12 }}
-                       tickFormatter={(value) => formatCurrency(value)}
+                       tickFormatter={(value) => formatYAxisValue(value)}
                      />
                      <Tooltip content={<CustomTooltip />} />
                      <Legend 
@@ -2975,7 +2991,7 @@ export default function Home() {
                         axisLine={false}
                         stroke="#6b7280"
                         tick={{ fill: '#6b7280', fontSize: 12, fontWeight: 500 }}
-                        tickFormatter={(value) => formatCurrency(value)}
+                        tickFormatter={(value) => formatYAxisValue(value)}
                       />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend 
@@ -3068,7 +3084,7 @@ export default function Home() {
                         axisLine={false}
                         stroke="#6b7280"
                         tick={{ fill: '#6b7280', fontSize: 12, fontWeight: 500 }}
-                        tickFormatter={(value) => formatCurrency(value)}
+                        tickFormatter={(value) => formatYAxisValue(value)}
                       />
                       <Tooltip content={<CustomTooltip />} />
                       <Legend 
@@ -3579,7 +3595,7 @@ export default function Home() {
                        axisLine={false}
                        stroke="#6b7280"
                        tick={{ fill: '#6b7280', fontSize: 12 }}
-                       tickFormatter={(value) => formatCurrency(value)}
+                       tickFormatter={(value) => formatYAxisValue(value)}
                      />
                      <Tooltip content={<CustomTooltip />} />
                      <Legend 
