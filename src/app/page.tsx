@@ -301,80 +301,28 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
     };
   });
 
-  // Sempre criar array completo desde janeiro de 2025
-  const startDate = new Date(2025, 0, 1); // Janeiro de 2025
-  const currentDate = new Date();
-  const allMonths = [];
-  
-  for (let d = new Date(startDate); d <= currentDate; d.setMonth(d.getMonth() + 1)) {
-    const monthName = d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
-    const monthKey = `${d.getFullYear()}-${d.getMonth()}`;
+  // Usar apenas dados reais, sem preencher com dados históricos
+  const realDataOnly = sortedDataWithAccumulated.map((item: any) => ({
+    month: item.month,
+    value: item.value,
+    defiTotal: item.defiTotal,
+    date: item.date
+  }));
+
+  // Adicionar tokens ao último mês com dados reais
+  if (realDataOnly.length > 0) {
+    const lastIndex = realDataOnly.length - 1;
+    const lastItem = realDataOnly[lastIndex];
     
-    // Verificar se há dados reais para este mês
-    const realData = sortedDataWithAccumulated.find((item: any) => {
-      const itemDate = new Date(item.date);
-      return itemDate.getFullYear() === d.getFullYear() && itemDate.getMonth() === d.getMonth();
-    });
-    
-    if (realData) {
-      // Usar dados reais
-      allMonths.push({
-        month: monthName,
-        value: realData.value,
-        defiTotal: realData.defiTotal,
-        date: new Date(d)
-      });
-    } else {
-      // Usar dados históricos de exemplo para meses sem registros
-      const historicalData = {
-        "Jan/25": 28000,
-        "Fev/25": 29500,
-        "Mar/25": 31200,
-        "Abr/25": 29800,
-        "Mai/25": 32500,
-        "Jun/25": 34100,
-        "Jul/25": 35800,
-        "Ago/25": 37200,
-        "Set/25": 38500,
-        "Out/25": 39800,
-        "Nov/25": 41200,
-        "Dez/25": 42500
-      };
-      
-      allMonths.push({
-        month: monthName,
-        value: historicalData[monthName as keyof typeof historicalData] || 0,
-        defiTotal: 0, // Dados históricos não têm DeFi
-        date: new Date(d)
-      });
-    }
+    realDataOnly[lastIndex] = {
+      month: lastItem.month,
+      value: lastItem.value + tokensTotal,
+      defiTotal: lastItem.defiTotal,
+      date: lastItem.date
+    };
   }
   
-  // Adicionar tokens apenas ao último mês com dados reais (se não for zero)
-  if (allMonths.length > 0) {
-    const lastIndex = allMonths.length - 1;
-    const lastItem = allMonths[lastIndex] as any;
-    
-    // Verificar se o último mês tem dados reais (não históricos)
-    const lastMonthKey = `${lastItem.date.getFullYear()}-${lastItem.date.getMonth()}`;
-    const hasRealData = sortedDataWithAccumulated.some((item: any) => {
-      const itemDate = new Date(item.date);
-      return itemDate.getFullYear() === lastItem.date.getFullYear() && 
-             itemDate.getMonth() === lastItem.date.getMonth();
-    });
-    
-    // Só adicionar tokens se há dados reais no último mês
-    if (hasRealData && lastItem.value > 0) {
-      allMonths[lastIndex] = {
-        month: lastItem.month,
-        value: lastItem.value + tokensTotal,
-        defiTotal: lastItem.defiTotal,
-        date: lastItem.date
-      };
-    }
-  }
-  
-  return allMonths;
+  return realDataOnly;
 };
 
 
