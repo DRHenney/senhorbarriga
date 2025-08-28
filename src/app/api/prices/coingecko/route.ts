@@ -6,7 +6,7 @@ const COINGECKO_BASE_URL = 'https://api.coingecko.com/api/v3';
 // Cache global para tokens da CoinGecko (mesmo do buscador)
 let ALL_TOKENS_CACHE: any[] = [];
 let CACHE_TIMESTAMP = 0;
-const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 horas
+const CACHE_DURATION = 1 * 60 * 60 * 1000; // 1 hora (reduzido para debug)
 
 // Função para buscar todos os tokens da CoinGecko (mesma do buscador)
 async function getAllTokensFromCoinGecko() {
@@ -24,8 +24,8 @@ async function getAllTokensFromCoinGecko() {
     // Buscar lista muito mais completa de tokens (múltiplas páginas)
     let allTokens: any[] = [];
     
-    // Buscar muito mais páginas para incluir tokens de baixa capitalização (até posição #10000)
-    for (let page = 1; page <= 40; page++) {
+    // Buscar menos páginas para reduzir rate limiting (até posição #2500)
+    for (let page = 1; page <= 10; page++) {
       const response = await fetch(`${COINGECKO_BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=${page}&sparkline=false&price_change_percentage=24h`, {
         headers: {
           'Accept': 'application/json',
@@ -33,7 +33,7 @@ async function getAllTokensFromCoinGecko() {
           'X-CG-API-KEY': COINGECKO_API_KEY
         },
         cache: 'no-store',
-        next: { revalidate: 3600 } // Cache por 1 hora
+        next: { revalidate: 300 } // Cache por 5 minutos (reduzido para debug)
       });
 
       if (response.ok) {
@@ -43,8 +43,16 @@ async function getAllTokensFromCoinGecko() {
         
         // Se não há mais dados, parar
         if (data.length === 0) break;
+        
+        // Adicionar delay para evitar rate limiting
+        if (page < 10) {
+          await new Promise(resolve => setTimeout(resolve, 100)); // 100ms delay
+        }
       } else {
-        console.log(`⚠️ Erro na página ${page}:`, response.status);
+        console.log(`⚠️ Erro na página ${page}:`, response.status, response.statusText);
+        if (response.status === 429) {
+          console.log('🚫 Rate limit atingido, parando busca');
+        }
         break;
       }
     }
@@ -69,6 +77,12 @@ async function getAllTokensFromCoinGecko() {
     return ALL_TOKENS_CACHE;
   } catch (error) {
     console.error('❌ Erro ao buscar todos os tokens:', error);
+    
+    // Se o cache tem dados antigos, usar eles mesmo assim
+    if (ALL_TOKENS_CACHE.length > 0) {
+      console.log('🔄 Usando cache antigo devido ao erro:', ALL_TOKENS_CACHE.length, 'tokens');
+      return ALL_TOKENS_CACHE;
+    }
   }
 
   return [];
