@@ -3540,70 +3540,83 @@ export default function Home() {
               <CardDescription className="text-slate-600 dark:text-slate-400">Registre seus valores de pool de liquidez e grid bot com data</CardDescription>
             </CardHeader>
            <CardContent className="pt-6">
-             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                               <div className="space-y-3">
-                  <label htmlFor="poolLiquidity" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    Pool de Liquidez ($)
-                  </label>
-                  <Input
-                    id="poolLiquidity"
-                    type="number"
-                    placeholder="0.00"
-                    value={newEntry.poolLiquidity}
-                    onChange={(e) => setNewEntry({ ...newEntry, poolLiquidity: e.target.value })}
-                    className="h-12 text-lg border-2 border-slate-300 dark:border-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100 font-medium"
-                  />
-                </div>
-                               <div className="space-y-3">
-                  <label htmlFor="gridBot" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    Grid Bot ($)
-                  </label>
-                  <Input
-                    id="gridBot"
-                    type="number"
-                    placeholder="0.00"
-                    value={newEntry.gridBot}
-                    onChange={(e) => setNewEntry({ ...newEntry, gridBot: e.target.value })}
-                    className="h-12 text-lg border-2 border-slate-300 dark:border-slate-600 focus:border-green-500 focus:ring-4 focus:ring-green-100 dark:focus:ring-green-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100 font-medium"
-                  />
-                </div>
-                               <div className="space-y-3">
-                  <label htmlFor="recordDate" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    Data do Registro
-                  </label>
-                  <Input
-                    id="recordDate"
-                    type="date"
-                    value={newEntry.recordDate}
-                    onChange={(e) => setNewEntry({ ...newEntry, recordDate: e.target.value })}
-                    className="h-12 text-lg border-2 border-slate-300 dark:border-slate-600 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 dark:focus:ring-purple-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 text-slate-900 dark:text-slate-100 font-medium"
-                  />
-                </div>
-                               <div className="space-y-3">
-                  <label htmlFor="notes" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    Observações (Opcional)
-                  </label>
-                  <Input
-                    id="notes"
-                    type="text"
-                    placeholder="Ex: Semana de alta volatilidade"
-                    value={newEntry.notes}
-                    onChange={(e) => setNewEntry({ ...newEntry, notes: e.target.value })}
-                    className="h-12 text-lg border-2 border-slate-300 dark:border-slate-600 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 dark:focus:ring-orange-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-600 dark:placeholder:text-slate-400 text-slate-900 dark:text-slate-100 font-medium"
-                  />
-                </div>
+             <div className="space-y-6">
+               {/* Primeira linha - Valores principais */}
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <div className="space-y-2">
+                   <label htmlFor="poolLiquidity" className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center">
+                     <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                     Pool de Liquidez ($)
+                   </label>
+                   <Input
+                     id="poolLiquidity"
+                     type="number"
+                     placeholder="0.00"
+                     value={newEntry.poolLiquidity}
+                     onChange={(e) => setNewEntry({ ...newEntry, poolLiquidity: e.target.value })}
+                     className="h-14 text-lg border-2 border-slate-200 dark:border-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-300 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-900 dark:text-slate-100 font-medium"
+                   />
+                 </div>
+                 <div className="space-y-2">
+                   <label htmlFor="gridBot" className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center">
+                     <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                     Grid Bot ($)
+                   </label>
+                   <Input
+                     id="gridBot"
+                     type="number"
+                     placeholder="0.00"
+                     value={newEntry.gridBot}
+                     onChange={(e) => setNewEntry({ ...newEntry, gridBot: e.target.value })}
+                     className="h-14 text-lg border-2 border-slate-200 dark:border-slate-600 focus:border-green-500 focus:ring-2 focus:ring-green-100 dark:focus:ring-green-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-300 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-900 dark:text-slate-100 font-medium"
+                   />
+                 </div>
+               </div>
+
+               {/* Segunda linha - Data e Observações */}
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <div className="space-y-2">
+                   <label htmlFor="recordDate" className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center">
+                     <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
+                     Data do Registro
+                   </label>
+                   <Input
+                     id="recordDate"
+                     type="date"
+                     value={newEntry.recordDate}
+                     onChange={(e) => setNewEntry({ ...newEntry, recordDate: e.target.value })}
+                     className="h-14 text-lg border-2 border-slate-200 dark:border-slate-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 dark:focus:ring-purple-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-300 dark:hover:border-slate-500 transition-all duration-200 text-slate-900 dark:text-slate-100 font-medium"
+                   />
+                 </div>
+                 <div className="space-y-2">
+                   <label htmlFor="notes" className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center">
+                     <div className="w-2 h-2 bg-orange-500 rounded-full mr-2"></div>
+                     Observações (Opcional)
+                   </label>
+                   <Input
+                     id="notes"
+                     type="text"
+                     placeholder="Ex: Semana de alta volatilidade"
+                     value={newEntry.notes}
+                     onChange={(e) => setNewEntry({ ...newEntry, notes: e.target.value })}
+                     className="h-14 text-lg border-2 border-slate-200 dark:border-slate-600 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 dark:focus:ring-orange-900/20 bg-white dark:bg-slate-700 shadow-sm hover:border-slate-300 dark:hover:border-slate-500 transition-all duration-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-900 dark:text-slate-100 font-medium"
+                   />
+                 </div>
+               </div>
              </div>
-             <div className="flex justify-end mt-6">
+
+             {/* Botão centralizado */}
+             <div className="flex justify-center mt-8">
                <Button 
                  onClick={addRecord}
                  disabled={!newEntry.poolLiquidity || !newEntry.gridBot || !newEntry.recordDate}
-                 className={`px-8 py-3 text-lg font-semibold shadow-xl transition-all duration-300 transform hover:scale-105 border-0 ${
+                 className={`px-10 py-4 text-lg font-semibold shadow-lg transition-all duration-300 transform hover:scale-105 border-0 rounded-xl ${
                    newEntry.poolLiquidity && newEntry.gridBot && newEntry.recordDate
-                     ? 'bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white hover:shadow-2xl' 
-                     : 'bg-gradient-to-r from-slate-400 to-slate-500 text-slate-200 cursor-not-allowed'
+                     ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white hover:shadow-xl' 
+                     : 'bg-gradient-to-r from-slate-300 to-slate-400 text-slate-500 cursor-not-allowed'
                  }`}
                >
-                 <Plus className="h-5 w-5 mr-2" />
+                 <Plus className="h-5 w-5 mr-3" />
                  {newEntry.poolLiquidity && newEntry.gridBot && newEntry.recordDate ? 'Adicionar Registro' : 'Preencha os campos obrigatórios'}
                </Button>
              </div>
