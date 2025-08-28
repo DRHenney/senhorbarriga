@@ -1132,7 +1132,7 @@ export default function Home() {
           setTokens(updatedTokens);
           setLastPriceUpdate(new Date().toLocaleString('pt-BR'));
           // Reset do temporizador para próxima atualização
-          setNextUpdateTime(new Date(Date.now() + 30000));
+          setNextUpdateTime(new Date(Date.now() + 10000));
         } else {
           console.log('📊 Nenhuma mudança detectada nos preços');
         }
@@ -1350,9 +1350,9 @@ export default function Home() {
       console.log('🚀 Executando primeira atualização imediatamente...');
       startAutoUpdate();
       
-      // Configurar próxima atualização em 30 segundos
-      setNextUpdateTime(new Date(Date.now() + 30000));
-      console.log('✅ nextUpdateTime configurado - próxima atualização em 30 segundos');
+      // Configurar próxima atualização em 10 segundos
+      setNextUpdateTime(new Date(Date.now() + 10000));
+      console.log('✅ nextUpdateTime configurado - próxima atualização em 10 segundos');
     } else {
       console.log('📭 Nenhum token para atualização automática');
     }
@@ -1368,7 +1368,7 @@ export default function Home() {
 
     if (!nextUpdateTime || tokens.length === 0) {
       console.log('⏱️ Countdown desativado - sem nextUpdateTime ou tokens');
-      setCountdownSeconds(30);
+      setCountdownSeconds(10);
       return;
     }
 
@@ -1384,8 +1384,8 @@ export default function Home() {
         console.log('⏱️ Countdown zerado, executando atualização automática...');
         startAutoUpdate();
         // Reset para próxima atualização
-        setNextUpdateTime(new Date(Date.now() + 30000));
-        setCountdownSeconds(30);
+        setNextUpdateTime(new Date(Date.now() + 10000));
+        setCountdownSeconds(10);
       } else {
         setCountdownSeconds(timeLeft);
       }
