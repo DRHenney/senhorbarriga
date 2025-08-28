@@ -1073,15 +1073,15 @@ export default function Home() {
         symbol: t.symbol, 
         coinGeckoId: t.coinGeckoId 
       })));
-      console.log('🌐 Fazendo fetch para /api/prices/coingecko...');
-      console.log('📤 Dados enviados:', JSON.stringify({ tokens: tokensToFetch }, null, 2));
+      console.log('🌐 Fazendo fetch para /api/prices/realtime-cache...');
+      console.log('📤 Dados enviados:', JSON.stringify({ symbols: tokensToFetch.map(t => t.symbol) }, null, 2));
 
-      const response = await fetch('/api/prices/coingecko', {
+      const response = await fetch('/api/prices/realtime-cache', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ tokens: tokensToFetch }),
+        body: JSON.stringify({ symbols: tokensToFetch.map(t => t.symbol) }),
         cache: 'no-store'
       });
 
@@ -1106,12 +1106,11 @@ export default function Home() {
           console.log(`🔍 Resultado para ${token.symbol}:`, priceData ? { success: priceData.success, symbol: priceData.symbol } : 'não encontrado');
           
           if (priceData && priceData.success) {
-            console.log(`✅ ${token.symbol}: $${priceData.data.priceUsd} (${priceData.data.priceChange24h > 0 ? '+' : ''}${priceData.data.priceChange24h.toFixed(2)}%)`);
+            console.log(`✅ ${token.symbol}: $${priceData.realTimePrice} (${priceData.priceChange24h > 0 ? '+' : ''}${priceData.priceChange24h.toFixed(2)}%)`);
             return {
               ...token,
-              realTimePrice: priceData.data.priceUsd,
-              priceChange24h: priceData.data.priceChange24h,
-              imageUrl: priceData.data.imageUrl || token.imageUrl, // Salvar URL da imagem
+              realTimePrice: priceData.realTimePrice,
+              priceChange24h: priceData.priceChange24h,
               lastUpdated: new Date().toLocaleString('pt-BR')
             };
           } else {
