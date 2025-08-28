@@ -256,9 +256,36 @@ const getDefiEvolutionData = (records: any[]) => {
 // Função para calcular dados de evolução do portfólio baseados nos registros reais
 const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
   // Calcular valor total dos tokens
-  const tokensTotal = tokens.reduce((sum, token) => sum + (token.value || 0), 0);
+  const tokensTotal = tokens.reduce((sum, token) => {
+    const currentPrice = token.realTimePrice || token.price || 0;
+    const amount = token.amount || 0;
+    const tokenValue = amount * currentPrice;
+    return sum + (isNaN(tokenValue) ? 0 : tokenValue);
+  }, 0);
 
-  // Agrupar registros por mês
+  // Calcular valor total de todos os registros (soma acumulada)
+  const totalRecordsValue = records.reduce((sum, record) => {
+    const poolValue = record.poolLiquidity || 0;
+    const gridValue = record.gridBot || 0;
+    return sum + poolValue + gridValue;
+  }, 0);
+
+  // Calcular valor DeFi apenas do ano atual (2024)
+  const currentYearDefiValue = records
+    .filter(record => {
+      const recordDate = new Date(record.recordDate);
+      return recordDate.getFullYear() === new Date().getFullYear();
+    })
+    .reduce((sum, record) => {
+      const poolValue = record.poolLiquidity || 0;
+      const gridValue = record.gridBot || 0;
+      return sum + poolValue + gridValue;
+    }, 0);
+
+  // Calcular valor total geral: registros acumulados (exceto ano atual) + tokens
+  const totalPortfolioValue = (totalRecordsValue - currentYearDefiValue) + tokensTotal;
+
+  // Agrupar registros por mês para criar pontos no gráfico
   const monthlyData = records.reduce((acc: any, record) => {
     const date = new Date(record.recordDate);
     const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
@@ -267,14 +294,12 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
     if (!acc[monthKey]) {
       acc[monthKey] = {
         month: monthName,
-        value: 0,
         defiTotal: 0,
         date: date,
         records: []
       };
     }
     
-    acc[monthKey].value += record.total;
     acc[monthKey].defiTotal += (record.poolLiquidity || 0) + (record.gridBot || 0);
     acc[monthKey].records.push(record);
     
@@ -286,7 +311,6 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
     .sort((a: any, b: any) => a.date - b.date)
     .map((item: any) => ({
       month: item.month,
-      value: item.value,
       defiTotal: item.defiTotal,
       date: item.date
     }));
@@ -301,28 +325,45 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
     };
   });
 
-  // Usar apenas dados reais, sem preencher com dados históricos
-  const realDataOnly = sortedDataWithAccumulated.map((item: any) => ({
-    month: item.month,
-    value: item.value,
-    defiTotal: item.defiTotal,
-    date: item.date
-  }));
+  // Criar dados para o gráfico com valores consistentes
+  const chartData = sortedDataWithAccumulated.map((item: any, index: number) => {
+    // Calcular valor do portfólio para este ponto no tempo
+    const recordsUpToThisMonth = records.filter(record => {
+      const recordDate = new Date(record.recordDate);
+      return recordDate <= item.date;
+    });
 
-  // Adicionar tokens ao último mês com dados reais
-  if (realDataOnly.length > 0) {
-    const lastIndex = realDataOnly.length - 1;
-    const lastItem = realDataOnly[lastIndex];
+    const recordsValueUpToThisMonth = recordsUpToThisMonth.reduce((sum, record) => {
+      const poolValue = record.poolLiquidity || 0;
+      const gridValue = record.gridBot || 0;
+      return sum + poolValue + gridValue;
+    }, 0);
+
+    const currentYearDefiUpToThisMonth = recordsUpToThisMonth
+      .filter(record => {
+        const recordDate = new Date(record.recordDate);
+        return recordDate.getFullYear() === new Date().getFullYear();
+      })
+      .reduce((sum, record) => {
+        const poolValue = record.poolLiquidity || 0;
+        const gridValue = record.gridBot || 0;
+        return sum + poolValue + gridValue;
+      }, 0);
+
+    // Para pontos históricos, não incluir tokens (eles só existem no presente)
+    const tokensValue = index === sortedDataWithAccumulated.length - 1 ? tokensTotal : 0;
     
-    realDataOnly[lastIndex] = {
-      month: lastItem.month,
-      value: lastItem.value + tokensTotal,
-      defiTotal: lastItem.defiTotal,
-      date: lastItem.date
+    const portfolioValue = (recordsValueUpToThisMonth - currentYearDefiUpToThisMonth) + tokensValue;
+
+    return {
+      month: item.month,
+      value: portfolioValue,
+      defiTotal: item.defiTotal,
+      date: item.date
     };
-  }
-  
-  return realDataOnly;
+  });
+
+  return chartData;
 };
 
 
