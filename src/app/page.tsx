@@ -170,7 +170,7 @@ const getMonthlyDefiData = (records: any[]) => {
     .sort((a: any, b: any) => {
       const dateA = new Date(a.records[0]?.recordDate || 0);
       const dateB = new Date(b.records[0]?.recordDate || 0);
-      return dateB.getTime() - dateA.getTime(); // Ordem decrescente (mais recente primeiro)
+      return dateA.getTime() - dateB.getTime(); // Ordem crescente (mais antigo primeiro, mais recente por último)
     })
     .slice(0, 6) // Pegar apenas os últimos 6 meses
     .map((item: any) => ({
@@ -3009,16 +3009,7 @@ export default function Home() {
                         tick={{ fill: '#6b7280', fontSize: 12, fontWeight: 500 }}
                         tickFormatter={(value) => `$${(value/1000).toFixed(0)}k`}
                       />
-                      <Tooltip 
-                        formatter={(value: any) => [`$${value.toLocaleString()}`, 'Valor']}
-                        labelFormatter={(label) => `${label}`}
-                        contentStyle={{
-                          backgroundColor: 'hsl(var(--card))',
-                          border: '1px solid hsl(var(--border))',
-                          borderRadius: '8px',
-                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                        }}
-                      />
+                      <Tooltip content={<CustomTooltip />} />
                       <Area 
                         type="monotone" 
                         dataKey="poolLiquidity" 
@@ -3105,16 +3096,7 @@ export default function Home() {
                         tick={{ fill: '#6b7280', fontSize: 12, fontWeight: 500 }}
                         tickFormatter={(value) => `$${(value/1000).toFixed(0)}k`}
                       />
-                      <Tooltip 
-                        formatter={(value: any) => [`$${value.toLocaleString()}`, 'Valor']}
-                        labelFormatter={(label) => `Ano ${label}`}
-                        contentStyle={{
-                          backgroundColor: 'hsl(var(--card))',
-                          border: '1px solid hsl(var(--border))',
-                          borderRadius: '8px',
-                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                        }}
-                      />
+                      <Tooltip content={<CustomTooltip />} />
                       <Bar 
                         dataKey="poolLiquidity" 
                         fill="#3b82f6" 
