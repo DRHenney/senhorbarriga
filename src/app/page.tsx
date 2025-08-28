@@ -2577,8 +2577,8 @@ export default function Home() {
         </Card>
 
         {/* Gráficos com design melhorado */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border-0 shadow-xl border-slate-200 dark:border-slate-700">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border-0 shadow-xl border-slate-200 dark:border-slate-700 lg:col-span-2">
             <CardHeader className="border-b border-slate-200 dark:border-slate-600">
               <div className="flex items-center justify-between">
                 <div>
@@ -3532,16 +3532,15 @@ export default function Home() {
               )}
             </CardFooter>
           </Card>
-        </div>
 
-                                   {/* Formulário com design melhorado */}
+          {/* Formulário com design melhorado */}
           <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border-0 shadow-xl border-slate-200 dark:border-slate-700">
             <CardHeader className="border-b border-slate-200 dark:border-slate-600">
               <CardTitle className="text-xl font-semibold text-slate-800 dark:text-slate-100">Adicionar Nova Entrada Semanal</CardTitle>
               <CardDescription className="text-slate-600 dark:text-slate-400">Registre seus valores de pool de liquidez e grid bot com data</CardDescription>
             </CardHeader>
            <CardContent className="pt-6">
-             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+             <div className="space-y-4">
                                <div className="space-y-3">
                   <label htmlFor="poolLiquidity" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     Pool de Liquidez ($)
@@ -3609,7 +3608,8 @@ export default function Home() {
                </Button>
              </div>
            </CardContent>
-                   </Card>
+          </Card>
+        </div>
 
 
 
