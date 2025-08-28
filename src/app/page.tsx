@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Label } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Label, AreaChart, Area, ComposedChart } from "recharts";
 
 import { Plus, TrendingUp, DollarSign, BarChart3, Target, Zap, Coins, Trash2, Calendar, User } from "lucide-react";
 import Link from "next/link";
@@ -2965,53 +2965,87 @@ export default function Home() {
             <CardContent className="pt-4">
               {defiTab === "current" ? (
                 <div className="space-y-4">
-                  {/* Gráfico de barras mensal */}
+                  {/* Gráfico de área moderno mensal */}
                   <ResponsiveContainer width="100%" height={250}>
-                    <BarChart 
+                    <AreaChart 
                       data={monthlyDefiData}
                       style={{
                         background: 'linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%)',
-                        borderRadius: '8px',
-                        padding: '12px',
+                        borderRadius: '12px',
+                        padding: '16px',
                         border: '1px solid hsl(var(--border))',
-                        boxShadow: '0 2px 4px -1px rgba(0, 0, 0, 0.1)'
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
                       }}
                     >
+                      <defs>
+                        <linearGradient id="colorPool" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                        </linearGradient>
+                        <linearGradient id="colorGrid" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#6b7280" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#6b7280" stopOpacity={0.1}/>
+                        </linearGradient>
+                      </defs>
                       <CartesianGrid 
                         vertical={false} 
                         stroke="hsl(var(--border))" 
                         strokeDasharray="3 3"
-                        opacity={0.3}
+                        opacity={0.2}
                       />
                       <XAxis
                         dataKey="month"
                         tickLine={false}
-                        tickMargin={8}
+                        tickMargin={10}
                         axisLine={false}
                         stroke="#6b7280"
-                        tick={{ fill: '#6b7280', fontSize: 11 }}
+                        tick={{ fill: '#6b7280', fontSize: 12, fontWeight: 500 }}
                       />
                       <YAxis
                         tickLine={false}
-                        tickMargin={8}
+                        tickMargin={10}
                         axisLine={false}
                         stroke="#6b7280"
-                        tick={{ fill: '#6b7280', fontSize: 11 }}
-                        tickFormatter={(value) => `$${value.toLocaleString()}`}
+                        tick={{ fill: '#6b7280', fontSize: 12, fontWeight: 500 }}
+                        tickFormatter={(value) => `$${(value/1000).toFixed(0)}k`}
                       />
                       <Tooltip 
                         formatter={(value: any) => [`$${value.toLocaleString()}`, 'Valor']}
                         labelFormatter={(label) => `${label}`}
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--card))',
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                        }}
                       />
-                      <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={3} name="Pool de Liquidez" />
-                      <Bar dataKey="gridBot" fill="#6b7280" radius={3} name="Grid Bot" />
-                    </BarChart>
+                      <Area 
+                        type="monotone" 
+                        dataKey="poolLiquidity" 
+                        stroke="#3b82f6" 
+                        strokeWidth={2}
+                        fillOpacity={1} 
+                        fill="url(#colorPool)" 
+                        name="Pool de Liquidez"
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="gridBot" 
+                        stroke="#6b7280" 
+                        strokeWidth={2}
+                        fillOpacity={1} 
+                        fill="url(#colorGrid)" 
+                        name="Grid Bot"
+                      />
+                    </AreaChart>
                   </ResponsiveContainer>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div className="p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
                       <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1 text-sm">Mês Atual</h3>
-                      <p className="text-lg font-bold text-slate-900 dark:text-slate-100">{formatCurrency(currentYearDefiValue)}</p>
-                      <p className="text-xs text-slate-600 dark:text-slate-400">DeFi 2024</p>
+                      <p className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                        {monthlyDefiData.length > 0 ? formatCurrency(monthlyDefiData[0]?.total || 0) : formatCurrency(0)}
+                      </p>
+                      <p className="text-xs text-slate-600 dark:text-slate-400">Valor do mês atual</p>
                     </div>
                     <div className="p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
                       <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1 text-sm">Último Mês</h3>
@@ -3031,47 +3065,80 @@ export default function Home() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {/* Gráfico de barras anual */}
+                  {/* Gráfico composto moderno anual */}
                   <ResponsiveContainer width="100%" height={250}>
-                    <BarChart 
+                    <ComposedChart 
                       data={yearlyDefiData}
                       style={{
                         background: 'linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%)',
-                        borderRadius: '8px',
-                        padding: '12px',
+                        borderRadius: '12px',
+                        padding: '16px',
                         border: '1px solid hsl(var(--border))',
-                        boxShadow: '0 2px 4px -1px rgba(0, 0, 0, 0.1)'
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
                       }}
                     >
+                      <defs>
+                        <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#10b981" stopOpacity={0.1}/>
+                        </linearGradient>
+                      </defs>
                       <CartesianGrid 
                         vertical={false} 
                         stroke="hsl(var(--border))" 
                         strokeDasharray="3 3"
-                        opacity={0.3}
+                        opacity={0.2}
                       />
                       <XAxis
                         dataKey="year"
                         tickLine={false}
-                        tickMargin={8}
+                        tickMargin={10}
                         axisLine={false}
                         stroke="#6b7280"
-                        tick={{ fill: '#6b7280', fontSize: 11 }}
+                        tick={{ fill: '#6b7280', fontSize: 12, fontWeight: 500 }}
                       />
                       <YAxis
                         tickLine={false}
-                        tickMargin={8}
+                        tickMargin={10}
                         axisLine={false}
                         stroke="#6b7280"
-                        tick={{ fill: '#6b7280', fontSize: 11 }}
-                        tickFormatter={(value) => `$${value.toLocaleString()}`}
+                        tick={{ fill: '#6b7280', fontSize: 12, fontWeight: 500 }}
+                        tickFormatter={(value) => `$${(value/1000).toFixed(0)}k`}
                       />
                       <Tooltip 
                         formatter={(value: any) => [`$${value.toLocaleString()}`, 'Valor']}
                         labelFormatter={(label) => `Ano ${label}`}
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--card))',
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                        }}
                       />
-                      <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={3} name="Pool de Liquidez" />
-                      <Bar dataKey="gridBot" fill="#6b7280" radius={3} name="Grid Bot" />
-                    </BarChart>
+                      <Bar 
+                        dataKey="poolLiquidity" 
+                        fill="#3b82f6" 
+                        radius={[4, 4, 0, 0]} 
+                        name="Pool de Liquidez"
+                        opacity={0.8}
+                      />
+                      <Bar 
+                        dataKey="gridBot" 
+                        fill="#6b7280" 
+                        radius={[4, 4, 0, 0]} 
+                        name="Grid Bot"
+                        opacity={0.8}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="total" 
+                        stroke="#10b981" 
+                        strokeWidth={3}
+                        dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
+                        activeDot={{ r: 6, stroke: '#10b981', strokeWidth: 2, fill: '#fff' }}
+                        name="Total"
+                      />
+                    </ComposedChart>
                   </ResponsiveContainer>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div className="p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
