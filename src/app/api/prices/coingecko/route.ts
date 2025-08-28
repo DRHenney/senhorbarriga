@@ -24,8 +24,8 @@ async function getAllTokensFromCoinGecko() {
     // Buscar lista muito mais completa de tokens (múltiplas páginas)
     let allTokens: any[] = [];
     
-    // Buscar muito mais páginas para incluir tokens de baixa capitalização (até posição #10000)
-    for (let page = 1; page <= 40; page++) {
+    // Buscar muito mais páginas para incluir tokens de baixa capitalização (até posição #15000)
+    for (let page = 1; page <= 60; page++) {
       const response = await fetch(`${COINGECKO_BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=${page}&sparkline=false&price_change_percentage=24h`, {
         headers: {
           'Accept': 'application/json',
@@ -45,7 +45,7 @@ async function getAllTokensFromCoinGecko() {
         if (data.length === 0) break;
         
         // Adicionar delay para evitar rate limiting
-        if (page < 40) {
+        if (page < 60) {
           await new Promise(resolve => setTimeout(resolve, 100)); // 100ms delay
         }
       } else {
