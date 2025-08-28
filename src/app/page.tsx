@@ -291,6 +291,16 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
       date: item.date
     }));
 
+  // Calcular DeFi total acumulado progressivamente
+  let accumulatedDefi = 0;
+  const sortedDataWithAccumulated = sortedData.map((item: any) => {
+    accumulatedDefi += item.defiTotal;
+    return {
+      ...item,
+      defiTotal: accumulatedDefi
+    };
+  });
+
   // Sempre criar array completo desde janeiro de 2025
   const startDate = new Date(2025, 0, 1); // Janeiro de 2025
   const currentDate = new Date();
@@ -301,7 +311,7 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
     const monthKey = `${d.getFullYear()}-${d.getMonth()}`;
     
     // Verificar se há dados reais para este mês
-    const realData = sortedData.find((item: any) => {
+    const realData = sortedDataWithAccumulated.find((item: any) => {
       const itemDate = new Date(item.date);
       return itemDate.getFullYear() === d.getFullYear() && itemDate.getMonth() === d.getMonth();
     });
@@ -347,7 +357,7 @@ const getPortfolioEvolutionData = (records: any[], tokens: any[]) => {
     
     // Verificar se o último mês tem dados reais (não históricos)
     const lastMonthKey = `${lastItem.date.getFullYear()}-${lastItem.date.getMonth()}`;
-    const hasRealData = sortedData.some((item: any) => {
+    const hasRealData = sortedDataWithAccumulated.some((item: any) => {
       const itemDate = new Date(item.date);
       return itemDate.getFullYear() === lastItem.date.getFullYear() && 
              itemDate.getMonth() === lastItem.date.getMonth();
