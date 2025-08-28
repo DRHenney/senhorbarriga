@@ -2014,7 +2014,7 @@ export default function Home() {
                          axisLine={false}
                          stroke="#64748b"
                          fontSize={12}
-                         tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                         tickFormatter={(value) => formatCurrency(value)}
                        />
                        <Tooltip content={<CustomTooltip />} />
                                             <Line 
@@ -2700,7 +2700,7 @@ export default function Home() {
                        axisLine={false}
                        stroke="#6b7280"
                        tick={{ fill: '#6b7280', fontSize: 12 }}
-                       tickFormatter={(value) => `$${value.toLocaleString()}`}
+                       tickFormatter={(value) => formatCurrency(value)}
                      />
                      <Tooltip content={<CustomTooltip />} />
                      <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={4} name="Pool de Liquidez" isAnimationActive={false} />
@@ -2955,7 +2955,7 @@ export default function Home() {
                         axisLine={false}
                         stroke="#6b7280"
                         tick={{ fill: '#6b7280', fontSize: 12, fontWeight: 500 }}
-                        tickFormatter={(value) => `$${(value/1000).toFixed(0)}k`}
+                        tickFormatter={(value) => formatCurrency(value)}
                       />
                       <Tooltip content={<CustomTooltip />} />
                       <Area 
@@ -3042,7 +3042,7 @@ export default function Home() {
                         axisLine={false}
                         stroke="#6b7280"
                         tick={{ fill: '#6b7280', fontSize: 12, fontWeight: 500 }}
-                        tickFormatter={(value) => `$${(value/1000).toFixed(0)}k`}
+                        tickFormatter={(value) => formatCurrency(value)}
                       />
                       <Tooltip content={<CustomTooltip />} />
                       <Bar 
@@ -3547,7 +3547,7 @@ export default function Home() {
                        axisLine={false}
                        stroke="#6b7280"
                        tick={{ fill: '#6b7280', fontSize: 12 }}
-                       tickFormatter={(value) => `$${value.toLocaleString()}`}
+                       tickFormatter={(value) => formatCurrency(value)}
                      />
                      <Tooltip content={<CustomTooltip />} />
                      <Bar dataKey="poolLiquidity" fill="#3b82f6" radius={4} name="Pool de Liquidez" isAnimationActive={false} />
