@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Label, AreaChart, Area, ComposedChart, Legend } from "recharts";
 
-import { Plus, TrendingUp, DollarSign, BarChart3, Target, Zap, Coins, Trash2, Calendar, User } from "lucide-react";
+import { Plus, TrendingUp, DollarSign, Target, Zap, Coins, Trash2, Calendar } from "lucide-react";
 import Link from "next/link";
 
 import UserNav from "@/components/auth/UserNav";
@@ -3857,21 +3857,7 @@ export default function Home() {
 
 
 
-                 {/* Links de Navegação */}
-         <div className="flex justify-center space-x-4">
-           <Link href="/historico">
-             <Button variant="outline" size="lg" className="bg-white/80 dark:bg-slate-700/80 backdrop-blur-sm border-slate-200 dark:border-slate-600 hover:bg-white dark:hover:bg-slate-600 hover:border-slate-300 dark:hover:border-slate-500 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 px-8 py-3 text-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300">
-               <BarChart3 className="h-5 w-5 mr-2" />
-               Ver Histórico Completo
-             </Button>
-           </Link>
-           <Link href="/dashboard">
-             <Button size="lg" className="bg-gradient-to-r from-slate-600 to-slate-700 dark:from-slate-700 dark:to-slate-800 hover:from-slate-700 hover:to-slate-800 dark:hover:from-slate-600 dark:hover:to-slate-700 text-white px-8 py-3 text-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300">
-               <User className="h-5 w-5 mr-2" />
-               Dashboard
-             </Button>
-           </Link>
-         </div>
+
 
         {/* Modais dos Cards */}
         
