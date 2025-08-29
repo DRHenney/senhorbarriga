@@ -132,11 +132,11 @@ async function getRealTimePricesWithCache(tokens: Array<{ symbol: string; coinGe
     // Se o cache tem dados antigos, usar eles mesmo assim
     if (Object.keys(REALTIME_PRICES_CACHE).length > 0) {
       console.log('🔄 Usando cache antigo devido ao erro');
-      return symbols.map(symbol => {
-        const cached = REALTIME_PRICES_CACHE[symbol];
+      return tokens.map(token => {
+        const cached = REALTIME_PRICES_CACHE[token.symbol];
         if (cached) {
           return {
-            symbol,
+            symbol: token.symbol,
             success: true,
             realTimePrice: cached.price,
             priceChange24h: cached.priceChange24h,
@@ -144,7 +144,7 @@ async function getRealTimePricesWithCache(tokens: Array<{ symbol: string; coinGe
           };
         } else {
           return {
-            symbol,
+            symbol: token.symbol,
             success: false,
             error: 'Token não encontrado'
           };
@@ -152,8 +152,8 @@ async function getRealTimePricesWithCache(tokens: Array<{ symbol: string; coinGe
       });
     }
     
-    return symbols.map(symbol => ({
-      symbol,
+    return tokens.map(token => ({
+      symbol: token.symbol,
       success: false,
       error: 'Erro na API'
     }));
@@ -241,25 +241,25 @@ async function fetchMissingTokens(missingTokens: Array<{ symbol: string; coinGec
         // Delay pequeno entre requisições
         await new Promise(resolve => setTimeout(resolve, 50));
         
-      } catch (error) {
-        console.error(`❌ Erro ao buscar ${symbol}:`, error);
-        results.push({
-          symbol,
-          success: false,
-          error: 'Erro de rede'
-        });
-      }
-    }
-    
-    return results;
-  } catch (error) {
-    console.error('❌ Erro ao buscar tokens faltantes:', error);
-    return missingSymbols.map(symbol => ({
-      symbol,
-      success: false,
-      error: 'Erro interno'
-    }));
-  }
+             } catch (error) {
+         console.error(`❌ Erro ao buscar ${token.symbol}:`, error);
+         results.push({
+           symbol: token.symbol,
+           success: false,
+           error: 'Erro de rede'
+         });
+       }
+     }
+     
+     return results;
+   } catch (error) {
+     console.error('❌ Erro ao buscar tokens faltantes:', error);
+     return missingTokens.map(token => ({
+       symbol: token.symbol,
+       success: false,
+       error: 'Erro interno'
+     }));
+   }
 }
 
 // Função para buscar todos os tokens da CoinGecko (copiada do buscador)
