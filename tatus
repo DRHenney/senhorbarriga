@@ -1,5 +1,0 @@
-[33m139dc48[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;33mtag: [m[1;33mbackup-20250825-094218[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Integrar sistema de autenticação com landing page e dashboard
-[33m96d7d67[m[33m ([m[1;33mtag: [m[1;33mbackup-20250825-093429[m[33m)[m Adicionar framer-motion para animações da landing page
-[33m8edb159[m[33m ([m[1;33mtag: [m[1;33mbackup-20250825-093236[m[33m)[m Implementar landing page moderna com sistema de autenticação
-[33mf935f0b[m[33m ([m[1;33mtag: [m[1;33mbackup-20250825-093134[m[33m)[m Adicionar scripts de backup automático
-[33m3037c93[m[33m ([m[1;33mtag: [m[1;33mbackup-20250825-092704[m[33m, [m[1;33mtag: [m[1;33mbackup-20250825-092650[m[33m, [m[1;33mtag: [m[1;33mbackup-20250825-092420[m[33m)[m Corrigir erro TypeScript - adicionar imageUrl ao tipo Token

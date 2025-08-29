@@ -1,7 +1,0 @@
-[33mb681ff6[m Adicionar imagens dos tokens - Integrar com CoinGecko para exibir logos reais
-[33m4d2f3d8[m feat: implementar atualização automática de preços a cada 30 segundos - Remove cache da API CoinGecko para dados sempre atualizados - Implementa atualização automática silenciosa sem botão manual - Adiciona indicador visual de status da atualização automática - Melhora logs e tratamento de erros - Remove arquivos de teste desnecessários
-[33maa3bda8[m Correção do erro na atualização automática de preços CoinGecko: ajustando estrutura de resposta da API
-[33mdfabee4[m Implementação de atualização automática de preços a cada 30 segundos via CoinGecko - removendo botão manual
-[33mbd21693[m Integração com API do CoinGecko: substituindo DexScreener por CoinGecko para preços em tempo real
-[33m40553c6[m Adicionar integração com DexScreener API para preços em tempo real dos tokens
-[33m52310f9[m feat: implementar sistema de preço médio para tokens - calcular preço médio ponderado ao adicionar tokens

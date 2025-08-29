@@ -2,12 +2,30 @@
 // Forçar novo deploy - formatação de valores monetários corrigida
 
 import { useState, useEffect } from "react";
+
+// Sistema de logs condicional - só mostra logs em desenvolvimento
+const DEBUG = process.env.NODE_ENV === 'development';
+const log = (message: string, ...args: any[]) => {
+  if (DEBUG) {
+    console.log(message, ...args);
+  }
+};
+const logError = (message: string, ...args: any[]) => {
+  if (DEBUG) {
+    console.error(message, ...args);
+  }
+};
+const logWarn = (message: string, ...args: any[]) => {
+  if (DEBUG) {
+    console.warn(message, ...args);
+  }
+};
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Label, AreaChart, Area, ComposedChart, Legend } from "recharts";
 
-import { Plus, TrendingUp, DollarSign, Target, Zap, Coins, Trash2, Calendar } from "lucide-react";
+import { Plus, TrendingUp, DollarSign, Target, Zap, Coins, Trash2, Calendar, BarChart3 } from "lucide-react";
 import Link from "next/link";
 
 import UserNav from "@/components/auth/UserNav";
@@ -793,7 +811,7 @@ export default function Home() {
         });
       }
     } catch (error) {
-      console.error('Erro ao atualizar preço:', error);
+              logError('Erro ao atualizar preço:', error);
       toast({
         title: "❌ Erro",
         description: "Erro ao atualizar preço",
@@ -1051,7 +1069,7 @@ export default function Home() {
 
   // Função para buscar preços em tempo real
   const fetchRealTimePrices = async (tokensList: any[], showLoading = false) => {
-    console.log('🔄 fetchRealTimePrices chamada:', {
+    log('🔄 fetchRealTimePrices chamada:', {
       tokensListLength: tokensList.length,
       isFetchingPrices,
       showLoading,
@@ -1059,12 +1077,12 @@ export default function Home() {
     });
     
     if (tokensList.length === 0) {
-      console.log('❌ fetchRealTimePrices cancelada: lista vazia');
+      log('❌ fetchRealTimePrices cancelada: lista vazia');
       return;
     }
     
     if (isFetchingPrices) {
-      console.log('❌ fetchRealTimePrices cancelada: já está executando');
+      log('❌ fetchRealTimePrices cancelada: já está executando');
       return;
     }
 
