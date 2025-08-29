@@ -2378,8 +2378,18 @@ export default function Home() {
 
             {/* Lista de tokens */}
             <div className="space-y-3">
-              {tokens.map((token) => (
-                <div key={token.id} className="p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+              {tokens
+                .map(token => ({
+                  ...token,
+                  totalValue: token.amount * (token.realTimePrice || token.price || 0)
+                }))
+                .sort((a, b) => b.totalValue - a.totalValue)
+                .map((token, index) => (
+                <div key={token.id} className="p-4 pl-12 bg-slate-50 dark:bg-slate-700/50 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors relative">
+                  {/* Indicador de ranking */}
+                  <div className="absolute top-2 left-2 w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                    #{index + 1}
+                  </div>
                   {editingToken?.id === token.id ? (
                     // Modo de edição
                     <div className="space-y-4">
@@ -2404,6 +2414,9 @@ export default function Home() {
                                                 <div>
                           <h3 className="font-semibold text-slate-900 dark:text-slate-100">{token.name || 'Token'}</h3>
                           <p className="text-sm text-slate-600 dark:text-slate-400">{token.symbol || 'N/A'}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">
+                            Valor total: {formatCurrency(token.amount * (token.realTimePrice || token.price || 0))}
+                          </p>
                         </div>
                         <div className="text-right">
                           <p className="text-sm text-slate-600 dark:text-slate-400">
