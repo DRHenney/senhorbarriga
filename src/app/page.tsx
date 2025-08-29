@@ -2503,18 +2503,28 @@ export default function Home() {
                       {/* Lado esquerdo - Informações básicas */}
                       <div className="flex items-center space-x-4">
                         <div className="w-12 h-12 bg-gradient-to-r from-slate-500 to-slate-600 rounded-full flex items-center justify-center text-white font-bold text-lg overflow-hidden">
-                          {token.imageUrl ? (
-                            <img 
-                              src={token.imageUrl} 
-                              alt={`${token.name} logo`}
-                              className="w-full h-full object-cover rounded-full"
-                              onError={(e) => {
-                                // Fallback para inicial se a imagem falhar
-                                e.currentTarget.style.display = 'none';
-                                e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                              }}
-                            />
-                          ) : null}
+                          {(() => {
+                            if (!token.imageUrl) {
+                              console.log(`⚠️ Sem imagem para ${token.symbol}`);
+                              return null;
+                            }
+                            return (
+                              <img 
+                                src={token.imageUrl} 
+                                alt={`${token.name} logo`}
+                                className="w-full h-full object-cover rounded-full"
+                                onError={(e) => {
+                                  // Fallback para inicial se a imagem falhar
+                                  console.log(`❌ Erro ao carregar imagem para ${token.symbol}:`, token.imageUrl);
+                                  e.currentTarget.style.display = 'none';
+                                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                }}
+                                onLoad={(e) => {
+                                  console.log(`✅ Imagem carregada com sucesso para ${token.symbol}:`, token.imageUrl);
+                                }}
+                              />
+                            );
+                          })()}
                           <span className={token.imageUrl ? 'hidden' : ''}>
                             {token.symbol && token.symbol.length > 0 ? token.symbol.charAt(0) : '?'}
                           </span>
