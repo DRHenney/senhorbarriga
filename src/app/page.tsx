@@ -1085,14 +1085,14 @@ export default function Home() {
         coinGeckoId: t.coinGeckoId 
       })));
       console.log('🌐 Fazendo fetch para /api/prices/realtime-cache...');
-      console.log('📤 Dados enviados:', JSON.stringify({ symbols: tokensToFetch.map(t => t.symbol) }, null, 2));
+      console.log('📤 Dados enviados:', JSON.stringify({ tokens: tokensToFetch }, null, 2));
 
       const response = await fetch('/api/prices/realtime-cache', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ symbols: tokensToFetch.map(t => t.symbol) }),
+        body: JSON.stringify({ tokens: tokensToFetch }),
         cache: 'no-store'
       });
 
