@@ -16,10 +16,38 @@ async function getRealTimePricesWithCache(symbols: string[]) {
   if (Object.keys(REALTIME_PRICES_CACHE).length > 0 && (now - CACHE_TIMESTAMP) < CACHE_DURATION) {
     console.log('📦 Usando cache compartilhado de preços:', Object.keys(REALTIME_PRICES_CACHE).length, 'tokens');
     
-    // Retornar apenas os símbolos solicitados que estão no cache
-    const cachedResults = symbols.map(symbol => {
-      const cached = REALTIME_PRICES_CACHE[symbol];
-      if (cached) {
+    // Verificar quais símbolos estão no cache e quais precisam ser buscados
+    const cachedSymbols = symbols.filter(symbol => REALTIME_PRICES_CACHE[symbol]);
+    const missingSymbols = symbols.filter(symbol => !REALTIME_PRICES_CACHE[symbol]);
+    
+    console.log('📦 Símbolos no cache:', cachedSymbols);
+    console.log('❓ Símbolos faltando:', missingSymbols);
+    
+    // Se todos os símbolos estão no cache, retornar do cache
+    if (missingSymbols.length === 0) {
+      const cachedResults = symbols.map(symbol => {
+        const cached = REALTIME_PRICES_CACHE[symbol];
+        return {
+          symbol,
+          success: true,
+          realTimePrice: cached.price,
+          priceChange24h: cached.priceChange24h,
+          lastUpdated: cached.lastUpdated
+        };
+      });
+      
+      return cachedResults;
+    }
+    
+    // Se alguns símbolos estão faltando, buscar apenas eles e manter o cache
+    console.log('🔄 Buscando símbolos faltando:', missingSymbols);
+    const missingResults = await fetchMissingTokens(missingSymbols);
+    
+    // Combinar resultados do cache com os novos
+    const allResults = symbols.map(symbol => {
+      if (REALTIME_PRICES_CACHE[symbol]) {
+        // Usar cache existente
+        const cached = REALTIME_PRICES_CACHE[symbol];
         return {
           symbol,
           success: true,
@@ -28,15 +56,17 @@ async function getRealTimePricesWithCache(symbols: string[]) {
           lastUpdated: cached.lastUpdated
         };
       } else {
-        return {
+        // Usar resultado da busca
+        const result = missingResults.find(r => r.symbol === symbol);
+        return result || {
           symbol,
           success: false,
-          error: 'Token não encontrado no cache'
+          error: 'Token não encontrado'
         };
       }
     });
     
-    return cachedResults;
+    return allResults;
   }
 
   // Cache expirado ou vazio, buscar novos dados
@@ -112,6 +142,88 @@ async function getRealTimePricesWithCache(symbols: string[]) {
       symbol,
       success: false,
       error: 'Erro na API'
+    }));
+  }
+}
+
+// Função para buscar apenas tokens faltantes (sem buscar toda a lista)
+async function fetchMissingTokens(missingSymbols: string[]) {
+  try {
+    console.log('🔍 Buscando tokens faltantes:', missingSymbols);
+    
+    // Buscar apenas os tokens específicos que estão faltando
+    const results = [];
+    
+    for (const symbol of missingSymbols) {
+      try {
+        // Buscar token específico por símbolo
+        const response = await fetch(`${COINGECKO_BASE_URL}/coins/markets?vs_currency=usd&ids=${symbol.toLowerCase()}&order=market_cap_desc&per_page=1&sparkline=false&price_change_percentage=24h`, {
+          headers: {
+            'Accept': 'application/json',
+            'User-Agent': 'SenhorBarriga-Portfolio/1.0',
+            'X-CG-API-KEY': COINGECKO_API_KEY
+          },
+          cache: 'no-store'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.length > 0) {
+            const token = data[0];
+            const result = {
+              symbol,
+              success: true,
+              realTimePrice: token.current_price,
+              priceChange24h: token.price_change_percentage_24h,
+              lastUpdated: new Date().toISOString()
+            };
+            
+            // Adicionar ao cache
+            REALTIME_PRICES_CACHE[symbol] = {
+              price: token.current_price,
+              priceChange24h: token.price_change_percentage_24h,
+              lastUpdated: new Date().toISOString()
+            };
+            
+            results.push(result);
+            console.log(`✅ ${symbol}: $${token.current_price}`);
+          } else {
+            results.push({
+              symbol,
+              success: false,
+              error: 'Token não encontrado'
+            });
+            console.log(`❌ ${symbol}: não encontrado`);
+          }
+        } else {
+          results.push({
+            symbol,
+            success: false,
+            error: `Erro API: ${response.status}`
+          });
+          console.log(`❌ ${symbol}: erro ${response.status}`);
+        }
+        
+        // Delay pequeno entre requisições
+        await new Promise(resolve => setTimeout(resolve, 50));
+        
+      } catch (error) {
+        console.error(`❌ Erro ao buscar ${symbol}:`, error);
+        results.push({
+          symbol,
+          success: false,
+          error: 'Erro de rede'
+        });
+      }
+    }
+    
+    return results;
+  } catch (error) {
+    console.error('❌ Erro ao buscar tokens faltantes:', error);
+    return missingSymbols.map(symbol => ({
+      symbol,
+      success: false,
+      error: 'Erro interno'
     }));
   }
 }
