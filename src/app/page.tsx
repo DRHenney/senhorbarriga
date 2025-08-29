@@ -665,6 +665,17 @@ export default function Home() {
     notes?: string;
   } | null>(null);
 
+  // Estado para controlar adição/remoção de capital
+  const [capitalAdjustment, setCapitalAdjustment] = useState<{
+    action: "add" | "remove";
+    amount: string;
+    reason: string;
+  }>({
+    action: "add",
+    amount: "",
+    reason: ""
+  });
+
   // Verificar se os campos obrigatórios estão preenchidos
   const isFormComplete = newToken.name && 
                         newToken.symbol && 
@@ -1853,6 +1864,13 @@ export default function Home() {
       numGrids: operation.numGrids,
       notes: operation.notes,
     });
+    
+    // Resetar ajuste de capital
+    setCapitalAdjustment({
+      action: "add",
+      amount: "",
+      reason: ""
+    });
   };
 
   const applyOperationEdit = async () => {
@@ -1867,6 +1885,44 @@ export default function Home() {
         variant: "destructive",
       });
       return;
+    }
+
+    // Verificar se há ajuste de capital
+    const adjustmentAmount = parseFloat(capitalAdjustment.amount);
+    if (capitalAdjustment.amount && !isNaN(adjustmentAmount) && adjustmentAmount > 0) {
+      const originalOperation = activeOperations.find(op => op.id === editingOperation.id);
+      if (!originalOperation) return;
+
+      const originalCapital = Number(originalOperation.capital);
+      let newCapital: number;
+
+      if (capitalAdjustment.action === "add") {
+        newCapital = originalCapital + adjustmentAmount;
+      } else {
+        newCapital = originalCapital - adjustmentAmount;
+        if (newCapital < 0) {
+          toast({
+            title: "⚠️ Aviso",
+            description: "Não é possível retirar mais capital do que existe na operação.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
+      // Confirmar ajuste de capital
+      const actionText = capitalAdjustment.action === "add" ? "adicionar" : "retirar";
+      const confirmMessage = `Confirmar ${actionText} $${adjustmentAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}?\n\n` +
+        `Capital atual: $${originalCapital.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\n` +
+        `Novo capital: $${newCapital.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\n` +
+        `Motivo: ${capitalAdjustment.reason || 'Não especificado'}`;
+
+      if (!confirm(confirmMessage)) {
+        return;
+      }
+
+      // Atualizar capital com o ajuste
+      editingOperation.capital = newCapital;
     }
 
     // Validações específicas para grid bots
@@ -1910,6 +1966,11 @@ export default function Home() {
           op.id === editingOperation.id ? updatedOperationData : op
         ));
         setEditingOperation(null);
+        setCapitalAdjustment({
+          action: "add",
+          amount: "",
+          reason: ""
+        });
         toast({
           title: "✅ Sucesso!",
           description: "Operação atualizada com sucesso!",
@@ -3424,6 +3485,53 @@ export default function Home() {
                                       className="h-10 border-2 border-slate-300 focus:border-green-500 focus:ring-2 focus:ring-green-100 bg-white text-slate-900 font-medium placeholder:text-slate-500"
                                     />
                                   </div>
+                                </div>
+                                
+                                {/* Seção de Ajuste de Capital */}
+                                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                                  <h4 className="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-3">
+                                    💰 Ajuste de Capital (Opcional)
+                                  </h4>
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="space-y-2">
+                                      <label className="text-sm font-medium text-blue-700 dark:text-blue-300">Ação</label>
+                                      <select
+                                        value={capitalAdjustment.action}
+                                        onChange={(e) => setCapitalAdjustment({ ...capitalAdjustment, action: e.target.value as "add" | "remove" })}
+                                        className="w-full h-10 px-3 border-2 border-blue-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white text-slate-900 font-medium"
+                                      >
+                                        <option value="add">➕ Adicionar Capital</option>
+                                        <option value="remove">➖ Retirar Capital</option>
+                                      </select>
+                                    </div>
+                                    <div className="space-y-2">
+                                      <label className="text-sm font-medium text-blue-700 dark:text-blue-300">Valor ($)</label>
+                                      <Input
+                                        type="number"
+                                        placeholder="0.00"
+                                        value={capitalAdjustment.amount}
+                                        onChange={(e) => setCapitalAdjustment({ ...capitalAdjustment, amount: e.target.value })}
+                                        className="h-10 border-2 border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white text-slate-900 font-medium placeholder:text-slate-500"
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <label className="text-sm font-medium text-blue-700 dark:text-blue-300">Motivo (Opcional)</label>
+                                      <Input
+                                        placeholder="Ex: Rebalanceamento, DCA..."
+                                        value={capitalAdjustment.reason}
+                                        onChange={(e) => setCapitalAdjustment({ ...capitalAdjustment, reason: e.target.value })}
+                                        className="h-10 border-2 border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white text-slate-900 font-medium placeholder:text-slate-500"
+                                      />
+                                    </div>
+                                  </div>
+                                  {capitalAdjustment.amount && parseFloat(capitalAdjustment.amount) > 0 && (
+                                    <div className="mt-3 p-3 bg-blue-100 dark:bg-blue-800/30 rounded-md">
+                                      <p className="text-sm text-blue-800 dark:text-blue-200">
+                                        <strong>Preview:</strong> {capitalAdjustment.action === "add" ? "Adicionar" : "Retirar"} ${parseFloat(capitalAdjustment.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} 
+                                        {capitalAdjustment.reason && ` - ${capitalAdjustment.reason}`}
+                                      </p>
+                                    </div>
+                                  )}
                                 </div>
                                 
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-4">
