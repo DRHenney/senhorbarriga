@@ -1432,6 +1432,12 @@ export default function Home() {
       const data = await response.json();
       
       if (data.success && Array.isArray(data.records)) {
+        console.log('📊 Registros carregados da API:', data.records.length);
+        console.log('📅 Primeiros 3 registros:', data.records.slice(0, 3).map((r: any) => ({
+          id: r.id,
+          date: r.recordDate,
+          total: r.total
+        })));
         setRecords(data.records);
       } else {
         console.warn('Resposta inválida da API de registros:', data);

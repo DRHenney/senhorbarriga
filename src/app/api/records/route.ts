@@ -48,6 +48,19 @@ export async function GET() {
     });
 
     console.log('📊 Registros encontrados:', records.length);
+    
+    // Log dos primeiros 3 registros para debug
+    if (records.length > 0) {
+      console.log('📅 Primeiros 3 registros (deve ser os mais recentes):');
+      records.slice(0, 3).forEach((record, index) => {
+        console.log(`  ${index + 1}. ID: ${record.id}, Ano: ${record.year}, Semana: ${record.weekNumber}, Data: ${record.recordDate}, Total: ${record.total}`);
+      });
+      
+      console.log('📅 Últimos 3 registros (deve ser os mais antigos):');
+      records.slice(-3).forEach((record, index) => {
+        console.log(`  ${index + 1}. ID: ${record.id}, Ano: ${record.year}, Semana: ${record.weekNumber}, Data: ${record.recordDate}, Total: ${record.total}`);
+      });
+    }
 
     return NextResponse.json({
       success: true,
