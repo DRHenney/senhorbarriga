@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
       total: total.toFixed(2),
       weekNumber,
       year,
-      recordDate: date.toISOString(),
+      recordDate: date,
       notes: notes || null,
     }).returning();
 
@@ -234,7 +234,7 @@ export async function PUT(request: NextRequest) {
         total: total.toFixed(2),
         weekNumber,
         year,
-        recordDate: date.toISOString(),
+        recordDate: date,
         notes: notes || null,
         updatedAt: new Date(),
       })

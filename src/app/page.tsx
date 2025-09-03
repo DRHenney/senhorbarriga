@@ -2923,18 +2923,11 @@ export default function Home() {
                                <div className="flex items-center space-x-4">
                                  <div>
                                                                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                                      {typeof record.recordDate === 'string' 
-                                        ? new Date(record.recordDate).toLocaleDateString('pt-BR', {
-                                            day: '2-digit',
-                                            month: '2-digit',
-                                            year: 'numeric'
-                                          })
-                                        : record.recordDate.toLocaleDateString('pt-BR', {
-                                            day: '2-digit',
-                                            month: '2-digit',
-                                            year: 'numeric'
-                                          })
-                                      }
+                                      {new Date(record.recordDate).toLocaleDateString('pt-BR', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric'
+                                      })}
                                     </p>
                                     {record.notes && (
                                       <p className="text-xs text-slate-500 dark:text-slate-500 italic">{record.notes}</p>
@@ -3928,18 +3921,11 @@ export default function Home() {
                     {records.slice(0, 5).map((record, index) => (
                       <div key={index} className="flex justify-between items-center p-2 bg-white dark:bg-slate-600 rounded">
                         <span className="text-sm text-slate-600 dark:text-slate-400">
-                          {typeof record.recordDate === 'string' 
-                            ? new Date(record.recordDate).toLocaleDateString('pt-BR', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric'
-                              })
-                            : record.recordDate.toLocaleDateString('pt-BR', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric'
-                              })
-                          }
+                          {new Date(record.recordDate).toLocaleDateString('pt-BR', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                          })}
                         </span>
                         <span className="font-medium text-slate-900 dark:text-slate-100">
                           {formatCurrency((record.poolLiquidity || 0) + (record.gridBot || 0))}
@@ -3992,18 +3978,11 @@ export default function Home() {
                       .map((record, index) => (
                         <div key={index} className="flex justify-between items-center p-2 bg-white dark:bg-slate-600 rounded">
                           <span className="text-sm text-slate-600 dark:text-slate-400">
-                            {typeof record.recordDate === 'string' 
-                              ? new Date(record.recordDate).toLocaleDateString('pt-BR', {
-                                  day: '2-digit',
-                                  month: '2-digit',
-                                  year: 'numeric'
-                                })
-                              : record.recordDate.toLocaleDateString('pt-BR', {
-                                  day: '2-digit',
-                                  month: '2-digit',
-                                  year: 'numeric'
-                                })
-                            }
+                            {new Date(record.recordDate).toLocaleDateString('pt-BR', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric'
+                            })}
                           </span>
                           <span className="font-medium text-slate-900 dark:text-slate-100">
                             {formatCurrency(record.poolLiquidity || 0)}
@@ -4056,18 +4035,11 @@ export default function Home() {
                       .map((record, index) => (
                         <div key={index} className="flex justify-between items-center p-2 bg-white dark:bg-slate-600 rounded">
                           <span className="text-sm text-slate-600 dark:text-slate-400">
-                            {typeof record.recordDate === 'string' 
-                              ? new Date(record.recordDate).toLocaleDateString('pt-BR', {
-                                  day: '2-digit',
-                                  month: '2-digit',
-                                  year: 'numeric'
-                                })
-                              : record.recordDate.toLocaleDateString('pt-BR', {
-                                  day: '2-digit',
-                                  month: '2-digit',
-                                  year: 'numeric'
-                                })
-                            }
+                            {new Date(record.recordDate).toLocaleDateString('pt-BR', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric'
+                            })}
                           </span>
                           <span className="font-medium text-slate-900 dark:text-slate-100">
                             {formatCurrency(record.gridBot || 0)}
