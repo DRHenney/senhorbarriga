@@ -2858,8 +2858,8 @@ export default function Home() {
                         <p className="text-sm text-slate-500 dark:text-slate-500">Adicione registros semanais para ver o histórico</p>
                      </div>
                    ) : (
-                     <div className="space-y-3 max-h-80 overflow-y-auto">
-                       {records.slice(0, 10).map((record) => (
+                     <div className="space-y-3 max-h-96 overflow-y-auto">
+                       {records.map((record) => (
                          <div key={record.id} className="p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
                            {editingRecord?.id === record.id ? (
                              // Modo de edição
@@ -3004,7 +3004,7 @@ export default function Home() {
                      {records.length > 0 ? `${records.length} registros encontrados` : 'Nenhum registro'}
                    </div>
                    <div className="text-slate-600 dark:text-slate-400 leading-none">
-                     Mostrando os últimos 10 registros semanais
+                     Mostrando todos os {records.length} registros semanais
                    </div>
                 </>
               )}
@@ -3922,9 +3922,9 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">Últimos Registros</h3>
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">Todos os Registros</h3>
                   <div className="space-y-2 max-h-40 overflow-y-auto">
-                    {records.slice(0, 5).map((record, index) => (
+                    {records.map((record, index) => (
                       <div key={index} className="flex justify-between items-center p-2 bg-white dark:bg-slate-600 rounded">
                         <span className="text-sm text-slate-600 dark:text-slate-400">
                           {new Date(record.recordDate).toLocaleDateString('pt-BR', {
@@ -3976,11 +3976,10 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">Histórico de Pool de Liquidez</h3>
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">Todos os Registros de Pool de Liquidez</h3>
                   <div className="space-y-2 max-h-40 overflow-y-auto">
                     {records
                       .filter(record => record.poolLiquidity > 0)
-                      .slice(0, 5)
                       .map((record, index) => (
                         <div key={index} className="flex justify-between items-center p-2 bg-white dark:bg-slate-600 rounded">
                           <span className="text-sm text-slate-600 dark:text-slate-400">
@@ -4033,11 +4032,10 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">Histórico de Grid Bot</h3>
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3">Todos os Registros de Grid Bot</h3>
                   <div className="space-y-2 max-h-40 overflow-y-auto">
                     {records
                       .filter(record => record.gridBot > 0)
-                      .slice(0, 5)
                       .map((record, index) => (
                         <div key={index} className="flex justify-between items-center p-2 bg-white dark:bg-slate-600 rounded">
                           <span className="text-sm text-slate-600 dark:text-slate-400">
