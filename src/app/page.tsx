@@ -1458,7 +1458,8 @@ export default function Home() {
         const data = await response.json();
         
         if (data.success) {
-          setRecords([data.record, ...records]);
+          // Recarregar registros do banco para garantir ordem correta
+          await loadRecords();
           setNewEntry({ 
             poolLiquidity: "", 
             gridBot: "", 
@@ -1495,7 +1496,7 @@ export default function Home() {
       id: record.id,
       poolLiquidity: record.poolLiquidity || 0,
       gridBot: record.gridBot || 0,
-      recordDate: record.recordDate ? record.recordDate.split('T')[0] : new Date().toISOString().split('T')[0],
+      recordDate: record.recordDate ? (typeof record.recordDate === 'string' ? record.recordDate.split('T')[0] : new Date(record.recordDate).toISOString().split('T')[0]) : new Date().toISOString().split('T')[0],
       notes: record.notes || "",
     });
   };
@@ -1522,7 +1523,7 @@ export default function Home() {
       id: editingRecord.id,
       poolLiquidity: editingRecord.poolLiquidity || originalRecord.poolLiquidity,
       gridBot: editingRecord.gridBot || originalRecord.gridBot,
-      recordDate: editingRecord.recordDate || originalRecord.recordDate.split('T')[0],
+      recordDate: editingRecord.recordDate || (typeof originalRecord.recordDate === 'string' ? originalRecord.recordDate.split('T')[0] : new Date(originalRecord.recordDate).toISOString().split('T')[0]),
       notes: editingRecord.notes !== undefined ? editingRecord.notes : (originalRecord.notes || ""),
     };
 
@@ -1540,7 +1541,8 @@ export default function Home() {
       const data = await response.json();
       
       if (data.success) {
-        setRecords(records.map(r => r.id === editingRecord.id ? data.record : r));
+        // Recarregar registros do banco para garantir ordem correta
+        await loadRecords();
         setEditingRecord(null);
         toast({
           title: "✅ Sucesso!",
@@ -1576,7 +1578,8 @@ export default function Home() {
         const data = await response.json();
         
         if (data.success) {
-          setRecords(records.filter(r => r.id !== id));
+          // Recarregar registros do banco para garantir ordem correta
+          await loadRecords();
           toast({
             title: "✅ Sucesso!",
             description: "Registro removido com sucesso!",
@@ -2920,11 +2923,18 @@ export default function Home() {
                                <div className="flex items-center space-x-4">
                                  <div>
                                                                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                                      {new Date(record.recordDate).toLocaleDateString('pt-BR', {
-                                        day: '2-digit',
-                                        month: '2-digit',
-                                        year: 'numeric'
-                                      })}
+                                      {typeof record.recordDate === 'string' 
+                                        ? new Date(record.recordDate).toLocaleDateString('pt-BR', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: 'numeric'
+                                          })
+                                        : record.recordDate.toLocaleDateString('pt-BR', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: 'numeric'
+                                          })
+                                      }
                                     </p>
                                     {record.notes && (
                                       <p className="text-xs text-slate-500 dark:text-slate-500 italic">{record.notes}</p>
@@ -3917,7 +3927,20 @@ export default function Home() {
                   <div className="space-y-2 max-h-40 overflow-y-auto">
                     {records.slice(0, 5).map((record, index) => (
                       <div key={index} className="flex justify-between items-center p-2 bg-white dark:bg-slate-600 rounded">
-                        <span className="text-sm text-slate-600 dark:text-slate-400">{record.recordDate}</span>
+                        <span className="text-sm text-slate-600 dark:text-slate-400">
+                          {typeof record.recordDate === 'string' 
+                            ? new Date(record.recordDate).toLocaleDateString('pt-BR', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric'
+                              })
+                            : record.recordDate.toLocaleDateString('pt-BR', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric'
+                              })
+                          }
+                        </span>
                         <span className="font-medium text-slate-900 dark:text-slate-100">
                           {formatCurrency((record.poolLiquidity || 0) + (record.gridBot || 0))}
                         </span>
@@ -3968,7 +3991,20 @@ export default function Home() {
                       .slice(0, 5)
                       .map((record, index) => (
                         <div key={index} className="flex justify-between items-center p-2 bg-white dark:bg-slate-600 rounded">
-                          <span className="text-sm text-slate-600 dark:text-slate-400">{record.recordDate}</span>
+                          <span className="text-sm text-slate-600 dark:text-slate-400">
+                            {typeof record.recordDate === 'string' 
+                              ? new Date(record.recordDate).toLocaleDateString('pt-BR', {
+                                  day: '2-digit',
+                                  month: '2-digit',
+                                  year: 'numeric'
+                                })
+                              : record.recordDate.toLocaleDateString('pt-BR', {
+                                  day: '2-digit',
+                                  month: '2-digit',
+                                  year: 'numeric'
+                                })
+                            }
+                          </span>
                           <span className="font-medium text-slate-900 dark:text-slate-100">
                             {formatCurrency(record.poolLiquidity || 0)}
                           </span>
@@ -4019,7 +4055,20 @@ export default function Home() {
                       .slice(0, 5)
                       .map((record, index) => (
                         <div key={index} className="flex justify-between items-center p-2 bg-white dark:bg-slate-600 rounded">
-                          <span className="text-sm text-slate-600 dark:text-slate-400">{record.recordDate}</span>
+                          <span className="text-sm text-slate-600 dark:text-slate-400">
+                            {typeof record.recordDate === 'string' 
+                              ? new Date(record.recordDate).toLocaleDateString('pt-BR', {
+                                  day: '2-digit',
+                                  month: '2-digit',
+                                  year: 'numeric'
+                                })
+                              : record.recordDate.toLocaleDateString('pt-BR', {
+                                  day: '2-digit',
+                                  month: '2-digit',
+                                  year: 'numeric'
+                                })
+                            }
+                          </span>
                           <span className="font-medium text-slate-900 dark:text-slate-100">
                             {formatCurrency(record.gridBot || 0)}
                           </span>
